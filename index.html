@@ -3,511 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy | Portfolio</title>
+    <title>Sketchy | Dev Hub</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;950&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
 
         :root {
-            --bg: #030303;
-            --surface: rgba(15, 15, 15, 0.6);
-            --surface-hover: rgba(25, 25, 25, 0.8);
-            --accent-g: linear-gradient(135deg, #dc2626 0%, #7c3aed 100%);
-            --red: #dc2626;
-            --purple: #7c3aed;
-            --text-main: #ffffff;
-            --text-muted: #888888;
-            --border: rgba(255, 255, 255, 0.06);
-            --border-highlight: rgba(124, 58, 237, 0.3);
+            --bg: #050505;
+            --surface: rgba(20, 20, 20, 0.4);
+            --surface-glass: rgba(15, 15, 15, 0.6);
+            --accent-g: linear-gradient(135deg, #ff2a2a 0%, #8b5cf6 100%);
+            --red: #ff2a2a;
+            --purple: #8b5cf6;
+            --text-main: #ededed;
+            --text-muted: #888;
+            --border: rgba(255, 255, 255, 0.05);
+            --border-hover: rgba(139, 92, 246, 0.4);
         }
 
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #333; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-        body.lock { overflow: hidden; }
         
-        /* Typography & Utilities */
-        .g-text { background: var(--accent-g); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 950; }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            -webkit-font-smoothing: antialiased; 
+        }
+        
+        /* Pamatuje si texturu ;) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .g-text { 
+            background: var(--accent-g); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900; 
+        }
         .hidden { display: none !important; }
-        .label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+        .label { font-size: 0.75rem; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
 
         /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
         .delay-1 { animation-delay: 0.1s; }
         .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
 
-        /* Navigation & Sidebar */
-        #mt-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 12px; border-radius: 50%; cursor: pointer; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        #mt-btn:hover { transform: scale(1.1); border-color: var(--border-highlight); }
-        #mt-btn.hide { opacity: 0; pointer-events: none; transform: scale(0.8); }
+        /* Sidebar & Overlay */
+        #menu-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 1000; opacity: 0; pointer-events: none; transition: 0.4s;
+        }
+        #menu-overlay.active { opacity: 1; pointer-events: all; }
+
+        #mt-btn { 
+            position: fixed; top: 20px; left: 20px; z-index: 1002; background: var(--surface-glass); 
+            backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 12px; 
+            border-radius: 12px; cursor: pointer; color: white; transition: 0.3s; 
+        }
+        #mt-btn:hover { border-color: var(--purple); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
         
-        .sidebar-detector { position: fixed; left: 0; top: 0; height: 100vh; width: 20px; z-index: 999; }
-        .sidebar { position: fixed; left: -320px; top: 0; height: 100vh; width: 300px; background: rgba(5,5,5,0.85); backdrop-filter: blur(30px); z-index: 1000; padding: 3rem 2rem; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar.open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-        .nav-item { padding: 15px 15px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; border-radius: 12px; }
-        .nav-item:hover { color: #fff; background: var(--surface); transform: translateX(5px); }
+        .edge-detector { position: fixed; left: 0; top: 0; width: 15px; height: 100vh; z-index: 999; }
+
+        .sidebar { 
+            position: fixed; left: -320px; top: 0; height: 100vh; width: 300px; 
+            background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(20px); z-index: 1001; 
+            padding: 5rem 2rem 2rem; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            border-right: 1px solid var(--border); display: flex; flex-direction: column; 
+        }
+        .sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+        
+        .nav-item { 
+            padding: 14px 16px; font-weight: 700; color: var(--text-muted); 
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; 
+            gap: 12px; border-radius: 10px; margin-bottom: 5px;
+        }
+        .nav-item:hover, .nav-item.active { 
+            color: #fff; background: rgba(255,255,255,0.05); transform: translateX(5px); 
+        }
 
         /* Music Player */
-        .music-player { background: rgba(10,10,10,0.5); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-top: auto; backdrop-filter: blur(10px); }
-        .p-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .music-player { 
+            background: rgba(0,0,0,0.4); padding: 15px; border-radius: 16px; 
+            border: 1px solid var(--border); margin-top: auto; 
+        }
+        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .m-select { 
+            background: transparent; border: none; color: var(--text-muted); 
+            font-size: 0.8rem; outline: none; cursor: pointer; font-weight: 700;
+        }
+        .m-select option { background: #111; color: white; }
+        .p-controls { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 10px; }
         .p-icon { cursor: pointer; color: var(--text-muted); transition: 0.2s; }
-        .p-icon:hover { color: white; transform: scale(1.15); }
-        .p-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .p-bar { height: 100%; background: var(--accent-g); width: 0%; transition: width 0.1s linear; }
+        .p-icon:hover { color: white; transform: scale(1.1); }
+        .p-progress { width: 100%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .p-bar { height: 100%; background: var(--accent-g); width: 0%; box-shadow: 0 0 10px var(--purple); }
 
         /* Main Layout */
-        .main { max-width: 1100px; margin: 0 auto; padding: 6rem 1.5rem; min-height: 100vh; }
+        .main { max-width: 1000px; margin: 0 auto; padding: 6rem 1.5rem; min-height: 100vh; }
 
-        /* Modern Hero Section */
-        .hero { padding: 4rem 0; text-align: left; position: relative; }
-        .hero-badge { display: inline-block; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 20px; backdrop-filter: blur(10px); }
-        .hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 950; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -1px; }
-        .hero p { font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-muted); max-width: 600px; margin-bottom: 2.5rem; line-height: 1.6; }
-        
-        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; }
-        .btn { padding: 14px 28px; border-radius: 14px; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: 0.3s; border: none; outline: none; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--accent-g); color: white; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4); }
-        .btn-secondary { background: var(--surface); color: white; border: 1px solid var(--border); backdrop-filter: blur(10px); }
-        .btn-secondary:hover { background: var(--surface-hover); border-color: var(--border-highlight); transform: translateY(-3px); }
+        /* UI Elements */
+        .btn { 
+            padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; 
+            transition: 0.3s; border: none; display: inline-flex; align-items: center; gap: 8px; 
+        }
+        .btn-primary { background: var(--accent-g); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .btn-secondary { background: var(--surface); color: white; border: 1px solid var(--border); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); border-color: var(--purple); }
 
-        /* Bento Grid */
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .bento { background: var(--surface); padding: 30px; border-radius: 24px; border: 1px solid var(--border); backdrop-filter: blur(10px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
-        .bento:hover { transform: translateY(-5px); border-color: var(--border-highlight); }
-        
-        /* Social Dock */
-        .social-dock { background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 20px 40px; display: flex; justify-content: center; gap: 40px; align-items: center; margin: 40px auto; max-width: max-content; backdrop-filter: blur(20px); }
-        .s-link { color: var(--text-muted); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        /* Marquee */
-        .marquee-box { width: 100%; background: transparent; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 20px 0; overflow: hidden; margin-top: 50px; opacity: 0.5; }
-        .marquee-content { display: flex; white-space: nowrap; animation: marquee-scroll 30s linear infinite; width: max-content; gap: 50px; font-weight: 800; letter-spacing: 2px; }
-        @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .bento { background: var(--surface-glass); padding: 25px; border-radius: 20px; border: 1px solid var(--border); transition: 0.3s; }
+        .bento:hover { border-color: var(--border-hover); }
 
-        /* Projects Section */
-        .p-window { width: 100%; aspect-ratio: 16/9; max-height: 600px; background: #000; border-radius: 24px; border: 1px solid var(--border); overflow: hidden; position: relative; margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .p-window img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.3s; }
-        .p-nav { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 10; }
-        .p-arrow { width: 50px; height: 50px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid var(--border); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .p-arrow:hover { background: var(--purple); transform: scale(1.1); border-color: transparent; }
+        /* Projects Detail - Customization support */
+        .p-window { 
+            width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 20px; 
+            border: 1px solid var(--border); overflow: hidden; position: relative; margin-bottom: 30px; 
+        }
+        .p-window img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        
+        .dynamic-block { margin-bottom: 20px; width: 100%; display: flex; flex-direction: column; }
+        .dynamic-block img { max-width: 100%; border: 1px solid var(--border); }
 
         /* Changelog */
-        .ch-container { position: relative; padding-left: 30px; margin-top: 40px; }
-        .ch-line { position: absolute; left: 0; top: 10px; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--purple) 0%, transparent 100%); opacity: 0.5; }
-        .ch-box { position: relative; padding: 25px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); margin-bottom: 25px; backdrop-filter: blur(10px); transition: 0.3s; }
-        .ch-box:hover { transform: translateX(10px); border-color: var(--border-highlight); }
-        .ch-dot { position: absolute; left: -36px; top: 25px; width: 14px; height: 14px; background: var(--bg); border: 2px solid var(--purple); border-radius: 50%; box-shadow: 0 0 10px var(--purple); }
+        .ch-box { 
+            padding: 20px; background: var(--surface-glass); border-radius: 16px; 
+            border: 1px solid var(--border); border-left: 4px solid var(--purple); 
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .ch-box:hover { transform: translateX(5px); background: rgba(255,255,255,0.03); }
 
         /* Index Popup */
-        #index-popup { position: fixed; inset: 0; background: rgba(3,3,3,0.95); backdrop-filter: blur(20px); z-index: 2000; display: none; padding: 5vw; overflow-y: auto; }
-        .idx-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .idx-search-row { display: flex; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; }
-        .idx-input { flex: 1; min-width: 250px; background: var(--surface); border: 1px solid var(--border); padding: 18px 25px; border-radius: 16px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
-        .idx-input:focus { border-color: var(--purple); box-shadow: 0 0 20px rgba(124, 58, 237, 0.1); }
-        
-        .custom-filter { position: relative; min-width: 180px; }
-        .filter-trigger { background: var(--surface); border: 1px solid var(--border); padding: 18px 25px; border-radius: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 800; transition: 0.3s; }
-        .filter-trigger:hover { border-color: var(--border-highlight); }
-        .filter-options { position: absolute; top: 110%; left: 0; right: 0; background: #0d0d0d; border: 1px solid #222; border-radius: 16px; display: none; z-index: 10; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .filter-options.show { display: block; animation: fadeInUp 0.2s ease forwards; }
-        .f-opt { padding: 15px 20px; cursor: pointer; color: var(--text-muted); font-weight: 600; transition: 0.2s; }
-        .f-opt:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 25px; }
+        #index-popup { 
+            position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; 
+            display: none; padding: 5vw; overflow-y: auto; 
+        }
+        .idx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .idx-card { 
+            height: 180px; border-radius: 16px; border: 1px solid var(--border); 
+            position: relative; overflow: hidden; cursor: pointer; background: #000; 
+        }
+        .idx-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; transition: 0.4s; }
+        .idx-card:hover img { opacity: 0.6; transform: scale(1.05); }
+        .idx-card-content { position: relative; z-index: 2; padding: 20px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+        .idx-search { 
+            width: 100%; background: var(--surface); border: 1px solid var(--border); 
+            padding: 15px 20px; border-radius: 12px; color: white; outline: none; margin-bottom: 30px; 
+        }
+        .idx-search:focus { border-color: var(--purple); }
 
-        .idx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .idx-card { height: 200px; border-radius: 20px; border: 1px solid var(--border); position: relative; overflow: hidden; cursor: pointer; transition: 0.4s; background: var(--surface); }
-        .idx-card-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.2; transition: 0.5s; }
-        .idx-card:hover { transform: translateY(-8px); border-color: var(--purple); box-shadow: 0 15px 30px rgba(124, 58, 237, 0.15); }
-        .idx-card:hover .idx-card-bg { opacity: 0.4; transform: scale(1.05); }
-        .idx-card-info { position: relative; z-index: 2; padding: 25px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); }
-        .idx-section-title { font-size: 0.8rem; font-weight: 950; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0 20px; grid-column: 1 / -1; display: flex; align-items: center; gap: 15px; }
-        .idx-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-        /* Mobile Adjustments */
-        @media (max-width: 768px) { 
+        @media (max-width: 768px) {
+            .sidebar { width: 280px; }
             .main { padding: 5rem 1rem; }
-            .hero { padding: 2rem 0; text-align: center; }
-            .hero-actions { justify-content: center; display: flex; }
-            .social-dock { padding: 15px 25px; gap: 25px; width: 100%; justify-content: space-between; border-radius: 20px; }
-            .p-window { max-height: 300px; border-radius: 16px; }
-            .p-nav { bottom: 15px; right: 15px; }
-            .p-arrow { width: 40px; height: 40px; }
-            .idx-header h1 { font-size: 1.8rem !important; }
-            #index-popup { padding: 20px; }
-            .ch-container { padding-left: 20px; }
-            .ch-dot { left: -26px; width: 12px; height: 12px; }
         }
     </style>
 </head>
-<body id="main-body">
+<body>
 
-    <div class="sidebar-detector" id="detector"></div>
-    <div id="mt-btn" onclick="toggleSidebar()"><i data-lucide="menu"></i></div>
+    <div class="edge-detector" id="edge-detect"></div>
+    <div id="menu-overlay" onclick="toggleSidebar(false)"></div>
+    <div id="mt-btn" onclick="toggleSidebar(true)"><i data-lucide="menu"></i></div>
 
     <nav class="sidebar" id="sidebar">
-        <div class="nav-items">
-            <h2 class="g-text" style="font-size: 2.2rem; margin-bottom: 2.5rem;">Sketchy.</h2>
-            <div class="nav-item" onclick="showSection('home')"><i data-lucide="layout-grid"></i> Přehled</div>
-            <div class="nav-item" onclick="showSection('projects')"><i data-lucide="layers"></i> Projekty</div>
-            <div class="nav-item" onclick="showSection('changelog')"><i data-lucide="zap"></i> Changelog</div>
-        </div>
+        <h2 class="g-text" style="font-size: 2rem; margin-bottom: 2rem;">Sketchy.</h2>
+        <div class="nav-item active" onclick="nav('home')"><i data-lucide="terminal"></i> Dashboard</div>
+        <div class="nav-item" onclick="nav('projects')"><i data-lucide="folder-code"></i> Projekty</div>
+        <div class="nav-item" onclick="nav('changelog')"><i data-lucide="git-commit"></i> Changelog</div>
 
         <div class="music-player">
-            <div style="font-size:0.75rem; font-weight:800; color:var(--purple); margin-bottom:12px; letter-spacing: 1px; text-transform: uppercase;" id="track-name">Nyní hraje</div>
-            <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; color: white;">Lofi Vibes</div>
+            <div class="m-header">
+                <span class="label" style="margin:0;">Now Playing</span>
+                <select class="m-select" id="m-category" onchange="changeSong()">
+                    <option value="lofi">Lo-Fi Dev</option>
+                    <option value="synth">Synthwave</option>
+                    <option value="cyber">Cyberpunk</option>
+                </select>
+            </div>
+            <div style="font-weight: 700; font-size: 0.9rem;" id="m-title">Coding in the rain</div>
             <div class="p-controls">
                 <i data-lucide="skip-back" class="p-icon" size="18"></i>
-                <i data-lucide="play" class="p-icon" onclick="togglePlay(this)" size="22" style="color: white;"></i>
+                <i data-lucide="pause" class="p-icon" id="m-playbtn" onclick="toggleMusic()" size="20"></i>
                 <i data-lucide="skip-forward" class="p-icon" size="18"></i>
-                <i data-lucide="volume-2" class="p-icon" size="18"></i>
             </div>
-            <div class="p-progress"><div class="p-bar" id="p-bar"></div></div>
+            <div class="p-progress"><div class="p-bar" id="m-bar"></div></div>
         </div>
     </nav>
 
     <div id="index-popup">
-        <div class="idx-header">
-            <h1 class="g-text" style="font-size: 2.5rem;">Archiv Projektů</h1>
-            <div style="background: var(--surface); padding: 10px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border);" onclick="toggleIndex()">
-                <i data-lucide="x"></i>
-            </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <h1 class="g-text" style="font-size: 2rem;">Databáze</h1>
+            <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='none'">Zavřít</button>
         </div>
-        <div class="idx-search-row">
-            <input type="text" class="idx-input" id="idxSearch" placeholder="Hledat projekt..." oninput="renderIndex()">
-            <div class="custom-filter">
-                <div class="filter-trigger" onclick="document.getElementById('f-opts').classList.toggle('show')">
-                    <span id="f-active">Všechny</span> <i data-lucide="chevron-down" size="18"></i>
-                </div>
-                <div class="filter-options" id="f-opts">
-                    <div class="f-opt" onclick="setFilter('Všechny')">Všechny</div>
-                    <div class="f-opt" onclick="setFilter('AI')">AI</div>
-                    <div class="f-opt" onclick="setFilter('Roblox')">Roblox</div>
-                    <div class="f-opt" onclick="setFilter('Applications')">Applications</div>
-                </div>
-            </div>
-        </div>
+        <input type="text" class="idx-search" id="idxSearch" placeholder="Vyhledat projekt..." oninput="renderIndex()">
         <div id="idx-content" class="idx-grid"></div>
     </div>
 
     <main class="main">
+        
         <section id="home">
-            <div class="hero animate">
-                <div class="hero-badge">👋 Vítej v mém prostoru</div>
-                <h1 class="hero-title">Tvořím <span class="g-text">Hry</span> & <br>Zkoumám <span class="g-text">AI</span>.</h1>
-                <p class="hero-subtitle">Jsem vývojář, co miluje čistej design, Roblox Studio a posouvání hranic pomocí umělé inteligence. Tohle je můj osobní archiv.</p>
-                <div class="btn-group hero-actions">
-                    <button class="btn btn-primary" onclick="showSection('projects')"><i data-lucide="rocket" size="18"></i> Moje Práce</button>
-                    <button class="btn btn-secondary" onclick="window.open('https://youtube.com/@Sk2tchy', '_blank')"><i data-lucide="youtube" size="18"></i> YouTube</button>
-                </div>
+            <div class="animate" style="margin-bottom: 3rem;">
+                <div class="label">System online</div>
+                <h1 style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem;">
+                    Code. <span class="g-text">Create.</span><br>Repeat.
+                </h1>
+                <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 1.5rem;">
+                    Roblox dev, AI explorer. Čistý UI, funkční kód.
+                </p>
+                <button class="btn btn-primary" onclick="nav('projects')">Otevřít Archiv</button>
             </div>
 
             <div class="bento-grid animate delay-1">
                 <div class="bento">
-                    <div class="label">Lokální Čas</div>
-                    <div id="clock" style="font-size:2.2rem; font-weight:950; letter-spacing: -1px;">00:00:00</div>
-                </div>
-                <div class="bento">
-                    <div class="label">Current Status</div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                        <div style="width: 10px; height: 10px; background: var(--purple); border-radius: 50%; box-shadow: 0 0 10px var(--purple); animation: pulse 2s infinite;"></div>
-                        <div style="font-weight:800; font-size:1.1rem;">Working on UNI's description.</div>
+                    <div class="label">Status</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e;"></div>
+                        <strong>Working on UNI</strong>
                     </div>
                 </div>
-            </div>
-
-            <div class="bento animate delay-2" style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 20px; background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), rgba(124, 58, 237, 0.05));">
-                <div>
-                    <h2 style="font-weight:950; font-size: 1.5rem; margin-bottom: 5px;">Sketchy na YouTube</h2>
-                    <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 600;">Trailers, showcases & gameplay. Přidej se k 20+ subs.</p>
+                <div class="bento">
+                    <div class="label">Local Time</div>
+                    <div id="clock" style="font-size: 1.5rem; font-weight: 900;">00:00</div>
                 </div>
-                <button class="btn btn-primary" onclick="window.open('https://youtube.com/@Sk2tchy?sub_confirmation=1', '_blank')" style="background: var(--red); box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);">
-                    Odebírat
-                </button>
-            </div>
-
-            <div class="social-dock animate delay-3">
-                <div class="s-link" data-color="#ff0000" onclick="window.open('https://youtube.com/@Sk2tchy', '_blank')">
-                    <i data-lucide="youtube" size="32"></i>
-                </div>
-                <div class="s-link" data-color="#ffffff" onclick="window.open('https://github.com/TVOJE_JMENO', '_blank')">
-                    <i data-lucide="github" size="32"></i>
-                </div>
-                <div class="s-link" data-color="#5865F2" onclick="window.open('https://discord.gg/TVUJ_SERVER', '_blank')">
-                    <i data-lucide="message-square" size="32"></i>
-                </div>
-                <div class="s-link" data-color="#E1306C" onclick="window.open('https://instagram.com/TVUJ_PROFIL', '_blank')">
-                    <i data-lucide="instagram" size="32"></i>
-                </div>
-            </div>
-
-            <div class="marquee-box animate delay-3">
-                <div class="marquee-content" id="marquee-inner"></div>
             </div>
         </section>
 
         <section id="projects" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; flex-wrap: wrap; gap: 20px;">
-                <div>
-                    <div class="label">Portfolio</div>
-                    <h1 class="g-text" style="font-size:3rem; line-height: 1;">Projekty</h1>
-                </div>
-                <button class="btn btn-secondary" onclick="toggleIndex()"><i data-lucide="grid" size="18"></i> Všechny Projekty</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h1 class="g-text" style="font-size: 2.5rem;">Inspekce</h1>
+                <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='block'; renderIndex();"><i data-lucide="grid" size="16"></i> Všechny</button>
             </div>
             
             <div class="p-window animate">
                 <img id="p-main-img" src="">
-                <div class="p-nav">
-                    <div class="p-arrow" onclick="changeP(-1)"><i data-lucide="chevron-left"></i></div>
-                    <div class="p-arrow" onclick="changeP(1)"><i data-lucide="chevron-right"></i></div>
-                </div>
             </div>
-            <div id="p-dynamic-content" class="animate delay-1"></div>
+            <div id="p-content" class="animate delay-1"></div>
         </section>
 
         <section id="changelog" class="hidden">
-            <div class="label animate">Historie verzí</div>
-            <h1 class="g-text animate" style="font-size:3rem; margin-bottom:40px; line-height: 1;">Changelog</h1>
-            
-            <div class="ch-container animate delay-1">
-                <div class="ch-line"></div>
-                <div id="ch-list"></div>
-            </div>
+            <h1 class="g-text animate" style="font-size: 2.5rem; margin-bottom: 2rem;">Commits</h1>
+            <div id="ch-list" class="animate delay-1"></div>
         </section>
+
     </main>
 
-    <style>
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); }
-        }
-    </style>
-
     <script>
-        // Data zůstávají 100% stejná
+        // --- DATA STRUKTURA (Plná customizace je zpět) ---
         const projects = [
             { 
-                name: "UNI - AI Assistant", cat: "AI", rec: true, 
-                img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1000&auto=format&fit=crop", 
+                name: "UNI - AI Assistant", cat: "AI", 
+                img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1000&q=80", 
                 content: [
-                    {type:'text', val:'UNI - AI Assistant', size:'clamp(2.5rem, 5vw, 4rem)', bold:true, align:'center', gradient: 'var(--accent-g)'},
-                    {type:'text', val:'Description is soon to come, its in work, basically Jarvis inspired assistant.', size:'1.1rem', bold:false, align:'center', color: 'var(--text-muted)'},
+                    { type: 'text', val: 'UNI Core System', size: '3rem', bold: true, align: 'center', gradient: 'var(--accent-g)', neon: true },
+                    { type: 'text', val: 'Základní popis asistence inspirované Jarvisem.', size: '1rem', color: 'var(--text-muted)', align: 'center' },
+                    { type: 'image', src: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80', width: '80%', align: 'center', radius: '16px' }
                 ] 
             },
             { 
-                name: "Placeholder 1", cat: "Roblox", rec: false, 
-                img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=1000&auto=format&fit=crop", 
+                name: "Roblox FPS Framework", cat: "Roblox", 
+                img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=1000&q=80", 
                 content: [
-                    {type:'text', val:'Placeholder 1', size:'clamp(2.5rem, 5vw, 4rem)', bold:true, align:'center', gradient: 'var(--accent-g)'},
-                    {type:'text', val:'Tady bude popis roblox hry.', size:'1.1rem', bold:false, align:'center', color: 'var(--text-muted)'},
-                ] 
-            },
-            { 
-                name: "Placeholder 2", cat: "Applications", rec: false, 
-                img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop", 
-                content: [
-                    {type:'text', val:'Placeholder 2', size:'clamp(2.5rem, 5vw, 4rem)', bold:true, align:'center', gradient: 'var(--accent-g)'},
-                    {type:'text', val:'Appka vo niecom cool.', size:'1.1rem', bold:false, align:'center', color: 'var(--text-muted)'},
+                    { type: 'text', val: 'Next-Gen Movement', size: '2rem', bold: true, align: 'left', color: '#fff' },
+                    { type: 'text', val: 'Custom framework pro zbraně a pohyb hráče v Roblox Studiu.', size: '1rem', color: '#aaa', align: 'left' }
                 ] 
             }
         ];
 
         const changelogData = [
-            { ver: "Build 0.2, BETA", date: "Feb 25, 2026", note: "Massive UI Redesign. Přidán glassmorphism, odstraněn slider, plynulejší animace a full mobile podpora." },
-            { ver: "Build 0.1, ALPHA", date: "Feb 06, 2026", note: "Site launched. Hub, Projects and ChangeLog page." }
+            { ver: "v1.1 - UI Overhaul", date: "Feb 26, 2026", note: "Opraven sidebar logic, vrácena customizace bloků, autoplay music fake player, odebrán otravný marquee." },
+            { ver: "v1.0 - Initial", date: "Feb 06, 2026", note: "První commit portfolia." }
         ];
 
-        // --- Core UI Logic ---
+        // --- SIDEBAR LOGIC (PC i Mobil) ---
         const sidebar = document.getElementById('sidebar');
-        const btn = document.getElementById('mt-btn');
-        let startX = 0;
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            btn.classList.toggle('hide');
+        const overlay = document.getElementById('menu-overlay');
+        
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            } else {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
         }
 
-        sidebar.addEventListener('mouseleave', () => { if(sidebar.classList.contains('open')) toggleSidebar(); });
-        document.getElementById('detector').addEventListener('mouseenter', () => { if(!sidebar.classList.contains('open') && window.innerWidth > 768) toggleSidebar(); });
+        // PC detekce
+        document.getElementById('edge-detect').addEventListener('mouseenter', () => toggleSidebar(true));
+        sidebar.addEventListener('mouseleave', () => toggleSidebar(false));
 
-        document.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        // Mobile Swipe detekce
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
         document.addEventListener('touchmove', e => {
-            let moveX = e.touches[0].clientX;
-            if (moveX - startX > 60 && startX < 50 && !sidebar.classList.contains('open')) toggleSidebar();
+            let touchEndX = e.touches[0].clientX;
+            // Swipe Left (Zavřít)
+            if (touchStartX - touchEndX > 50 && sidebar.classList.contains('open')) toggleSidebar(false);
+            // Swipe Right (Otevřít z levého kraje)
+            if (touchEndX - touchStartX > 50 && touchStartX < 30 && !sidebar.classList.contains('open')) toggleSidebar(true);
         });
 
-        function showSection(id) {
-            document.querySelectorAll('main > section').forEach(s => {
-                s.classList.add('hidden');
-                // Re-trigger animations
-                s.querySelectorAll('.animate').forEach(el => {
-                    el.style.animation = 'none';
-                    el.offsetHeight; /* trigger reflow */
-                    el.style.animation = null; 
-                });
-            });
+        // --- NAVIGACE ---
+        function nav(id) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            if(sidebar.classList.contains('open')) toggleSidebar();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo(0,0);
+            if(id === 'projects') loadProject(0);
         }
 
-        // Vylepšený hover socialek (Glow + Scale/Rotate)
-        document.querySelectorAll('.s-link').forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                const color = link.getAttribute('data-color');
-                link.style.color = color;
-                link.style.filter = `drop-shadow(0 0 10px ${color})`;
-                link.style.transform = `scale(1.3) rotate(${Math.random() * 30 - 15}deg)`;
-            });
-            link.addEventListener('mouseleave', () => {
-                link.style.color = 'var(--text-muted)';
-                link.style.filter = 'none';
-                link.style.transform = `scale(1) rotate(0deg)`;
-            });
-        });
-
-        // --- Index / Filtrování (Vylepšený layout) ---
-        let currentFilter = 'Všechny';
-        function setFilter(val) {
-            currentFilter = val;
-            document.getElementById('f-active').innerText = val;
-            document.getElementById('f-opts').classList.remove('show');
-            renderIndex();
-        }
-
-        function toggleIndex() { 
-            const pop = document.getElementById('index-popup');
-            const visible = pop.style.display === 'block';
-            pop.style.display = visible ? 'none' : 'block';
-            document.getElementById('main-body').classList.toggle('lock', !visible);
-            if(!visible) renderIndex();
-        }
-
-        function renderIndex() {
-            const container = document.getElementById('idx-content');
-            const search = document.getElementById('idxSearch').value.toLowerCase();
+        // --- PROJEKTY RENDER & CUSTOMIZACE ---
+        function loadProject(idx) {
+            const p = projects[idx];
+            document.getElementById('p-main-img').src = p.img;
+            
+            const container = document.getElementById('p-content');
             container.innerHTML = '';
 
-            let renderedIds = new Set();
-            let sections = currentFilter === 'Všechny' ? ['Recommended', ...new Set(projects.map(p => p.cat))] : [currentFilter];
-
-            sections.forEach(sec => {
-                const items = projects.filter(p => {
-                    const matchesSearch = p.name.toLowerCase().includes(search);
-                    const matchesCat = (sec === 'Recommended') ? p.rec : p.cat === sec;
-                    const notRenderedYet = currentFilter === 'Všechny' ? !renderedIds.has(projects.indexOf(p)) : true;
-                    return matchesSearch && matchesCat && notRenderedYet;
-                });
-
-                if (items.length > 0) {
-                    container.innerHTML += `<div class="idx-section-title">${sec}</div>`;
-                    items.forEach(p => {
-                        const pIdx = projects.indexOf(p);
-                        renderedIds.add(pIdx);
-                        // Fallback na prázdnou černou, pokud není obrázek
-                        const imgSrc = p.img || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-                        container.innerHTML += `
-                            <div class="idx-card" onclick="jumpTo(${pIdx})">
-                                <img src="${imgSrc}" class="idx-card-bg">
-                                <div class="idx-card-info">
-                                    <div class="label" style="color:var(--purple)">${p.cat}</div>
-                                    <div style="font-weight:950; font-size:1.4rem;">${p.name}</div>
-                                </div>
-                            </div>`;
-                    });
-                }
-            });
-        }
-
-        // --- Projekty Detail ---
-        let pIdx = 0;
-        function changeP(d) { pIdx = (pIdx + d + projects.length) % projects.length; renderProject(); }
-        function jumpTo(i) { pIdx = i; renderProject(); toggleIndex(); showSection('projects'); }
-        
-        function renderProject() {
-            const p = projects[pIdx];
-            const mainImg = document.getElementById('p-main-img');
-            mainImg.src = p.img || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-            
-            const area = document.getElementById('p-dynamic-content');
-            area.innerHTML = '';
             p.content.forEach(c => {
-                const row = document.createElement('div');
-                row.style.textAlign = c.align; row.style.marginBottom = '20px';
-                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'dynamic-block';
+                // Alignment logic
+                if(c.align === 'center') wrapper.style.alignItems = 'center';
+                else if(c.align === 'right') wrapper.style.alignItems = 'flex-end';
+                else wrapper.style.alignItems = 'flex-start';
+
                 if(c.type === 'text') {
-                    const el = document.createElement('div'); 
+                    const el = document.createElement('div');
                     el.innerText = c.val;
-                    el.style.fontSize = c.size; 
-                    el.style.fontWeight = c.bold ? '950' : '500';
-                    el.style.lineHeight = '1.4';
+                    el.style.fontSize = c.size || '1rem';
+                    el.style.fontWeight = c.bold ? '900' : '500';
+                    el.style.textAlign = c.align || 'left';
                     
-                    if(c.gradient) { 
-                        el.style.background = c.gradient; 
-                        el.style.webkitBackgroundClip = 'text'; 
-                        el.style.webkitTextFillColor = 'transparent'; 
+                    if(c.gradient) {
+                        el.style.background = c.gradient;
+                        el.style.webkitBackgroundClip = 'text';
+                        el.style.webkitTextFillColor = 'transparent';
                     } else if(c.color) {
                         el.style.color = c.color;
                     }
-                    if(c.neon) el.style.textShadow = `0 0 20px var(--purple)`;
-                    row.appendChild(el);
-                } else if(c.type === 'image') {
-                    const img = document.createElement('img'); img.src = c.src;
-                    img.style.width = '100%'; img.style.borderRadius = '20px'; 
-                    img.style.border = '1px solid var(--border)';
-                    row.appendChild(img);
+                    if(c.neon) el.style.textShadow = `0 0 15px var(--purple)`;
+                    
+                    wrapper.appendChild(el);
+                } 
+                else if(c.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = c.src;
+                    img.style.width = c.width || '100%';
+                    img.style.borderRadius = c.radius || '12px';
+                    wrapper.appendChild(img);
                 }
-                area.appendChild(row);
+                container.appendChild(wrapper);
+            });
+            
+            document.getElementById('index-popup').style.display = 'none';
+        }
+
+        // --- INDEX ARCHIV ---
+        function renderIndex() {
+            const q = document.getElementById('idxSearch').value.toLowerCase();
+            const grid = document.getElementById('idx-content');
+            grid.innerHTML = '';
+            
+            projects.forEach((p, i) => {
+                if(p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q)) {
+                    grid.innerHTML += `
+                        <div class="idx-card" onclick="nav('projects'); loadProject(${i});">
+                            <img src="${p.img}">
+                            <div class="idx-card-content">
+                                <div class="label">${p.cat}</div>
+                                <div style="font-weight:900; font-size:1.2rem;">${p.name}</div>
+                            </div>
+                        </div>`;
+                }
             });
         }
 
-        // --- Music Player (Falešný) ---
-        let isPlaying = false;
-        let progress = 0;
-        function togglePlay(el) {
+        // --- MUSIC PLAYER ---
+        let isPlaying = true; // Autoplay ON
+        let mProg = 0;
+        const songs = { lofi: "Coding in the rain", synth: "Neon Grid", cyber: "Data Breach" };
+        
+        function toggleMusic() {
             isPlaying = !isPlaying;
-            el.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+            document.getElementById('m-playbtn').setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
             lucide.createIcons();
         }
+        function changeSong() {
+            const cat = document.getElementById('m-category').value;
+            document.getElementById('m-title').innerText = songs[cat];
+            mProg = 0;
+            if(!isPlaying) toggleMusic();
+        }
         setInterval(() => {
-            if(isPlaying && progress < 100) {
-                progress += 0.5;
-                document.getElementById('p-bar').style.width = progress + '%';
-            } else if (progress >= 100) {
-                progress = 0; // Loop
+            if(isPlaying) {
+                mProg = (mProg >= 100) ? 0 : mProg + 0.5;
+                document.getElementById('m-bar').style.width = mProg + '%';
             }
+        }, 500);
+
+        // --- UTILS ---
+        setInterval(() => { 
+            const d = new Date();
+            document.getElementById('clock').innerText = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); 
         }, 1000);
 
-        // --- Utility ---
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('cs-CZ'); }, 1000);
-
-        // Render Changelog
-        const chList = document.getElementById('ch-list');
         changelogData.forEach(ch => {
-            chList.innerHTML += `
-            <div class="ch-box">
-                <div class="ch-dot"></div>
-                <div class="label" style="color:var(--purple)">${ch.date}</div>
-                <h2 style="font-weight:950; font-size: 1.4rem; margin-bottom: 8px;">${ch.ver}</h2>
-                <p style="color:var(--text-muted); font-size: 0.95rem; line-height: 1.5;">${ch.note}</p>
-            </div>`;
+            document.getElementById('ch-list').innerHTML += `
+                <div class="ch-box">
+                    <div class="label">${ch.date}</div>
+                    <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px;">${ch.ver}</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">${ch.note}</div>
+                </div>`;
         });
 
-        // Marquee
-        const marquee = document.getElementById('marquee-inner');
-        marquee.innerHTML = (`<span class="g-text">ROBLOX STUDIO</span> &nbsp;•&nbsp; <span style="color:white">AI</span> &nbsp;•&nbsp; <span class="g-text">GAMES</span> &nbsp;•&nbsp; <span style="color:white">WEB</span> &nbsp;•&nbsp; `).repeat(4);
-
-        // Init
-        renderProject();
         lucide.createIcons();
     </script>
 </body>
