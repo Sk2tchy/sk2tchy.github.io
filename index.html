@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Example M0</title>
+    <title>Sketchy | Dev Hub</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
@@ -36,12 +36,12 @@
             -webkit-font-smoothing: antialiased; 
         }
         
-        /* Globální textura pro víc hloubky */
+        /* Původní textura s lehkým blendem */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 9999;
             mix-blend-mode: overlay;
@@ -85,7 +85,7 @@
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); z-index: 1001; 
             padding: 5rem 2rem 2rem; transition: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
             border-right: 1px solid rgba(255, 255, 255, 0.05); 
-            border-radius: 0 40px 40px 0; /* Tohle dělá ten clean look */
+            border-radius: 0 40px 40px 0;
             display: flex; flex-direction: column; 
             box-shadow: inset -1px 0 20px rgba(124, 58, 237, 0.05);
         }
@@ -205,21 +205,21 @@
     <div id="mt-btn" onclick="toggleSidebar(true)"><i data-lucide="menu"></i></div>
 
     <nav class="sidebar" id="sidebar">
-        <h2 class="g-text" style="font-size: 2.2rem; margin-bottom: 2rem;">Example M1</h2>
-        <div class="nav-item active" onclick="nav('home')"><i data-lucide="terminal"></i> Example M2</div>
-        <div class="nav-item" onclick="nav('projects')"><i data-lucide="folder-code"></i> Example M3</div>
-        <div class="nav-item" onclick="nav('changelog')"><i data-lucide="git-commit"></i> Example M4</div>
+        <h2 class="g-text" style="font-size: 2.2rem; margin-bottom: 2rem;">Sketchy.</h2>
+        <div class="nav-item active" onclick="nav('home')"><i data-lucide="terminal"></i> Dashboard</div>
+        <div class="nav-item" onclick="nav('projects')"><i data-lucide="folder-code"></i> Projekty</div>
+        <div class="nav-item" onclick="nav('changelog')"><i data-lucide="git-commit"></i> Changelog</div>
 
         <div class="music-player" id="m-container">
             <div class="m-header">
-                <span class="label" style="margin:0;">Example M5</span>
+                <span class="label" style="margin:0;">Now Playing</span>
                 <select class="m-select" id="m-category" onchange="changeSong()">
                     <option value="phonk">Phonk Drift</option>
                     <option value="chill">Chillhop Dev</option>
                     <option value="synth">Midnight Synth</option>
                 </select>
             </div>
-            <div class="m-title-wrap" style="font-weight: 900; font-size: 1.1rem; letter-spacing: -0.5px;" id="m-title">Example M6</div>
+            <div class="m-title-wrap" style="font-weight: 900; font-size: 1.1rem; letter-spacing: -0.5px;" id="m-title">Načítám...</div>
             <div class="p-controls">
                 <i data-lucide="skip-back" class="p-icon" size="20" onclick="changeSong()"></i>
                 <i data-lucide="play" class="p-icon" id="m-playbtn" onclick="toggleMusic()" size="28" style="color: white;"></i>
@@ -232,10 +232,10 @@
 
     <div id="index-popup">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h1 class="g-text" style="font-size: 2.5rem;">Example D1</h1>
-            <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='none'">Example D2</button>
+            <h1 class="g-text" style="font-size: 2.5rem;">Databáze</h1>
+            <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='none'">Zavřít</button>
         </div>
-        <input type="text" class="idx-search" id="idxSearch" placeholder="Example D3" oninput="renderIndex()">
+        <input type="text" class="idx-search" id="idxSearch" placeholder="Vyhledat projekt..." oninput="renderIndex()">
         <div id="idx-content" class="idx-grid"></div>
     </div>
 
@@ -243,26 +243,26 @@
         
         <section id="home">
             <div class="animate" style="margin-bottom: 4rem;">
-                <div class="label">Example A1</div>
+                <div class="label">System online</div>
                 <h1 style="font-size: clamp(3rem, 7vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px;">
-                    Example A2. <span class="g-text">Example A3.</span><br>Example A4.
+                    Code. <span class="g-text">Create.</span><br>Repeat.
                 </h1>
                 <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 2rem; font-size: 1.1rem;">
-                    Example A5
+                    Roblox dev, AI explorer. Čistý UI, funkční kód.
                 </p>
-                <button class="btn btn-primary" onclick="nav('projects')">Example A6</button>
+                <button class="btn btn-primary" onclick="nav('projects')">Otevřít Archiv</button>
             </div>
 
             <div class="bento-grid animate delay-1">
                 <div class="bento">
-                    <div class="label">Example A7</div>
+                    <div class="label">Status</div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 15px #22c55e;"></div>
-                        <strong style="font-size: 1.2rem;">Example A8</strong>
+                        <strong style="font-size: 1.2rem;">Working on UNI</strong>
                     </div>
                 </div>
                 <div class="bento">
-                    <div class="label">Example A9</div>
+                    <div class="label">Local Time</div>
                     <div id="clock" style="font-size: 1.8rem; font-weight: 900; letter-spacing: -1px;">00:00</div>
                 </div>
             </div>
@@ -270,8 +270,8 @@
 
         <section id="projects" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h1 class="g-text" style="font-size: 3rem; letter-spacing: -1px;">Example B1</h1>
-                <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='block'; renderIndex();"><i data-lucide="grid" size="18"></i> Example B2</button>
+                <h1 class="g-text" style="font-size: 3rem; letter-spacing: -1px;">Inspekce</h1>
+                <button class="btn btn-secondary" onclick="document.getElementById('index-popup').style.display='block'; renderIndex();"><i data-lucide="grid" size="18"></i> Všechny</button>
             </div>
             
             <div class="p-window animate">
@@ -281,36 +281,37 @@
         </section>
 
         <section id="changelog" class="hidden">
-            <h1 class="g-text animate" style="font-size: 3rem; margin-bottom: 3rem; letter-spacing: -1px;">Example C1</h1>
+            <h1 class="g-text animate" style="font-size: 3rem; margin-bottom: 3rem; letter-spacing: -1px;">Commits</h1>
             <div id="ch-list" class="animate delay-1"></div>
         </section>
 
     </main>
 
     <script>
+        // Původní data jsou zpět
         const projects = [
             { 
-                name: "Example B3", cat: "Example B4", 
+                name: "UNI - AI Assistant", cat: "AI", 
                 img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1000&q=80", 
                 content: [
-                    { type: 'text', val: 'Example B5', size: '3.5rem', bold: true, align: 'center', gradient: 'var(--accent-g)', neon: true },
-                    { type: 'text', val: 'Example B6', size: '1.2rem', color: 'var(--text-muted)', align: 'center' },
+                    { type: 'text', val: 'UNI Core System', size: '3.5rem', bold: true, align: 'center', gradient: 'var(--accent-g)', neon: true },
+                    { type: 'text', val: 'Základní popis asistence inspirované Jarvisem.', size: '1.2rem', color: 'var(--text-muted)', align: 'center' },
                     { type: 'image', src: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80', width: '80%', align: 'center', radius: '25px' }
                 ] 
             },
             { 
-                name: "Example B7", cat: "Example B8", 
+                name: "Roblox FPS Framework", cat: "Roblox", 
                 img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=1000&q=80", 
                 content: [
-                    { type: 'text', val: 'Example B9', size: '2.5rem', bold: true, align: 'left', color: '#fff' },
-                    { type: 'text', val: 'Example B10', size: '1.1rem', color: '#aaa', align: 'left' }
+                    { type: 'text', val: 'Next-Gen Movement', size: '2.5rem', bold: true, align: 'left', color: '#fff' },
+                    { type: 'text', val: 'Custom framework pro zbraně a pohyb hráče v Roblox Studiu.', size: '1.1rem', color: '#aaa', align: 'left' }
                 ] 
             }
         ];
 
         const changelogData = [
-            { ver: "Example C2", date: "Example C3", note: "Example C4" },
-            { ver: "Example C5", date: "Example C6", note: "Example C7" }
+            { ver: "v1.1 - UI Overhaul", date: "Feb 26, 2026", note: "Opraven sidebar logic, vrácena customizace bloků, funkční audio přehrávač." },
+            { ver: "v1.0 - Initial", date: "Feb 06, 2026", note: "První commit portfolia." }
         ];
 
         // --- SIDEBAR LOGIC ---
@@ -422,7 +423,7 @@
         const progressBar = document.getElementById('m-bar');
         let isPlaying = false; 
 
-        // Lepší music výběr s real linkama (Pixabay royalty free)
+        // Tady si pak můžeš napojit svoje MP3 ze složky
         const songsData = { 
             phonk: { title: "Drift in Tokyo", url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_27c38f1211.mp3" }, 
             chill: { title: "Midnight Lo-Fi", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf589.mp3" }, 
