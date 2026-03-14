@@ -3,318 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy // Hub</title>
+    <title>Sketchy | Hub</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;950&display=swap');
 
         :root {
-            --bg: #050505;
-            --surface: #111111;
-            --surface-hover: #1a1a1a;
-            --border: #222222;
-            --text-main: #eeeeee;
-            --text-muted: #888888;
-            --accent: #ffffff;
+            /* Zklidněná, modernější paleta */
+            --bg-base: #050508;
+            --accent-1: #4f46e5; /* Indigo */
+            --accent-2: #0ea5e9; /* Sky Blue */
+            --accent-3: #8b5cf6; /* Violet */
+            --surface: rgba(15, 17, 23, 0.6);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             --noise: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.04"/%3E%3C/svg%3E');
         }
 
-        /* Skrytí defaultní myši pro desktop */
-        @media (pointer: fine) { body { cursor: none; } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-2); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-        
-        /* Custom Cursor */
-        .cursor-dot { position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s; mix-blend-mode: difference; }
-        .cursor-dot.active { width: 40px; height: 40px; background: rgba(255,255,255,0.1); backdrop-filter: blur(2px); mix-blend-mode: normal; border: 1px solid rgba(255,255,255,0.5); }
+        body { background: var(--bg-base); color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        body.lock { overflow: hidden; }
 
-        .noise-overlay { position: fixed; inset: 0; background-image: var(--noise); z-index: 9000; pointer-events: none; mix-blend-mode: screen; opacity: 0.8; }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #333; }
+        /* Subtle Mesh Background */
+        .mesh-bg { position: fixed; inset: 0; z-index: -3; overflow: hidden; background: var(--bg-base); }
+        .mesh-blob { position: absolute; filter: blur(120px); border-radius: 50%; opacity: 0.15; animation: mesh-float 20s infinite alternate ease-in-out; pointer-events: none; }
+        .mesh-1 { background: var(--accent-1); width: 50vw; height: 50vw; top: -10%; left: -10%; }
+        .mesh-2 { background: var(--accent-3); width: 45vw; height: 45vw; bottom: -10%; right: -5%; animation-delay: -5s; }
+        @keyframes mesh-float { 100% { transform: translate(30px, 50px) scale(1.1); } }
 
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(var(--surface-border) 1px, transparent 1px), linear-gradient(90deg, var(--surface-border) 1px, transparent 1px); background-size: 40px 40px; z-index: -2; opacity: 0.4; mask-image: radial-gradient(circle at center, black 30%, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%); pointer-events: none; }
+        .noise-overlay { position: fixed; inset: 0; background-image: var(--noise); z-index: -1; pointer-events: none; mix-blend-mode: overlay; opacity: 0.8; }
+
+        /* Utilities */
+        .g-text { background: linear-gradient(135deg, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 950; }
         .hidden { display: none !important; }
-        .label { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .label { font-size: 0.7rem; font-weight: 800; color: var(--accent-2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; display: inline-block; padding: 4px 12px; border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 8px; background: rgba(14, 165, 233, 0.05); }
 
-        /* Minimal Sidebar & Nav */
-        #mt-btn { position: fixed; top: 30px; left: 30px; z-index: 1001; background: transparent; border: 1px solid var(--border); padding: 12px; border-radius: 50%; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #mt-btn:hover { background: var(--accent); color: black; transform: scale(1.05); }
+        /* Sidebar & Menu Btn */
+        #mt-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid var(--surface-border); padding: 12px; border-radius: 12px; cursor: pointer; color: white; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        #mt-btn:hover { transform: scale(1.05); border-color: var(--accent-2); background: rgba(30, 32, 40, 0.8); }
+        #mt-btn.hide { opacity: 0; transform: scale(0.8); pointer-events: none; }
+
+        .sidebar-detector { position: fixed; left: 0; top: 0; height: 100vh; width: 15px; z-index: 999; }
+        .sidebar { position: fixed; left: -320px; top: 0; height: 100vh; width: 300px; background: rgba(10, 11, 16, 0.75); backdrop-filter: blur(30px); z-index: 1000; padding: 2.5rem 1.5rem; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); border-right: 1px solid var(--surface-border); display: flex; flex-direction: column; }
+        .sidebar.open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.7); }
+
+        .nav-item { padding: 14px 16px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; border-radius: 10px; font-size: 0.95rem; margin-bottom: 6px; }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); padding-left: 22px; border-left: 2px solid var(--accent-2); }
+
+        /* Music Player Pill */
+        .music-player { background: rgba(0,0,0,0.4); padding: 16px; border-radius: 16px; border: 1px solid var(--surface-border); margin-top: auto; transition: 0.3s; }
+        .custom-music-select { position: relative; margin-bottom: 15px; }
+        .cms-trigger { background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); color: white; padding: 10px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .cms-trigger:hover { border-color: var(--accent-1); }
+        .cms-options { position: absolute; bottom: 110%; left: 0; width: 100%; background: #0f1115; border: 1px solid var(--surface-border); border-radius: 10px; overflow: hidden; display: none; z-index: 20; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .cms-options.show { display: block; }
+        .cms-opt { padding: 10px 14px; font-size: 0.8rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .cms-opt:hover { background: rgba(79, 70, 229, 0.15); color: white; padding-left: 20px; }
+
+        .p-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .p-icon { cursor: pointer; color: #888; transition: 0.2s; }
+        .p-icon:hover { color: white; transform: scale(1.1); }
+        .play-btn { background: var(--text-main); color: var(--bg-base); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .play-btn:hover { transform: scale(1.05); background: var(--accent-2); color: white; box-shadow: 0 0 15px rgba(14, 165, 233, 0.4); }
+        .p-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; cursor: pointer; }
+        .p-bar { height: 100%; background: var(--accent-1); width: 0%; border-radius: 4px; transition: width 0.1s linear; }
+
+        /* Main Content */
+        .main { max-width: 1050px; margin: 0 auto; padding: 6rem 1.5rem; min-height: 100vh; position: relative; z-index: 1; }
+
+        .hero { padding: 3rem 0; text-align: left; margin-bottom: 2rem; }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 950; line-height: 1.1; margin-bottom: 1.2rem; letter-spacing: -1.5px; }
+        .hero p { font-size: clamp(1rem, 2vw, 1.1rem); color: var(--text-muted); max-width: 550px; margin-bottom: 2.5rem; line-height: 1.6; }
         
-        .sidebar { position: fixed; left: -320px; top: 0; height: 100vh; width: 320px; background: rgba(5,5,5,0.8); backdrop-filter: blur(20px); z-index: 1000; padding: 6rem 2rem 2rem; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar.open { left: 0; }
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.3s; border: none; outline: none; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: white; color: black; }
+        .btn-primary:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.1); }
+        .btn-secondary { background: var(--surface); color: white; border: 1px solid var(--surface-border); backdrop-filter: blur(10px); }
+        .btn-secondary:hover { border-color: var(--accent-1); transform: translateY(-2px); }
+
+        /* FLASHLIGHT GLASS CARDS (Předminulej design) */
+        .glass-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .glass-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 20px; padding: 25px; position: relative; overflow: hidden; backdrop-filter: blur(16px); transform-style: preserve-3d; transition: border-color 0.3s; display: flex; flex-direction: column; justify-content: center; }
         
-        .nav-item { padding: 16px 20px; font-weight: 500; color: var(--text-muted); transition: 0.3s; display: flex; align-items: center; gap: 15px; border-radius: 8px; font-size: 0.95rem; margin-bottom: 4px; border: 1px solid transparent; }
-        .nav-item:hover { color: #fff; background: var(--surface); border-color: var(--border); transform: translateX(5px); }
+        /* Spotlight efekt na myš */
+        .glass-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.06), transparent 40%); z-index: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+        .glass-card:hover::before { opacity: 1; }
+        .glass-card > * { position: relative; z-index: 1; }
+        .glass-card:hover { border-color: rgba(255,255,255,0.15); }
 
-        /* Minimal Music Widget */
-        .music-widget { margin-top: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 12px; }
-        .mw-header { display: flex; justify-content: space-between; align-items: center; }
-        .mw-title { font-size: 0.75rem; font-weight: 600; color: var(--text-main); }
-        .mw-controls { display: flex; align-items: center; gap: 15px; }
-        .mw-icon { color: var(--text-muted); transition: 0.2s; }
-        .mw-icon:hover { color: white; }
-        .mw-play { background: white; color: black; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .mw-play:hover { transform: scale(1.1); }
-        .mw-select { background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; outline: none; cursor: pointer; }
-        .mw-select option { background: #111; color: white; }
+        .status-dot { width: 10px; height: 10px; background: var(--accent-2); border-radius: 50%; box-shadow: 0 0 12px var(--accent-2); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.5); } 70% { box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); } 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } }
 
-        /* Main Hub */
-        .main { max-width: 1200px; margin: 0 auto; padding: 8rem 2rem; min-height: 100vh; position: relative; }
-
-        .hero { margin-bottom: 6rem; }
-        .hero h1 { font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 1.5rem; color: var(--accent); }
-        .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; line-height: 1.6; font-weight: 400; margin-bottom: 3rem; }
+        .social-dock { background: rgba(15, 17, 23, 0.5); border: 1px solid var(--surface-border); border-radius: 100px; padding: 16px 32px; display: flex; justify-content: center; gap: 32px; align-items: center; margin: 40px auto; max-width: max-content; backdrop-filter: blur(20px); }
+        .s-link { color: var(--text-muted); transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
-        .btn-group { display: flex; gap: 16px; }
-        .btn { padding: 14px 28px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: background 0.2s, color 0.2s; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: transparent; color: white; }
-        .btn-primary { background: white; color: black; border-color: white; }
-        .btn-primary:hover { background: #d0d0d0; }
-        .btn-secondary:hover { background: var(--surface); color: white; }
+        .marquee-box { width: 100%; padding: 16px 0; overflow: hidden; margin-top: 50px; opacity: 0.4; border-top: 1px solid var(--surface-border); border-bottom: 1px solid var(--surface-border); }
+        .marquee-content { display: flex; white-space: nowrap; animation: marquee-scroll 35s linear infinite; width: max-content; gap: 40px; font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; color: #888; text-transform: uppercase; }
+        @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        /* Grid System */
-        .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 4rem; }
-        .hub-card { background: var(--bg); padding: 32px; transition: background 0.3s; display: flex; flex-direction: column; justify-content: center; min-height: 180px; }
-        .hub-card:hover { background: var(--surface); }
-
-        .status-indicator { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-        .ping { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; position: relative; }
-        .ping::after { content: ''; position: absolute; inset: -4px; border: 1px solid #00ff88; border-radius: 50%; animation: ping-anim 2s infinite; opacity: 0; }
-        @keyframes ping-anim { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-
-        /* ACCORDION DATABASE (The cool part) */
-        .db-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
-        .db-title { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        /* VYLEPŠENÝ PROJECT SHOWCASE */
+        .project-showcase { width: 100%; border-radius: 24px; border: 1px solid var(--surface-border); overflow: hidden; position: relative; margin-bottom: 30px; background: #000; box-shadow: 0 15px 40px rgba(0,0,0,0.5); min-height: 450px; display: flex; align-items: flex-end; }
+        .p-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; transition: opacity 0.4s ease, transform 0.8s ease; }
+        .project-showcase:hover .p-bg-img { opacity: 0.6; transform: scale(1.03); }
+        .p-gradient-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,5,8,1) 0%, rgba(5,5,8,0.4) 50%, transparent 100%); z-index: 1; pointer-events: none; }
         
-        .accordion-container { display: flex; gap: 10px; height: 500px; width: 100%; }
-        .acc-item { flex: 1; position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: flex 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s; background: #111; }
-        .acc-item:hover, .acc-item.active { flex: 5; border-color: #555; }
-        .acc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%); transition: 0.6s; }
-        .acc-item:hover .acc-img, .acc-item.active .acc-img { opacity: 0.6; filter: grayscale(0%); transform: scale(1.05); }
-        .acc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #000 0%, transparent 100%); opacity: 0.8; }
-        
-        .acc-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px; display: flex; flex-direction: column; opacity: 0; transform: translateY(20px); transition: 0.4s 0.1s; white-space: nowrap; }
-        .acc-item:hover .acc-content, .acc-item.active .acc-content { opacity: 1; transform: translateY(0); white-space: normal; }
-        .acc-cat { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .acc-name { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 10px; letter-spacing: -1px; }
-        .acc-desc { font-size: 0.95rem; color: #bbb; max-width: 400px; line-height: 1.5; }
-        
-        /* Vertikální text když je karta zavřená */
-        .acc-closed-text { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%) rotate(-90deg); transform-origin: left bottom; font-weight: 600; font-size: 1rem; color: #888; white-space: nowrap; transition: 0.3s; letter-spacing: 2px; text-transform: uppercase; }
-        .acc-item:hover .acc-closed-text, .acc-item.active .acc-closed-text { opacity: 0; }
+        .p-content-wrapper { position: relative; z-index: 2; padding: 30px; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .p-info { max-width: 550px; }
+        .p-nav-btns { display: flex; gap: 10px; }
+        .p-arrow { width: 45px; height: 45px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .p-arrow:hover { background: var(--text-main); color: black; transform: scale(1.05); }
 
         /* Changelog */
-        .log-container { border-left: 1px solid var(--border); margin-left: 10px; padding-left: 30px; }
-        .log-item { position: relative; margin-bottom: 40px; }
-        .log-item::before { content: ''; position: absolute; left: -34px; top: 5px; width: 7px; height: 7px; background: white; border-radius: 50%; }
-        .log-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; font-family: monospace; }
-        .log-ver { font-size: 1.2rem; font-weight: 600; color: white; margin-bottom: 8px; }
-        .log-note { font-size: 0.95rem; color: #aaa; line-height: 1.6; }
+        .ch-container { position: relative; padding-left: 24px; margin-top: 30px; }
+        .ch-line { position: absolute; left: 0; top: 10px; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent-1) 0%, transparent 100%); opacity: 0.5; }
+        .ch-box { position: relative; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+        .ch-dot { position: absolute; left: -29px; top: 24px; width: 10px; height: 10px; background: var(--bg-base); border: 2px solid var(--accent-1); border-radius: 50%; box-shadow: 0 0 10px var(--accent-1); }
 
-        @media (max-width: 768px) {
-            .main { padding: 6rem 1rem; }
-            .accordion-container { flex-direction: column; height: 800px; }
-            .acc-closed-text { transform: none; bottom: auto; top: 50%; left: 20px; transform: translateY(-50%); }
-            .hero h1 { font-size: 2.8rem; }
-            #mt-btn { top: 15px; left: 15px; padding: 10px; }
-            .sidebar { padding-top: 5rem; width: 280px; }
+        /* Index Popup (Archiv) */
+        #index-popup { position: fixed; inset: 0; background: rgba(5,5,8,0.95); backdrop-filter: blur(20px); z-index: 2000; display: none; padding: 4vw; overflow-y: auto; }
+        .idx-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .idx-search-row { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .idx-input { flex: 1; min-width: 200px; background: var(--surface); border: 1px solid var(--surface-border); padding: 14px 20px; border-radius: 12px; color: white; font-size: 0.95rem; outline: none; transition: 0.2s; }
+        .idx-input:focus { border-color: var(--accent-2); }
+        
+        .custom-filter { position: relative; min-width: 150px; }
+        .filter-trigger { background: var(--surface); border: 1px solid var(--surface-border); padding: 14px 20px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .filter-trigger:hover { border-color: var(--accent-1); }
+        .filter-options { position: absolute; top: 110%; left: 0; right: 0; background: #0f1115; border: 1px solid var(--surface-border); border-radius: 12px; display: none; z-index: 10; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .filter-options.show { display: block; }
+        .f-opt { padding: 12px 16px; cursor: pointer; color: var(--text-muted); font-weight: 500; font-size: 0.85rem; transition: 0.2s; }
+        .f-opt:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 20px; border-left: 2px solid var(--accent-2); }
+
+        .idx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .idx-card { height: 200px; border-radius: 16px; border: 1px solid var(--surface-border); position: relative; overflow: hidden; cursor: pointer; background-color: var(--surface); transition: 0.3s; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+        .idx-card-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.15; transition: 0.4s ease; z-index: 0; }
+        .idx-card:hover { border-color: var(--accent-1); transform: translateY(-4px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2); }
+        .idx-card:hover .idx-card-bg { opacity: 0.3; transform: scale(1.05); }
+        .idx-card > div { position: relative; z-index: 1; }
+        .idx-section-title { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin: 30px 0 15px; grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+        .idx-section-title::after { content: ''; flex: 1; height: 1px; background: var(--surface-border); }
+
+        @media (max-width: 768px) { 
+            .main { padding: 5rem 1rem; }
+            .sidebar { left: -320px; border-radius: 0 20px 20px 0; top: 0; height: 100vh; }
+            .sidebar.open { left: 0; }
+            .glass-card, .idx-card { transform: none !important; } /* Vypnuto na mobile ať se to neseká */
+            .p-content-wrapper { flex-direction: column; align-items: flex-start; }
+            .hero h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
-<body>
-    <div class="cursor-dot" id="cursor"></div>
+<body id="main-body">
+    <div class="mesh-bg">
+        <div class="mesh-blob mesh-1"></div>
+        <div class="mesh-blob mesh-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
     <div class="noise-overlay"></div>
 
-    <div id="mt-btn" class="magnetic" onclick="toggleSidebar()"><i data-lucide="menu" size="20"></i></div>
+    <div class="sidebar-detector" id="detector"></div>
+    <div id="mt-btn" onclick="toggleSidebar()"><i data-lucide="menu" size="20"></i></div>
 
     <nav class="sidebar" id="sidebar">
-        <div style="flex: 1;">
-            <div class="label" style="margin-bottom: 2rem;">Menu</div>
-            <div class="nav-item magnetic" onclick="showSection('home')"><i data-lucide="terminal" size="18"></i> Hub</div>
-            <div class="nav-item magnetic" onclick="showSection('projects')"><i data-lucide="database" size="18"></i> Databáze</div>
-            <div class="nav-item magnetic" onclick="showSection('changelog')"><i data-lucide="git-commit-horizontal" size="18"></i> Logy</div>
+        <div class="nav-items" style="flex: 1;">
+            <h2 class="g-text" style="font-size: 2rem; margin-bottom: 2rem; letter-spacing: -1px;">Sk2tchy</h2>
+            <div class="nav-item" onclick="showSection('home')"><i data-lucide="layout-grid" size="18"></i> Hub</div>
+            <div class="nav-item" onclick="showSection('projects')"><i data-lucide="layers" size="18"></i> Databáze</div>
+            <div class="nav-item" onclick="showSection('changelog')"><i data-lucide="terminal" size="18"></i> Logy</div>
         </div>
 
-        <div class="music-widget">
-            <div class="mw-header">
-                <span class="mw-title">Audio.sys</span>
-                <select class="mw-select" id="audio-select" onchange="changeTrack(this.value)">
-                    <option value="https://cdn.pixabay.com/audio/2024/08/27/audio_4966d98177.mp3">Lofi Dev</option>
-                    <option value="https://cdn.pixabay.com/audio/2022/12/28/audio_af2a297924.mp3">Cyber Drift</option>
-                </select>
-            </div>
-            <div class="mw-controls">
-                <div class="mw-play magnetic" onclick="togglePlay()"><i data-lucide="play" id="play-icon" size="16" style="fill:currentColor; margin-left:2px;"></i></div>
-                <div style="flex:1; height:2px; background:#333; border-radius:2px; overflow:hidden;">
-                    <div id="p-bar" style="height:100%; width:0%; background:white; transition: 0.1s linear;"></div>
+        <div class="music-player">
+            <div style="font-size:0.6rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; letter-spacing: 1px; text-transform: uppercase;">Soundtrack</div>
+            
+            <div class="custom-music-select">
+                <div class="cms-trigger" onclick="document.getElementById('m-opts').classList.toggle('show')">
+                    <span id="active-track-name">Cyberpunk Action</span>
+                    <i data-lucide="disc" size="14"></i>
+                </div>
+                <div class="cms-options" id="m-opts">
+                    <div class="cms-opt" onclick="setTrack(0)">Cyberpunk Action</div>
+                    <div class="cms-opt" onclick="setTrack(1)">Coding Lofi</div>
                 </div>
             </div>
-            <audio id="real-audio" src="https://cdn.pixabay.com/audio/2024/08/27/audio_4966d98177.mp3" preload="none"></audio>
+
+            <audio id="real-audio" src="https://cdn.pixabay.com/audio/2022/12/28/audio_af2a297924.mp3" preload="none"></audio>
+
+            <div class="p-controls">
+                <i data-lucide="skip-back" class="p-icon" onclick="skipTrack(-1)" size="16"></i>
+                <div class="play-btn" onclick="togglePlay()"><i data-lucide="play" id="play-icon" size="18" style="fill:currentColor; margin-left:2px;"></i></div>
+                <i data-lucide="skip-forward" class="p-icon" onclick="skipTrack(1)" size="16"></i>
+                <i data-lucide="headphones" class="p-icon" size="16"></i>
+            </div>
+            
+            <div class="p-progress" id="progress-container" onclick="seekAudio(event)">
+                <div class="p-bar" id="p-bar"></div>
+            </div>
         </div>
     </nav>
+
+    <div id="index-popup">
+        <div class="idx-header">
+            <h1 class="g-text" style="font-size: 2.5rem; letter-spacing: -1px;">Archiv</h1>
+            <div style="background: var(--surface); padding: 10px; border-radius: 12px; cursor: pointer; border: 1px solid var(--surface-border); transition: 0.2s;" onclick="toggleIndex()">
+                <i data-lucide="x" size="20"></i>
+            </div>
+        </div>
+        <div class="idx-search-row">
+            <input type="text" class="idx-input" id="idxSearch" placeholder="Hledej hru, projekt..." oninput="renderIndex()">
+            <div class="custom-filter">
+                <div class="filter-trigger" onclick="document.getElementById('f-opts').classList.toggle('show')">
+                    <span id="f-active">Všechno</span> <i data-lucide="filter" size="16"></i>
+                </div>
+                <div class="filter-options" id="f-opts">
+                    <div class="f-opt" onclick="setFilter('Všechny')">Všechny</div>
+                    <div class="f-opt" onclick="setFilter('AI')">AI</div>
+                    <div class="f-opt" onclick="setFilter('Roblox')">Roblox</div>
+                    <div class="f-opt" onclick="setFilter('Applications')">Apps</div>
+                </div>
+            </div>
+        </div>
+        <div id="idx-content" class="idx-grid"></div>
+    </div>
 
     <main class="main">
         <section id="home">
             <div class="hero">
-                <h1>Sketchy // Hub</h1>
-                <p>Vývojář. Roblox Studio & AI integrace. Čistej kód, minimalismus a stealth interakce. Tohle je můj osobní workspace.</p>
-                <div class="btn-group">
-                    <button class="btn btn-primary magnetic" onclick="showSection('projects')">Databáze <i data-lucide="arrow-right" size="16"></i></button>
-                    <button class="btn btn-secondary magnetic" onclick="window.open('https://youtube.com/@Sk2tchy', '_blank')"><i data-lucide="youtube" size="16"></i> YouTube</button>
+                <div class="label">System Hub</div>
+                <h1 class="hero-title">Tvořím <span class="g-text">Hry</span><br>& Zkoumám <span class="g-text">AI</span>.</h1>
+                <p class="hero-subtitle">Jsem vývojář. Kódím v Roblox Studiu a zakládám si na čistým designu. Tohle je můj prostor.</p>
+                <div class="btn-group hero-actions">
+                    <button class="btn btn-primary" onclick="showSection('projects')">Otevřít Databázi</button>
+                    <button class="btn btn-secondary" onclick="window.open('https://youtube.com/@Sk2tchy', '_blank')"><i data-lucide="youtube" size="16"></i> YouTube</button>
                 </div>
             </div>
 
-            <div class="hub-grid">
-                <div class="hub-card">
-                    <span class="label">Local Time (CZ)</span>
-                    <div id="clock" style="font-size:2rem; font-weight:800; letter-spacing: -1px; color: white;">00:00:00</div>
+            <div class="glass-grid">
+                <div class="glass-card tilt-card">
+                    <div class="label">Local Time (CZ)</div>
+                    <div id="clock" style="font-size:1.8rem; font-weight:800; letter-spacing: -1px; color: white;">00:00:00</div>
                 </div>
-                <div class="hub-card">
-                    <span class="label">System Status</span>
-                    <div class="status-indicator">
-                        <div class="ping"></div>
-                        <span style="font-weight:500; color: white;">Online. Kódím UNI.</span>
+                <div class="glass-card tilt-card">
+                    <div class="label">Current Status</div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <div class="status-dot"></div>
+                        <div style="font-weight:600; font-size:1rem; color: #f8fafc;">Kódím UNI asistentku.</div>
                     </div>
                 </div>
-                <div class="hub-card" style="cursor: pointer;" onclick="window.open('https://youtube.com/@Sk2tchy?sub_confirmation=1', '_blank')">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span class="label">Socials</span>
-                            <div style="font-size:1.2rem; font-weight:600; color: white;">YouTube (20+ subs)</div>
-                            <div style="font-size:0.85rem; color: var(--text-muted); margin-top:4px;">Devlogs & Trailers</div>
-                        </div>
-                        <i data-lucide="external-link" size="20" color="#888"></i>
-                    </div>
+            </div>
+
+            <div class="glass-card tilt-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h2 style="font-weight:800; font-size: 1.2rem; margin-bottom: 4px; color: white;">Sketchy.yt</h2>
+                    <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Trailers, devlogy & showcases. Přidej se k 20+ subs.</p>
                 </div>
+                <button class="btn" onclick="window.open('https://youtube.com/@Sk2tchy?sub_confirmation=1', '_blank')" style="background: var(--text-main); color: black;">
+                    Odebírat
+                </button>
+            </div>
+
+            <div class="social-dock">
+                <div class="s-link" data-color="#ff2a6d" onclick="window.open('https://youtube.com/@Sk2tchy', '_blank')"><i data-lucide="youtube" size="24"></i></div>
+                <div class="s-link" data-color="#ffffff" onclick="window.open('https://github.com/TVOJE_JMENO', '_blank')"><i data-lucide="github" size="24"></i></div>
+                <div class="s-link" data-color="#7012ce" onclick="window.open('https://discord.gg/TVUJ_SERVER', '_blank')"><i data-lucide="message-square" size="24"></i></div>
+            </div>
+
+            <div class="marquee-box">
+                <div class="marquee-content" id="marquee-inner"></div>
             </div>
         </section>
 
         <section id="projects" class="hidden">
-            <div class="db-header">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px; flex-wrap: wrap; gap: 15px;">
                 <div>
-                    <span class="label">System_DB</span>
-                    <h1 class="db-title">Projekty</h1>
+                    <div class="label">System</div>
+                    <h1 class="g-text" style="font-size:2.8rem; line-height: 1; letter-spacing: -1.5px;">Projekty</h1>
                 </div>
+                <button class="btn btn-secondary" onclick="toggleIndex()"><i data-lucide="grid" size="16"></i> Zobrazit Archiv</button>
             </div>
             
-            <div class="accordion-container" id="acc-container">
-                </div>
+            <div class="project-showcase">
+                <img id="p-main-img" class="p-bg-img" src="">
+                <div class="p-gradient-overlay"></div>
+                
+                <div class="p-content-wrapper" id="p-dynamic-content">
+                    </div>
+            </div>
         </section>
 
         <section id="changelog" class="hidden">
-            <div style="margin-bottom: 4rem;">
-                <span class="label">Commit History</span>
-                <h1 style="font-size: 2rem; font-weight: 800; letter-spacing:-1px;">System Logs</h1>
-            </div>
+            <div class="label">System Logs</div>
+            <h1 class="g-text" style="font-size:2.8rem; margin-bottom:40px; line-height: 1; letter-spacing: -1.5px;">Changelog</h1>
             
-            <div class="log-container" id="log-list">
-                </div>
+            <div class="ch-container">
+                <div class="ch-line"></div>
+                <div id="ch-list"></div>
+            </div>
         </section>
     </main>
 
     <script>
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
-        const isDesktop = window.matchMedia("(pointer: fine)").matches;
-        
-        if (isDesktop) {
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
-            });
-
-            // Přidá classu "active" když najedeš na cokoliv klikatelnýho
-            const clickables = document.querySelectorAll('button, a, .magnetic, .hub-card, .acc-item, select');
-            clickables.forEach(el => {
-                el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-            });
-        } else {
-            cursor.style.display = 'none';
-        }
-
-        // Magnetic Hover Effect (Vercel/Linear style)
-        document.querySelectorAll('.magnetic').forEach(elem => {
-            elem.addEventListener('mousemove', (e) => {
-                const rect = elem.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                elem.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
-            });
-            elem.addEventListener('mouseleave', () => {
-                elem.style.transform = `translate(0px, 0px)`;
-            });
-        });
-
-        // Data
         const projects = [
-            { name: "UNI - Assistant", cat: "AI_CORE", img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200", desc: "Jarvis inspired asistent. Plně automatizovanej mozek s custom commandama. Currently in dev." },
-            { name: "Project [REDACTED]", cat: "ROBLOX", img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=1200", desc: "Top secret roblox hra. Zaměřená na clean mechaniky a temnou atmosféru." },
-            { name: "SysTool", cat: "UTILITY", img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200", desc: "Interní utilita na optimalizaci dev workflow. Nic víc, nic míň." }
+            { 
+                name: "UNI - AI Assistant", cat: "AI", rec: true, 
+                img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200", 
+                desc: "Tohle je ta hlavní věc. Jarvis inspired asistent, na kterým zrovna makám. Plnej automatizace a chytrých odpovědí."
+            },
+            { 
+                name: "Roblox Placeholder", cat: "Roblox", rec: false, 
+                img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=1200", 
+                desc: "Zde bude info o mojí nový roblox hře. Zatím to je top secret, ale engine šlape krásně."
+            },
+            { 
+                name: "System App", cat: "Applications", rec: false, 
+                img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200", 
+                desc: "Appka vo niecom cool. Utility tool pro ulehčení každodenní práce na PC."
+            }
         ];
 
-        const logs = [
-            { ver: "v1.0.0 // The Hub Update", date: "2026-03-11", note: "Kompletní rewrite. Zahozen glassmorphism pro čistej stealth design (Vercel/Linear inspirace). Přidán custom kurzor, magnetický interakce a horizontální rozbalovací databáze projektů. Noise textura zachována." },
-            { ver: "v0.9.5 // Mesh Beta", date: "2026-03-07", note: "Experiment s barvama a 3D hover efektem. Vráceno zpět kvůli bloatware feelu." }
+        const changelogData = [
+            { ver: "Build 0.7, Refined Hub", date: "Mar 14, 2026", note: "Vrácen oblíbený Glassmorphism a overlay projekty. Vyladěny barvy do tmavších deep space tónů, opraveny funkce filtrace v archivu a player." },
+            { ver: "Build 0.6, Next-Gen Base", date: "Mar 11, 2026", note: "Přidán mesh background, flashlight efekty na myš a overlay styl pro zobrazení projektů." }
         ];
 
-        // Render Accordion Projects
-        const accContainer = document.getElementById('acc-container');
-        projects.forEach((p, idx) => {
-            const isActive = idx === 0 ? 'active' : '';
-            const html = `
-                <div class="acc-item magnetic ${isActive}" onclick="setActiveAcc(this)" data-cursor="hover">
-                    <img src="${p.img}" class="acc-img">
-                    <div class="acc-overlay"></div>
-                    <div class="acc-closed-text">${p.name}</div>
-                    <div class="acc-content">
-                        <div class="acc-cat">${p.cat}</div>
-                        <div class="acc-name">${p.name}</div>
-                        <div class="acc-desc">${p.desc}</div>
-                    </div>
-                </div>
-            `;
-            acc-container.insertAdjacentHTML('beforeend', html);
+        // --- FLASHLIGHT EFEKT ---
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
         });
 
-        function setActiveAcc(el) {
-            document.querySelectorAll('.acc-item').forEach(item => item.classList.remove('active'));
-            el.classList.add('active');
+        // --- 3D TILT EFEKT ---
+        function initTilt() {
+            if(window.innerWidth < 768) return; 
+            document.querySelectorAll('.tilt-card').forEach(el => {
+                el.addEventListener('mousemove', e => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                    const xc = rect.width / 2; const yc = rect.height / 2;
+                    el.style.transform = `perspective(1000px) rotateY(${(x - xc) / xc * 4}deg) rotateX(${-(y - yc) / yc * 4}deg) scale3d(1.01, 1.01, 1.01)`;
+                });
+                el.addEventListener('mouseleave', () => el.style.transform = `none`);
+            });
         }
+        initTilt();
 
-        // Render Logs
-        const logList = document.getElementById('log-list');
-        logs.forEach(log => {
-            const html = `
-                <div class="log-item">
-                    <div class="log-date">${log.date}</div>
-                    <div class="log-ver">${log.ver}</div>
-                    <div class="log-note">${log.note}</div>
-                </div>
-            `;
-            logList.insertAdjacentHTML('beforeend', html);
-        });
-
-        // Sidebar Navigation
+        // --- SIDEBAR LOGIC ---
         const sidebar = document.getElementById('sidebar');
         const btn = document.getElementById('mt-btn');
-        function toggleSidebar() { sidebar.classList.toggle('open'); btn.style.opacity = sidebar.classList.contains('open') ? '0' : '1'; }
-        
+        let startX = 0;
+        function toggleSidebar() { sidebar.classList.toggle('open'); btn.classList.toggle('hide'); }
+        sidebar.addEventListener('mouseleave', () => { if(sidebar.classList.contains('open')) toggleSidebar(); });
+        document.getElementById('detector').addEventListener('mouseenter', () => { if(!sidebar.classList.contains('open') && window.innerWidth > 768) toggleSidebar(); });
+        document.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        document.addEventListener('touchmove', e => { let moveX = e.touches[0].clientX; if (moveX - startX > 60 && startX < 50 && !sidebar.classList.contains('open')) toggleSidebar(); });
+
         function showSection(id) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(sidebar.classList.contains('open')) toggleSidebar();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(initTilt, 100); 
         }
 
-        // Music Player
+        // --- SOCIALS ROTATION ---
+        document.querySelectorAll('.s-link').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                link.style.color = link.getAttribute('data-color');
+                link.style.transform = `scale(1.2) rotate(${(Math.random() * 30) - 15}deg) translateY(-3px)`;
+            });
+            link.addEventListener('mouseleave', () => { link.style.color = 'var(--text-muted)'; link.style.transform = `none`; });
+        });
+
+        // --- INDEX ARCHIV ---
+        let currentFilter = 'Všechny';
+        function setFilter(val) { currentFilter = val; document.getElementById('f-active').innerText = val; document.getElementById('f-opts').classList.remove('show'); renderIndex(); }
+        function toggleIndex() { const pop = document.getElementById('index-popup'); const vis = pop.style.display === 'block'; pop.style.display = vis ? 'none' : 'block'; document.getElementById('main-body').classList.toggle('lock', !vis); if(!vis) renderIndex(); }
+
+        function renderIndex() {
+            const container = document.getElementById('idx-content');
+            const search = document.getElementById('idxSearch').value.toLowerCase();
+            container.innerHTML = ''; let renderedIds = new Set();
+            let sections = currentFilter === 'Všechny' ? ['Recommended', ...new Set(projects.map(p => p.cat))] : [currentFilter];
+
+            sections.forEach(sec => {
+                const items = projects.filter(p => p.name.toLowerCase().includes(search) && ((sec === 'Recommended') ? p.rec : p.cat === sec) && (currentFilter === 'Všechny' ? !renderedIds.has(projects.indexOf(p)) : true));
+                if (items.length > 0) {
+                    container.innerHTML += `<div class="idx-section-title">${sec}</div>`;
+                    items.forEach(p => {
+                        const pIdx = projects.indexOf(p); renderedIds.add(pIdx);
+                        container.innerHTML += `
+                            <div class="idx-card" onclick="jumpTo(${pIdx})">
+                                <img src="${p.img || ''}" class="idx-card-bg">
+                                <div>
+                                    <div class="label" style="margin-bottom: 6px;">${p.cat}</div>
+                                    <div style="font-weight:800; font-size:1.1rem; line-height:1.2; color:white;">${p.name}</div>
+                                </div>
+                            </div>`;
+                    });
+                }
+            });
+        }
+
+        // --- RENDER PROJEKTŮ ---
+        let pIdx = 0;
+        function changeP(d) { pIdx = (pIdx + d + projects.length) % projects.length; renderProject(); }
+        function jumpTo(i) { pIdx = i; renderProject(); toggleIndex(); showSection('projects'); }
+        function renderProject() {
+            const p = projects[pIdx];
+            document.getElementById('p-main-img').src = p.img || '';
+            const area = document.getElementById('p-dynamic-content'); 
+            
+            area.innerHTML = `
+                <div class="p-info">
+                    <div class="label" style="margin-bottom:12px;">${p.cat}</div>
+                    <h2 style="font-size:clamp(2rem, 4vw, 3.5rem); font-weight:950; line-height:1.1; margin-bottom:15px; color:white; letter-spacing:-1px;">${p.name}</h2>
+                    <p style="font-size:1rem; color:#cbd5e1; line-height:1.6; max-width:90%;">${p.desc}</p>
+                </div>
+                <div class="p-nav-btns">
+                    <div class="p-arrow" onclick="changeP(-1)"><i data-lucide="arrow-left" size="20"></i></div>
+                    <div class="p-arrow" onclick="changeP(1)"><i data-lucide="arrow-right" size="20"></i></div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // --- MUSIC PLAYER ---
+        const audioTracks = [
+            { name: "Cyberpunk Action", url: "https://cdn.pixabay.com/audio/2022/12/28/audio_af2a297924.mp3" },
+            { name: "Coding Lofi", url: "https://cdn.pixabay.com/audio/2024/08/27/audio_4966d98177.mp3" }
+        ];
+        
+        let currentTrackIdx = 0;
         const audio = document.getElementById('real-audio');
         const playIcon = document.getElementById('play-icon');
-        const pBar = document.getElementById('p-bar');
+        const activeTrackName = document.getElementById('active-track-name');
+        const optsMenu = document.getElementById('m-opts');
+        const progressBar = document.getElementById('p-bar');
 
         function togglePlay() {
             if (audio.paused) {
-                audio.play();
+                audio.play().catch(e => console.log(e));
                 playIcon.setAttribute('data-lucide', 'pause');
             } else {
                 audio.pause();
@@ -323,23 +463,55 @@
             lucide.createIcons();
         }
 
-        function changeTrack(src) {
-            audio.src = src;
-            audio.play();
+        function setTrack(idx) {
+            currentTrackIdx = idx;
+            activeTrackName.innerText = audioTracks[idx].name;
+            audio.src = audioTracks[idx].url;
+            audio.play().catch(e => console.log(e));
             playIcon.setAttribute('data-lucide', 'pause');
+            optsMenu.classList.remove('show');
             lucide.createIcons();
         }
+
+        function skipTrack(dir) {
+            let idx = currentTrackIdx + dir;
+            if(idx >= audioTracks.length) idx = 0;
+            if(idx < 0) idx = audioTracks.length - 1;
+            setTrack(idx);
+        }
+
+        document.addEventListener('click', (e) => { if (!e.target.closest('.custom-music-select')) optsMenu.classList.remove('show'); });
 
         audio.addEventListener('timeupdate', () => {
             if(audio.duration) {
                 const percent = (audio.currentTime / audio.duration) * 100;
-                pBar.style.width = percent + '%';
+                progressBar.style.width = percent + '%';
             }
         });
 
-        // Clock
+        function seekAudio(e) {
+            const rect = document.getElementById('progress-container').getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pos * audio.duration;
+        }
+
+        // --- UTILITY ---
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('cs-CZ', { timeZone: 'Europe/Prague' }); }, 1000);
 
+        const chList = document.getElementById('ch-list');
+        changelogData.forEach(ch => {
+            chList.innerHTML += `
+            <div class="ch-box glass-card tilt-card">
+                <div class="ch-dot"></div>
+                <div class="label" style="margin-bottom:8px;">${ch.date}</div>
+                <h2 style="font-weight:800; font-size: 1.1rem; margin-bottom: 6px; color:white;">${ch.ver}</h2>
+                <p style="color:var(--text-muted); font-size: 0.9rem; line-height: 1.5;">${ch.note}</p>
+            </div>`;
+        });
+
+        document.getElementById('marquee-inner').innerHTML = (`<span class="g-text">ROBLOX STUDIO</span> &nbsp;•&nbsp; <span style="color:white">AI</span> &nbsp;•&nbsp; <span class="g-text">GAMES</span> &nbsp;•&nbsp; <span style="color:white">WEB</span> &nbsp;•&nbsp; `).repeat(4);
+
+        renderProject();
         lucide.createIcons();
     </script>
 </body>
