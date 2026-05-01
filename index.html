@@ -3,363 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy | Game Dev</title>
+    <title>Sketchy | Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
         :root {
-            --bg-base: #09090b;
-            --bg-card: rgba(24, 24, 27, 0.6);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.2);
+            --bg-deep: #050b14;
+            --bg-card: rgba(15, 23, 42, 0.4);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.5);
+            --accent: #38bdf8;
+            --border-glass: rgba(255, 255, 255, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden; 
-            -webkit-font-smoothing: antialiased; 
-            min-height: 100vh;
+        
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Technical Grid Background */
-        .grid-bg {
+        /* Atmosférický background & Textura */
+        .ambient-glow {
             position: fixed;
-            inset: 0;
+            top: -20vh; left: 10vw;
+            width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, transparent 60%);
+            border-radius: 50%;
             z-index: -2;
-            background-size: 40px 40px;
-            background-image: 
-                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-        }
-
-        .glow-point {
-            position: fixed;
-            top: 20%; left: 50%;
-            width: 50vw; height: 50vw;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
-            transform: translate(-50%, -50%);
-            filter: blur(80px);
-            opacity: 0.15;
-            z-index: -1;
             pointer-events: none;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-
-        .hidden { display: none !important; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Navigation */
-        .nav-island {
+        .texture-overlay {
             position: fixed;
-            top: 24px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(9, 9, 11, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-subtle);
-            padding: 6px;
-            border-radius: 100px;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.04"/></svg>');
+        }
+
+        ::selection { background: var(--accent); color: #000; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* Navigace */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 2rem 5%;
             display: flex;
-            gap: 4px;
-            transition: border-color 0.3s ease;
-        }
-        .nav-island:hover { border-color: var(--border-hover); }
-        .nav-btn {
-            padding: 8px 20px;
-            border-radius: 100px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .nav-btn:hover, .nav-btn.active {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-main);
-        }
-
-        /* Layout */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 8rem 2rem 4rem;
-        }
-
-        /* Header */
-        .hero { margin-bottom: 3rem; }
-        .status-badge {
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 6px;
-            color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-        .status-badge .dot {
-            width: 6px; height: 6px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        
-        .title { font-size: 3.5rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1rem; }
-        .subtitle { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; line-height: 1.5; }
-
-        /* Bento Grid */
-        .bento {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 16px;
-        }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 24px;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(5, 11, 20, 0.9), transparent);
             backdrop-filter: blur(10px);
-            transition: transform 0.2s cubic-bezier(0.1, 0.7, 0.3, 1), border-color 0.3s;
+        }
+        
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .logo span { color: var(--accent); }
+        
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--text-main); }
+
+        /* Hlavní layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        section {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding-top: 100px;
+        }
+
+        /* Typografie */
+        h1 { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 1.5rem; }
+        .subtitle { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; font-weight: 300; }
+        h2 { font-size: 2.5rem; font-weight: 600; margin-bottom: 3rem; letter-spacing: -1px; }
+
+        /* Tlačítka */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 100px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
+        .btn-primary { background: var(--accent); color: #000; border: none; font-weight: 600; }
+        .btn-primary:hover { background: #0ea5e9; box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3); }
+
+        /* Projekty Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
         }
         .card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
+            transform: translateY(-8px);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         
-        .span-8 { grid-column: span 8; }
-        .span-4 { grid-column: span 4; }
-        .span-12 { grid-column: span 12; }
-        .span-6 { grid-column: span 6; }
-        
+        .card-tag { font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 1rem; display: block; }
+        .card h3 { font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
+        .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Socials & Footer */
+        .socials { display: flex; gap: 1rem; margin-top: 3rem; }
+        .social-icon { color: var(--text-muted); transition: 0.3s; }
+        .social-icon:hover { color: var(--accent); transform: scale(1.1); }
+
+        /* Animace pro scroll */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
         @media (max-width: 768px) {
-            .span-8, .span-4, .span-12, .span-6 { grid-column: span 12; }
+            .nav-links { display: none; }
+            section { min-height: auto; padding-top: 150px; padding-bottom: 50px; }
         }
-
-        /* Card internals */
-        .c-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
-        .c-value { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
-        
-        .stack-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .tag { padding: 4px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 0.8rem; color: var(--text-muted); }
-
-        /* Socials */
-        .socials { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; height: 100%; }
-        .s-btn {
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.2s ease;
-            height: 100%; min-height: 80px;
-        }
-        .s-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: scale(1.02); }
-
-        /* Projects */
-        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .p-card {
-            border-radius: 16px; overflow: hidden; border: 1px solid var(--border-subtle);
-            position: relative; aspect-ratio: 16/9; background: #000; cursor: pointer;
-        }
-        .p-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.3s, transform 0.5s; }
-        .p-card:hover img { opacity: 0.3; transform: scale(1.05); }
-        .p-info {
-            position: absolute; bottom: 0; left: 0; padding: 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            width: 100%;
-        }
-        .p-title { font-weight: 700; font-size: 1.2rem; margin-bottom: 4px; }
-        .p-desc { font-size: 0.85rem; color: var(--text-muted); }
-
-        /* Music */
-        .mini-player {
-            position: fixed; bottom: 20px; right: 20px;
-            background: var(--bg-card); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-subtle);
-            padding: 12px 16px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px;
-            z-index: 100;
-        }
-        .play-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; }
-        .track-info { display: flex; flex-direction: column; width: 120px; }
-        .t-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .t-bar-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.1); margin-top: 6px; border-radius: 2px; }
-        .t-bar { width: 0%; height: 100%; background: var(--accent); border-radius: 2px; }
-
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-    <div class="glow-point"></div>
+    <div class="texture-overlay"></div>
+    <div class="ambient-glow"></div>
 
-    <nav class="nav-island">
-        <div class="nav-btn active" onclick="switchTab('hub', this)">Hub</div>
-        <div class="nav-btn" onclick="switchTab('portfolio', this)">Hry & Projekty</div>
+    <nav>
+        <div class="logo">Sketchy<span>.</span></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#work">Projekty</a>
+            <a href="#about">O mně</a>
+        </div>
     </nav>
 
-    <div class="mini-player">
-        <button class="play-btn" onclick="toggleAudio()">
-            <i data-lucide="play" id="audio-icon" size="18"></i>
-        </button>
-        <div class="track-info">
-            <span class="t-name">Dev Focus .mp3</span>
-            <div class="t-bar-bg"><div class="t-bar" id="audio-bar"></div></div>
-        </div>
-        <audio id="bg-music" src="https://cdn.pixabay.com/audio/2024/08/27/audio_4966d98177.mp3" loop></audio>
-    </div>
-
     <main class="container">
-        <!-- HUB TAB -->
-        <section id="hub">
-            <div class="hero">
-                <div class="status-badge"><div class="dot"></div> ENGINE ONLINE</div>
-                <h1 class="title">SKETCHY.</h1>
-                <p class="subtitle">Herní vývojář a level designer. Stavím světy, píšu kód a občas u toho i spím. Vítej v mým labu.</p>
-            </div>
-
-            <div class="bento">
-                <div class="card span-8">
-                    <div class="c-label">O mně</div>
-                    <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
-                        Specializuju se na Roblox Studio a AI implementace. Mám rád, když věci nejen dobře vypadají, ale taky běží na 60fps bez dropů. Clean kód > špagety.
-                    </p>
-                    <div class="stack-tags">
-                        <span class="tag">Roblox Studio</span>
-                        <span class="tag">Luau</span>
-                        <span class="tag">Game Design</span>
-                        <span class="tag">AI Prompting</span>
-                    </div>
-                </div>
-
-                <div class="card span-4">
-                    <div class="socials">
-                        <a href="#" class="s-btn" title="YouTube"><i data-lucide="youtube"></i></a>
-                        <a href="#" class="s-btn" title="GitHub"><i data-lucide="github"></i></a>
-                        <a href="#" class="s-btn" style="grid-column: span 2;" title="Discord">
-                            <i data-lucide="message-square" style="margin-right: 8px;"></i> Komunita
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card span-6">
-                    <div class="c-label">Local Time</div>
-                    <div class="c-value mono" id="clock">00:00:00</div>
-                </div>
-
-                <div class="card span-6" style="background: linear-gradient(145deg, rgba(24,24,27,0.8), rgba(59,130,246,0.1)); border-color: rgba(59,130,246,0.3);">
-                    <div class="c-label" style="color: var(--accent);">Current Project</div>
-                    <div class="c-value" style="font-size: 1.5rem;">[REDACTED] Horror</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Atmosférická hra, WIP.</p>
+        <section id="home">
+            <div class="reveal">
+                <h1>Game Dev &<br>Level Designer.</h1>
+                <p class="subtitle">Stavím imerzivní světy a píšu čistý kód. Zaměřeno na atmosféru, detail a plynulý gameplay.</p>
+                
+                <div style="margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="#work" class="btn btn-primary">Vidět práci</a>
+                    <a href="https://github.com" target="_blank" class="btn"><i data-lucide="github" size="18"></i> GitHub</a>
                 </div>
             </div>
         </section>
 
-        <!-- PORTFOLIO TAB -->
-        <section id="portfolio" class="hidden">
-            <div class="hero">
-                <h1 class="title">DATABÁZE.</h1>
-                <p class="subtitle">Knihovna mých releasů a experimentů.</p>
-            </div>
+        <section id="work">
+            <div class="reveal">
+                <h2>Vybrané Projekty</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="card-tag">Roblox / Horror</span>
+                        <h3>Project Eklipsa</h3>
+                        <p>Atmosférická survival hra. Custom AI nepřátelé, pokročilý sound design a dynamické osvětlení. Vše optimalizováno pro 60fps.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-tag">Systems / Luau</span>
+                        <h3>Movement Engine v2</h3>
+                        <p>Čistý character controller napsaný od nuly. Obsahuje plynulý parkour systém, proceduralní animace a predikci pohybu.</p>
+                    </div>
 
-            <div class="project-grid">
-                <div class="p-card">
-                    <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=800" alt="Game 1">
-                    <div class="p-info">
-                        <div class="p-title">Project: Eklipsa</div>
-                        <div class="p-desc">Roblox survival projekt s custom AI nepřáteli.</div>
+                    <div class="card">
+                        <span class="card-tag">AI / Tools</span>
+                        <h3>UNI Asistent</h3>
+                        <p>Plně automatizovaný systém pro zrychlení mýho vývoje. Generování boilerplate kódu a organizace tasků přes custom rozhraní.</p>
                     </div>
                 </div>
-                <div class="p-card">
-                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800" alt="Game 2">
-                    <div class="p-info">
-                        <div class="p-title">UNI Asistent</div>
-                        <div class="p-desc">Jarvis-like systém pro automatizaci dev tasků.</div>
-                    </div>
-                </div>
-                <div class="p-card">
-                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800" alt="Game 3">
-                    <div class="p-info">
-                        <div class="p-title">Movement Engine</div>
-                        <div class="p-desc">Custom character controller udělaný od nuly.</div>
-                    </div>
+            </div>
+        </section>
+
+        <section id="about" style="min-height: 70vh;">
+            <div class="reveal" style="max-width: 800px;">
+                <h2>Behind the code</h2>
+                <p class="subtitle" style="margin-bottom: 2rem; color: var(--text-main);">
+                    Vývoj her není jen o psaní skriptů, je to o pocitu, kterej hráč má, když to poprvý zapne.
+                </p>
+                <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;">
+                    Moje hlavní zaměření je Roblox Studio a Luau, ale rád experimentuju s čímkoliv novým. Když zrovna nekódím mechaniky, ladím level design nebo se snažím donutit AI, aby dělala nudnou práci za mě.
+                </p>
+                
+                <div class="socials">
+                    <a href="#" class="social-icon" title="YouTube"><i data-lucide="youtube" size="24"></i></a>
+                    <a href="#" class="social-icon" title="Discord"><i data-lucide="message-square" size="24"></i></a>
+                    <a href="#" class="social-icon" title="Twitter/X"><i data-lucide="twitter" size="24"></i></a>
                 </div>
             </div>
         </section>
     </main>
 
     <script>
+        // Init ikon
         lucide.createIcons();
 
-        // Tabs
-        function switchTab(id, btn) {
-            document.getElementById('hub').classList.add('hidden');
-            document.getElementById('portfolio').classList.add('hidden');
-            
-            document.getElementById(id).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            window.scrollTo(0,0);
-        }
+        // Reveal animace při scrollování
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
 
-        // Clock
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('cs-CZ');
-        }, 1000);
-
-        // Audio Player
-        const audio = document.getElementById('bg-music');
-        const audioIcon = document.getElementById('audio-icon');
-        const audioBar = document.getElementById('audio-bar');
-
-        function toggleAudio() {
-            if (audio.paused) {
-                audio.play();
-                audioIcon.setAttribute('data-lucide', 'pause');
-            } else {
-                audio.pause();
-                audioIcon.setAttribute('data-lucide', 'play');
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
             }
-            lucide.createIcons();
         }
 
-        audio.addEventListener('timeupdate', () => {
-            const percent = (audio.currentTime / audio.duration) * 100;
-            audioBar.style.width = percent + '%';
-        });
+        window.addEventListener("scroll", reveal);
+        // Spustit hned po načtení
+        setTimeout(reveal, 100);
 
-        // 3D Tilt for cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                card.style.transform = `perspective(1000px) rotateY(${x / 40}deg) rotateX(${-y / 40}deg) translateY(-2px)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)`;
+        // Plynulý scroll pro navigaci
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
     </script>
