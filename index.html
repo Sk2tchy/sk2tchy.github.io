@@ -3,319 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKETCHY | Game Design Architecture</title>
+    <title>SKETCHY | Architect of the Void</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;600&display=swap');
 
         :root {
-            --bg: #020408;
+            --bg: #030303;
+            --text: #ededed;
+            --muted: #737373;
             --accent: #00f2ff;
-            --surface: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.06);
-            --ds-color: #5865F2;
-            --yt-color: #FF0000;
+            --ds: #5865F2;
+            --yt: #FF0000;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Ambient background texture */
-        .overlay {
+        /* ta tvoje textura */
+        .noise {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at 50% 50%, #05101d 0%, #020408 100%);
-            z-index: -2;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.04;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>');
         }
 
-        canvas#bubbles {
+        /* loader animace */
+        .loader {
             position: fixed;
             inset: 0;
-            z-index: -1;
-            opacity: 0.4;
+            background: var(--bg);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
         }
+        .loader.hide { transform: translateY(-100%); }
+        .loader-text { font-family: 'Syncopate', sans-serif; letter-spacing: 4px; font-size: 0.8rem; overflow: hidden; }
+        .loader-text span { display: block; animation: slideUp 1s ease forwards; }
 
-        /* Navbar */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 1.5rem 6%;
+            padding: 2rem 5%;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            mix-blend-mode: difference;
         }
 
-        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; letter-spacing: 3px; font-weight: 700; }
-        .nav-links { display: flex; gap: 2.5rem; }
-        .nav-links a { text-decoration: none; color: #64748b; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; transition: 0.3s; }
-        .nav-links a:hover { color: var(--accent); }
+        .logo { font-family: 'Syncopate', sans-serif; font-size: 1rem; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 3rem; }
+        .nav-links a { text-decoration: none; color: var(--text); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Smooth Transition Hero */
-        .hero-space {
-            height: 250vh; /* Delší scroll pro ten "delay" */
-            position: relative;
-        }
-
-        .hero-sticky {
+        /* profi scroll parallax */
+        .hero-wrap {
             position: sticky;
             top: 0;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            z-index: 1;
         }
 
         .hero-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(3rem, 10vw, 8rem);
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 1.1;
             text-align: center;
-            line-height: 0.9;
-            will-change: transform, opacity;
         }
 
-        /* Content Overlap */
-        .content-layer {
+        /* maskovany text reveal */
+        .mask-text { overflow: hidden; display: block; }
+        .mask-text span {
+            display: block;
+            transform: translateY(100%);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mask-text.in span { transform: translateY(0); }
+
+        /* content co prekreje hero */
+        .content {
             position: relative;
-            z-index: 10;
+            z-index: 2;
             background: var(--bg);
-            box-shadow: 0 -50px 100px rgba(0,0,0,0.9);
+            margin-top: 100vh; /* udela ten scroll delay */
+            padding: 8rem 5%;
         }
 
-        section { padding: 8rem 6%; max-width: 1300px; margin: 0 auto; }
+        /* sekce */
+        .section-header { margin-bottom: 4rem; overflow: hidden; }
+        .section-header h2 { font-family: 'Syncopate', sans-serif; font-size: 2rem; transform: translateY(100%); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .section-header.in h2 { transform: translateY(0); }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
         }
 
-        .project-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
+        /* top tier 3D karty */
+        .card {
+            border: 1px solid rgba(255,255,255,0.05);
             padding: 3rem;
-            border-radius: 2px; /* Ostřejší hrany pro víc industriální feel */
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            position: relative;
+            background: rgba(255,255,255,0.01);
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: border-color 0.4s ease;
             cursor: pointer;
+            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
         }
 
-        .project-card:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: var(--accent);
-            transform: translateY(-5px);
+        .card.in {
+            animation: clipReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .card-tag { font-size: 0.65rem; color: var(--accent); font-weight: 800; letter-spacing: 2px; margin-bottom: 1rem; display: block; }
-        .project-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin-bottom: 1rem; }
-        .project-card p { color: #94a3b8; font-size: 0.9rem; line-height: 1.7; margin-bottom: 2rem; }
-
-        /* Socials */
-        .social-wrap {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            padding: 6rem 0;
-            border-top: 1px solid var(--border);
+        @keyframes clipReveal {
+            to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
         }
 
-        .soc-item { 
-            text-decoration: none; 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 1rem; 
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
+        .card:hover { border-color: rgba(0, 242, 255, 0.3); }
+        
+        /* vnitrek karty reaguje na tilt */
+        .card-inner { transform: translateZ(30px); pointer-events: none; }
+        .card-inner i { color: var(--accent); margin-bottom: 2rem; }
+        .card h3 { font-family: 'Syncopate', sans-serif; margin-bottom: 1rem; font-size: 1.5rem; }
+        .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 
-        .icon-box {
-            width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            transition: 0.4s;
-        }
+        .socials { display: flex; gap: 3rem; margin-top: 8rem; padding-top: 4rem; border-top: 1px solid rgba(255,255,255,0.05); }
+        .soc-link { text-decoration: none; color: var(--muted); display: flex; align-items: center; gap: 1rem; transition: 0.4s; }
+        .soc-link:hover { color: var(--text); }
+        .soc-link.ds:hover i { color: var(--ds); }
+        .soc-link.yt:hover i { color: var(--yt); }
 
-        .soc-item.ds:hover .icon-box { border-color: var(--ds-color); color: var(--ds-color); box-shadow: 0 0 20px rgba(88, 101, 242, 0.2); }
-        .soc-item.yt:hover .icon-box { border-color: var(--yt-color); color: var(--yt-color); box-shadow: 0 0 20px rgba(255, 0, 0, 0.2); }
-
-        /* Modal */
-        .modal {
-            position: fixed; inset: 0;
-            background: rgba(1, 2, 4, 0.98);
-            z-index: 2000;
-            display: none;
-            align-items: center; justify-content: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .modal-inner {
-            max-width: 600px;
-            padding: 4rem;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .nav-links { display: none; }
-            .hero-title { font-size: 3.5rem; }
-            section { padding: 4rem 6%; }
-            .social-wrap { gap: 2rem; }
+            .grid { grid-template-columns: 1fr; }
+            .card { padding: 2rem; }
         }
-
-        .reveal { opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.19, 1, 0.22, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <div class="overlay"></div>
-    <canvas id="bubbles"></canvas>
+    <div class="noise"></div>
+
+    <div class="loader" id="loader">
+        <div class="loader-text"><span>INITIALIZING VOID...</span></div>
+    </div>
 
     <nav>
-        <div class="logo">SKETCHY STUDIO</div>
+        <div class="logo">SKETCHY</div>
         <div class="nav-links">
-            <a href="#work">WORK</a>
-            <a href="#studio">STUDIO</a>
-            <a href="#contact">CONTACT</a>
+            <a href="#work">Projects</a>
+            <a href="#about">Studio</a>
+            <a href="#contact">Contact</a>
         </div>
     </nav>
 
-    <div class="hero-space">
-        <div class="hero-sticky">
-            <h1 class="hero-title" id="title-main">VOID<br>ARCHITECTURE</h1>
-            <div id="scroll-label" style="position: absolute; bottom: 10%; font-size: 0.6rem; letter-spacing: 5px; opacity: 0.5;">SCROLL DOWN</div>
+    <div class="hero-wrap">
+        <h1 class="hero-title">
+            <span class="mask-text main-title"><span>ENGINEERING</span></span>
+            <span class="mask-text main-title" style="transition-delay: 0.1s;"><span>ATMOSPHERE</span></span>
+        </h1>
+    </div>
+
+    <div class="content">
+        <div class="section-header ob-el">
+            <h2>SELECTED WORK</h2>
         </div>
-    </div>
-
-    <div class="content-layer">
-        <section id="work">
-            <div class="grid">
-                <div class="project-card reveal" onclick="openModal('PROJECT ECLIPSE', 'Technical placeholder for deep-sea rendering engine breakdown. Focus on volumetric lighting and atmosphere.')">
-                    <span class="card-tag">ENGINEERING</span>
-                    <h3>Project Eclipse</h3>
-                    <p>Placeholder text describing the technical aspects of the project. Designed for high-performance Roblox environments.</p>
-                </div>
-                <div class="project-card reveal" style="transition-delay: 0.1s;" onclick="openModal('VELOCITY V2', 'Character controller framework focused on procedural weight and IK systems.')">
-                    <span class="card-tag">PHYSICS</span>
-                    <h3>Velocity v2</h3>
-                    <p>Placeholder text describing the technical aspects of the project. Designed for high-performance Roblox environments.</p>
+        
+        <div class="grid">
+            <div class="card ob-el" data-delay="0">
+                <div class="card-inner">
+                    <i data-lucide="waves" size="32"></i>
+                    <h3>PROJECT ECLIPSE</h3>
+                    <p>Technical placeholder for deep-sea rendering breakdown. Volumetric lighting and atmosphere implementation.</p>
                 </div>
             </div>
-        </section>
-
-        <section id="studio" class="reveal">
-            <h2 style="font-family: 'Space Grotesk'; font-size: 2.5rem; margin-bottom: 2rem;">THE VISION</h2>
-            <p style="color: #94a3b8; font-size: 1.1rem; line-height: 1.8; max-width: 700px;">
-                Placeholder for studio philosophy. Focusing on the intersection of clean code and immersive level design. Building the next generation of digital experiences.
-            </p>
-        </section>
-
-        <footer id="contact">
-            <div class="social-wrap">
-                <a href="#" class="soc-item ds">
-                    <div class="icon-box"><i data-lucide="message-square"></i></div>
-                    <span>DISCORD</span>
-                </a>
-                <a href="#" class="soc-item yt">
-                    <div class="icon-box"><i data-lucide="youtube"></i></div>
-                    <span>YOUTUBE</span>
-                </a>
+            
+            <div class="card ob-el" data-delay="200">
+                <div class="card-inner">
+                    <i data-lucide="zap" size="32"></i>
+                    <h3>VELOCITY V2</h3>
+                    <p>Custom kinematics framework. Procedural animation and weight distribution systems designed for seamless movement.</p>
+                </div>
             </div>
-            <p style="text-align: center; opacity: 0.2; font-size: 0.6rem; padding-bottom: 4rem; letter-spacing: 2px;">© 2026 SKETCHY STUDIO. ALL RIGHTS RESERVED.</p>
-        </footer>
-    </div>
+        </div>
 
-    <div id="modal" class="modal" onclick="closeModal()">
-        <div class="modal-inner" onclick="event.stopPropagation()">
-            <h2 id="m-title" style="font-family: 'Space Grotesk'; font-size: 2.5rem; margin-bottom: 1.5rem;"></h2>
-            <p id="m-desc" style="color: #94a3b8; line-height: 1.7; margin-bottom: 2rem;"></p>
-            <div style="font-size: 0.7rem; color: var(--accent); cursor: pointer;" onclick="closeModal()">[ CLOSE WINDOW ]</div>
+        <div class="socials ob-el" id="contact">
+            <a href="#" class="soc-link ds"><i data-lucide="message-square"></i> DISCORD</a>
+            <a href="#" class="soc-link yt"><i data-lucide="youtube"></i> YOUTUBE</a>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // --- Clean Scroll Transition ---
+        // odstraneni loaderu a start hero animace
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hide');
+                setTimeout(() => {
+                    document.querySelectorAll('.main-title').forEach(el => el.classList.add('in'));
+                }, 400);
+            }, 800);
+        });
+
+        // profi fade out pri scrollu pro hero
         window.addEventListener('scroll', () => {
             const scroll = window.scrollY;
-            const title = document.getElementById('title-main');
-            const label = document.getElementById('scroll-label');
-            
-            // Text se plynule rozestupuje a mizí do stran
-            let opacity = 1 - (scroll / 600);
-            let spread = scroll * 0.1;
-
-            if (scroll < 800) {
-                title.style.opacity = opacity;
-                title.style.letterSpacing = `${spread}px`;
-                title.style.transform = `translateY(${scroll * 0.2}px)`; // Jemný parallax
-                label.style.opacity = 1 - (scroll / 200);
+            const hero = document.querySelector('.hero-title');
+            if(scroll < window.innerHeight) {
+                hero.style.opacity = 1 - (scroll / 500);
+                hero.style.transform = `translateY(${scroll * 0.3}px)`;
             }
         });
 
-        // --- Bubbles Physics ---
-        const canvas = document.getElementById('bubbles');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Intersection Observer pro maskovany odhaleni obsahu
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.getAttribute('data-delay') || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('in');
+                    }, delay);
+                    observer.unobserve(entry.target); // spusti se jen jednou
+                }
+            });
+        }, { threshold: 0.2 });
 
-        let bubbles = [];
-        class Bubble {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speed = Math.random() * 0.4 + 0.1;
-            }
-            update() {
-                this.y -= this.speed;
-                if (this.y < -10) this.y = canvas.height + 10;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(0, 242, 255, 0.15)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        for(let i=0; i<40; i++) bubbles.push(new Bubble());
+        document.querySelectorAll('.ob-el').forEach(el => observer.observe(el));
 
-        function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            bubbles.forEach(b => { b.update(); b.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // --- Intersection Observer for Reveals ---
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // --- Modal Control ---
-        function openModal(t, d) {
-            document.getElementById('m-title').innerText = t;
-            document.getElementById('m-desc').innerText = d;
-            document.getElementById('modal').style.display = 'flex';
-        }
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        // 3D Tilt efekt pro karty (bez externi knihovny)
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                card.style.transition = `transform 0.5s ease`;
+            });
+            
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = `none`;
+            });
+        });
     </script>
 </body>
 </html>
