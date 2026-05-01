@@ -3,363 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy Games | Official Studio</title>
+    <title>Sketchy Games Studio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
 
         :root {
-            --bg: #010409;
-            --accent: #00d2ff;
-            --accent-glow: rgba(0, 210, 255, 0.3);
-            --text: #ffffff;
-            --text-dim: #94a3b8;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --bg: #030407;
+            --accent: #ffffff;
+            --accent-dim: #5eead4;
+            --card-bg: rgba(255, 255, 255, 0.02);
             --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-muted: #64748b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            background: radial-gradient(circle at 50% 50%, #0a192f 0%, #010409 100%);
+            line-height: 1.5;
         }
 
-        /* Vlastní kurzor - mega moderní prvek */
-        #cursor {
-            position: fixed;
-            width: 20px; height: 20px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s ease, width 0.3s, height 0.3s;
-            mix-blend-mode: difference;
-        }
-
-        /* Textura a částice */
-        canvas#particles {
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .texture {
+        /* Textura na pozadí */
+        .grain {
             position: fixed;
             inset: 0;
-            z-index: 2;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>');
+            z-index: 99;
             pointer-events: none;
+            opacity: 0.04;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
         }
 
         /* Navigace */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 30px 6%;
+            padding: 2rem 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: linear-gradient(to bottom, var(--bg), transparent);
         }
 
         .logo {
-            font-family: 'Syncopate', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+            font-size: 1.4rem;
+            letter-spacing: -1px;
         }
 
-        .nav-links { display: flex; gap: 40px; }
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
         .nav-links a {
             text-decoration: none;
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
             transition: 0.3s;
         }
-        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        .nav-links a:hover { color: var(--accent); }
 
-        /* Hero sekce s Parallaxem */
+        .social-icons-top { display: flex; gap: 1.2rem; margin-left: 1rem; border-left: 1px solid var(--border); padding-left: 1.5rem; }
+        .social-icons-top a { color: var(--text-muted); transition: 0.3s; }
+        .social-icons-top a:hover { color: var(--accent-dim); transform: translateY(-2px); }
+
+        /* Hero */
         .hero {
-            height: 110vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 6%;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.5rem, 12vw, 8rem);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -4px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: heroLoad 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes heroLoad {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-muted);
+            max-width: 600px;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s forwards;
+        }
+
+        /* Projekty Grid */
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent-dim);
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .work { padding: 100px 6%; }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.04);
+            transform: translateY(-5px);
+        }
+
+        .card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin: 1.5rem 0 1rem; }
+        .card p { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
+
+        /* O mně */
+        .about { padding: 100px 6%; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+        .about-img { 
+            height: 600px; 
+            background: linear-gradient(135deg, #0f172a, #020617); 
+            border-radius: 20px; 
+            border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            position: relative;
-            z-index: 3;
-        }
-
-        .hero-content h1 {
-            font-family: 'Syncopate', sans-serif;
-            font-size: clamp(2rem, 10vw, 6rem);
-            line-height: 1;
-            margin-bottom: 20px;
-            background: linear-gradient(to bottom, #fff 30%, var(--text-dim));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Projekty - Grid System */
-        .projects-section { padding: 100px 6%; position: relative; z-index: 3; }
-        
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 30px;
-        }
-
-        .project-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 40px;
-            border-radius: 4px;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            position: relative;
             overflow: hidden;
         }
 
-        .project-card:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: var(--accent);
-            transform: translateY(-10px);
-        }
-
-        .project-card i { color: var(--accent); margin-bottom: 20px; }
-        .project-card h3 { font-family: 'Syncopate', sans-serif; margin-bottom: 15px; font-size: 1.1rem; }
-        .project-card p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 0.9rem; }
-
-        /* O mně - Cinematic */
-        .about-section {
-            padding: 150px 6%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            gap: 80px;
-            z-index: 3;
-            position: relative;
-        }
-
-        .about-visual {
-            height: 500px;
-            background: linear-gradient(45deg, #0a192f, #00d2ff22);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* Footer & Socials */
+        /* Footer */
         footer {
-            padding: 80px 6%;
+            padding: 100px 6% 50px;
             border-top: 1px solid var(--border);
             text-align: center;
-            position: relative;
-            z-index: 3;
         }
 
-        .social-bar {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
+        .footer-socials { display: flex; justify-content: center; gap: 3rem; margin-bottom: 4rem; }
+        .footer-socials a { color: var(--text); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; transition: 0.3s; }
+        .footer-socials a:hover { color: var(--accent-dim); transform: skewX(-10deg); }
 
-        .social-bar a {
-            color: var(--text);
-            transition: 0.4s;
-            opacity: 0.5;
-        }
+        .copyright { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; }
 
-        .social-bar a:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: scale(1.2);
-        }
-
-        .copy {
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-        }
-
-        /* Animace Scroll Reveal */
-        .reveal { opacity: 0; transform: translateY(50px); transition: 1s all ease; }
+        /* Scroll Anims */
+        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
+        @keyframes fadeIn { to { opacity: 1; } }
+
         @media (max-width: 768px) {
-            .about-section { grid-template-columns: 1fr; }
+            .about { grid-template-columns: 1fr; gap: 40px; }
+            .nav-links { display: none; }
             .project-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div id="cursor"></div>
-    <div class="texture"></div>
-    <canvas id="particles"></canvas>
+    <div class="grain"></div>
 
     <nav>
-        <div class="logo">Sketchy</div>
+        <div class="logo">SKETCHY STUDIO</div>
         <div class="nav-links">
-            <a href="#projects">Work</a>
-            <a href="#about">Studio</a>
-            <a href="#contact">Join</a>
+            <a href="#work">PROJEKTY</a>
+            <a href="#about">O MNĚ</a>
+            <div class="social-icons-top">
+                <a href="https://youtube.com" target="_blank"><i data-lucide="youtube" size="18"></i></a>
+                <a href="https://instagram.com" target="_blank"><i data-lucide="instagram" size="18"></i></a>
+                <a href="https://discord.com" target="_blank"><i data-lucide="message-square" size="18"></i></a>
+            </div>
         </div>
     </nav>
 
     <section class="hero">
-        <div class="hero-content">
-            <h1 id="parallax-title">IMMERSE<br>INTO VOID</h1>
-            <p style="letter-spacing: 5px; color: var(--accent); font-weight: 800; font-size: 0.8rem;">GAMEDEV STUDIO / LEVEL DESIGN</p>
-        </div>
+        <span class="section-label" style="opacity: 0; animation: fadeIn 1s 0.3s forwards;">Independent Game Developer</span>
+        <h1>BEYOND<br>THE LIMITS.</h1>
+        <p>Stavím digitální zážitky, které definují novou úroveň imerze. Zaměřeno na špičkový level design a technickou preciznost.</p>
     </section>
 
-    <section id="projects" class="projects-section">
+    <section id="work" class="work">
+        <span class="section-label reveal">Portfolio</span>
         <div class="project-grid">
-            <div class="project-card reveal">
-                <i data-lucide="waves" size="40"></i>
+            <div class="card reveal" style="transition-delay: 0.1s;">
+                <span class="tag">01 / Roblox Horror</span>
                 <h3>Project Eklipsa</h3>
-                <p>Deep-sea horror experience postavený na custom rendering pipeline v Roblox Studiu. Atmosféra, ze které mrazí.</p>
-                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">DISCOVER MORE</div>
+                <p>Nová definice survival horroru. Custom lighting engine a AI, která se učí z vašich chyb.</p>
+                <div class="card-footer">
+                    <i data-lucide="arrow-right-circle" size="24"></i>
+                </div>
             </div>
 
-            <div class="project-card reveal">
-                <i data-lucide="Zap" size="40"></i>
-                <h3>Movement v2</h3>
-                <p>Nová generace pohybu postav. Kinematika, procedurální animace a framework pro plynulý parkour.</p>
-                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">VIEW SOURCE</div>
+            <div class="card reveal" style="transition-delay: 0.2s;">
+                <span class="tag">02 / Physics</span>
+                <h3>Kinematics v2</h3>
+                <p>Framework pro pohyb postav, který přináší pocit váhy a realismu do každého kroku.</p>
+                <div class="card-footer">
+                    <i data-lucide="arrow-right-circle" size="24"></i>
+                </div>
             </div>
 
-            <div class="project-card reveal">
-                <i data-lucide="layout" size="40"></i>
-                <h3>Unknown Assets</h3>
-                <p>Knihovna optimalizovaných PBR materiálů a modelů pro herní vývojáře, co chtějí AAA look.</p>
-                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">ACCESS REPO</div>
+            <div class="card reveal" style="transition-delay: 0.3s;">
+                <span class="tag">03 / Environment</span>
+                <h3>The Void Station</h3>
+                <p>Prostředí postavené s důrazem na storytelling skrze detaily a nasvícení scény.</p>
+                <div class="card-footer">
+                    <i data-lucide="arrow-right-circle" size="24"></i>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="about-section">
-        <div class="about-visual reveal">
-            <i data-lucide="box" size="100" style="opacity: 0.1; position: absolute;"></i>
-            <div style="text-align: center; z-index: 2;">
-                <span style="font-family: 'Syncopate'; font-size: 3rem; color: var(--accent);">SK</span>
-            </div>
+    <section id="about" class="about">
+        <div class="about-img reveal">
+            <i data-lucide="cpu" size="80" style="opacity: 0.1;"></i>
         </div>
         <div class="about-text reveal">
-            <h2 style="font-family: 'Syncopate'; margin-bottom: 30px;">O MNĚ</h2>
-            <p style="margin-bottom: 20px; color: var(--text-dim);">Jsem vývojář her, co věří, že technická dokonalost a umělecká vize musí jít ruku v ruce. Neřeším jen aby kód fungoval, řeším jak se hráč u monitoru cítí.</p>
-            <p style="color: var(--text-dim);">Vše co vidíš, je výsledek hodin ladění shaderů, skriptování AI a stavění světů od úplnýho základu. Tohle je Sketchy Games Studio.</p>
+            <span class="section-label">Bio</span>
+            <h2 style="font-family: 'Space Grotesk'; font-size: 3rem; margin-bottom: 2rem;">Vize a kód v jednom.</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Hry pro mě nejsou jen produkt, je to médium pro vyprávění příběhů a vytváření emocí. Každý skript, který napíšu, má svůj účel.</p>
+            <p style="color: var(--text-muted);">Soustředím se na propojování moderních technologií s unikátním vizuálním stylem. Můj proces začíná u čistého kódu a končí u atmosféry, která hráče pohltí.</p>
         </div>
     </section>
 
     <footer>
-        <div class="social-bar">
-            <a href="#"><i data-lucide="youtube"></i></a>
-            <a href="#"><i data-lucide="instagram"></i></a>
-            <a href="#"><i data-lucide="message-square"></i></a>
+        <div class="footer-socials reveal">
+            <a href="https://youtube.com" target="_blank">YOUTUBE</a>
+            <a href="https://discord.com" target="_blank">DISCORD</a>
+            <a href="https://instagram.com" target="_blank">INSTAGRAM</a>
         </div>
-        <p class="copy">© 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.</p>
+        <div class="copyright">
+            © 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.
+        </div>
     </footer>
 
     <script>
+        // Inicializace ikon
         lucide.createIcons();
 
-        // --- Custom Cursor Logic ---
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        // Scroll Reveal Logic
+        const observerOptions = {
+            threshold: 0.15
+        };
 
-        document.querySelectorAll('a, .project-card').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(2.5)';
-                cursor.style.background = 'rgba(0, 210, 255, 0.1)';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
-                cursor.style.background = 'transparent';
-            });
-        });
-
-        // --- Particles System (Subnautica feel) ---
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particlesArray = [];
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-                this.opacity = Math.random() * 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(0, 210, 255, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function init() {
-            for (let i = 0; i < 100; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            requestAnimationFrame(animate);
-        }
-        init();
-        animate();
-
-        // --- Parallax Title ---
-        window.addEventListener('scroll', () => {
-            let value = window.scrollY;
-            document.getElementById('parallax-title').style.transform = `translateY(${value * 0.5}px)`;
-        });
-
-        // --- Reveal on Scroll ---
-        window.addEventListener('scroll', () => {
-            let reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(reveal => {
-                let windowHeight = window.innerHeight;
-                let revealTop = reveal.getBoundingClientRect().top;
-                if (revealTop < windowHeight - 100) {
-                    reveal.classList.add('active');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
                 }
             });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Jemný Parallax pro hero text
+        window.addEventListener('scroll', () => {
+            const h1 = document.querySelector('h1');
+            const scroll = window.scrollY;
+            h1.style.transform = `translateY(${scroll * 0.2}px) scale(${1 - scroll * 0.0005})`;
+            h1.style.opacity = `${1 - scroll * 0.002}`;
         });
     </script>
 </body>
