@@ -3,238 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy | Portfolio</title>
+    <title>Sketchy Games | Studio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600&display=swap');
 
         :root {
-            --bg-deep: #050b14;
-            --bg-card: rgba(15, 23, 42, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --border-glass: rgba(255, 255, 255, 0.05);
+            --bg-deep: #020813;
+            --bg-mid: #07172c;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --accent-cyan: #00e5ff;
+            --accent-blue: #0077ff;
+            --glass-bg: rgba(7, 23, 44, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
+            font-family: 'Open Sans', sans-serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Atmosférický background & Textura */
-        .ambient-glow {
-            position: fixed;
-            top: -20vh; left: 10vw;
-            width: 80vw; height: 80vw;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, transparent 60%);
-            border-radius: 50%;
-            z-index: -2;
-            pointer-events: none;
+        h1, h2, h3, h4, .nav-logo {
+            font-family: 'Montserrat', sans-serif;
         }
 
+        /* Tvoje oblíbená textura přes celou stránku */
         .texture-overlay {
             position: fixed;
             inset: 0;
             z-index: 50;
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.04"/></svg>');
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.03"/></svg>');
         }
 
-        ::selection { background: var(--accent); color: #000; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #112a4f; }
 
-        /* Navigace */
+        /* --- NAVIGACE --- */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 2rem 5%;
+            padding: 1.5rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: linear-gradient(to bottom, rgba(5, 11, 20, 0.9), transparent);
-            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
         }
-        
-        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
-        .logo span { color: var(--accent); }
-        
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
-        .nav-links a:hover { color: var(--text-main); }
-
-        /* Hlavní layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 5%;
+        nav.scrolled {
+            background: rgba(2, 8, 19, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 1rem 5%;
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        section {
-            min-height: 100vh;
+        .nav-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-main);
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-top: 100px;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-logo span { color: var(--accent-cyan); }
+
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        /* --- HERO SECTION (Cinematic) --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            overflow: hidden;
         }
 
-        /* Typografie */
-        h1 { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 1.5rem; }
-        .subtitle { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; font-weight: 300; }
-        h2 { font-size: 2.5rem; font-weight: 600; margin-bottom: 3rem; letter-spacing: -1px; }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1618331835717-801e976710b2?q=80&w=1920') center/cover no-repeat;
+            z-index: -2;
+            transform: scale(1.05); /* Pro jemný parallax/zoom */
+        }
 
-        /* Tlačítka */
+        .hero-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(2,8,19,0.95) 0%, rgba(2,8,19,0.4) 50%, rgba(2,8,19,0.1) 100%),
+                        linear-gradient(to bottom, transparent 60%, var(--bg-deep) 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 1;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeUp 1s 0.2s forwards ease-out;
+        }
+
+        @keyframes fadeUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .tagline {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 28px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-glass);
-            border-radius: 100px;
-            color: var(--text-main);
+            gap: 12px;
+            padding: 14px 32px;
+            background: var(--accent-blue);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: #000;
             text-decoration: none;
+            font-weight: 800;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: 0.3s;
         }
-        .btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
-        .btn-primary { background: var(--accent); color: #000; border: none; font-weight: 600; }
-        .btn-primary:hover { background: #0ea5e9; box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3); }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 229, 255, 0.3);
+        }
 
-        /* Projekty Grid */
+        /* --- FEATURED GAME (Subnautica style highlight) --- */
+        .featured {
+            padding: 8rem 5%;
+            position: relative;
+        }
+
+        .featured-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: flex-end;
+            min-height: 600px;
+        }
+
+        .featured-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            transition: opacity 0.5s, transform 5s linear;
+        }
+        .featured-wrapper:hover .featured-bg {
+            opacity: 0.8;
+            transform: scale(1.03);
+        }
+
+        .f-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(2,8,19,1) 0%, rgba(2,8,19,0.3) 60%, transparent 100%);
+        }
+
+        .f-content {
+            position: relative;
+            z-index: 2;
+            padding: 4rem;
+            width: 100%;
+        }
+
+        .f-content h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 10px; }
+        .f-content p { color: var(--text-muted); max-width: 500px; margin-bottom: 2rem; }
+
+        /* --- OTHER PROJECTS --- */
+        .projects {
+            padding: 4rem 5% 8rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
         }
 
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glass);
-            border-radius: 20px;
-            padding: 2.5rem;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
+        .studio-card {
+            background: var(--bg-mid);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
             overflow: hidden;
+            transition: 0.3s;
         }
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        .studio-card:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            transform: translateY(-5px);
         }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            opacity: 0.8;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-body { padding: 2rem; }
+        .card-body h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .card-body p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
         
-        .card-tag { font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 1rem; display: block; }
-        .card h3 { font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; }
+        .studio-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .studio-link:hover { color: #fff; }
 
-        /* Socials & Footer */
-        .socials { display: flex; gap: 1rem; margin-top: 3rem; }
-        .social-icon { color: var(--text-muted); transition: 0.3s; }
-        .social-icon:hover { color: var(--accent); transform: scale(1.1); }
+        /* --- FOOTER / ABOUT STUDIO --- */
+        footer {
+            background: var(--bg-mid);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 5%;
+            text-align: center;
+        }
 
-        /* Animace pro scroll */
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-content p { color: var(--text-muted); margin: 1.5rem 0; font-size: 0.95rem; }
+
+        .socials {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        .socials a {
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 50%;
+            display: flex;
+            transition: 0.3s;
+        }
+        .socials a:hover {
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* --- SCROLL ANIMACE --- */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 768px) {
             .nav-links { display: none; }
-            section { min-height: auto; padding-top: 150px; padding-bottom: 50px; }
+            .f-content { padding: 2rem; }
         }
     </style>
 </head>
 <body>
     <div class="texture-overlay"></div>
-    <div class="ambient-glow"></div>
 
-    <nav>
-        <div class="logo">Sketchy<span>.</span></div>
+    <nav id="navbar">
+        <a href="#" class="nav-logo">
+            <i data-lucide="hexagon" size="24" color="#00e5ff"></i>
+            Sketchy<span>Games</span>
+        </a>
         <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#work">Projekty</a>
-            <a href="#about">O mně</a>
+            <a href="#games">Hry</a>
+            <a href="#tech">Technologie</a>
+            <a href="#studio">Studio</a>
         </div>
     </nav>
 
-    <main class="container">
-        <section id="home">
-            <div class="reveal">
-                <h1>Game Dev &<br>Level Designer.</h1>
-                <p class="subtitle">Stavím imerzivní světy a píšu čistý kód. Zaměřeno na atmosféru, detail a plynulý gameplay.</p>
-                
-                <div style="margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <a href="#work" class="btn btn-primary">Vidět práci</a>
-                    <a href="https://github.com" target="_blank" class="btn"><i data-lucide="github" size="18"></i> GitHub</a>
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-content">
+            <span class="tagline">Nezávislé Herní Studio</span>
+            <h1>Tvoříme světy, do kterých se chceš ztratit.</h1>
+            <p>Jsme malý tým (no, vlastně jsem to jenom já) zaměřený na atmosférický level design, čistý kód a pohlcující hratelnost v Roblox enginu a dál.</p>
+            <a href="#games" class="btn">Naše Hry <i data-lucide="arrow-right" size="18"></i></a>
+        </div>
+    </section>
+
+    <section id="games" class="featured reveal">
+        <div class="featured-wrapper">
+            <img class="featured-bg" src="https://images.unsplash.com/photo-1551817958-c5b51e108bf8?q=80&w=1600" alt="Featured Game">
+            <div class="f-gradient"></div>
+            <div class="f-content">
+                <span class="tagline">Aktuální Vývoj</span>
+                <h2>Project Eklipsa</h2>
+                <p>Ponoř se do neznáma. Atmosférická survival zkušenost postavená na pokročilém osvětlení, custom AI chování a hutném sound designu.</p>
+                <a href="#" class="btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">Přečíst Devlog</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech" class="projects reveal">
+        <h2 class="section-title">Laboratoř & Technologie</h2>
+        <div class="grid">
+            <div class="studio-card">
+                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600" class="card-img" alt="Tech">
+                <div class="card-body">
+                    <h3>Movement Engine v2</h3>
+                    <p>Kompletně vlastní character controller. Vyladěná fyzika, predikce pohybu a proceduralní animace pro maximální plynulost.</p>
+                    <a href="#" class="studio-link">Zdrojové kódy <i data-lucide="chevron-right" size="16"></i></a>
                 </div>
             </div>
-        </section>
 
-        <section id="work">
-            <div class="reveal">
-                <h2>Vybrané Projekty</h2>
-                <div class="grid">
-                    <div class="card">
-                        <span class="card-tag">Roblox / Horror</span>
-                        <h3>Project Eklipsa</h3>
-                        <p>Atmosférická survival hra. Custom AI nepřátelé, pokročilý sound design a dynamické osvětlení. Vše optimalizováno pro 60fps.</p>
-                    </div>
-                    
-                    <div class="card">
-                        <span class="card-tag">Systems / Luau</span>
-                        <h3>Movement Engine v2</h3>
-                        <p>Čistý character controller napsaný od nuly. Obsahuje plynulý parkour systém, proceduralní animace a predikci pohybu.</p>
-                    </div>
-
-                    <div class="card">
-                        <span class="card-tag">AI / Tools</span>
-                        <h3>UNI Asistent</h3>
-                        <p>Plně automatizovaný systém pro zrychlení mýho vývoje. Generování boilerplate kódu a organizace tasků přes custom rozhraní.</p>
-                    </div>
+            <div class="studio-card">
+                <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=600" class="card-img" alt="Tech">
+                <div class="card-body">
+                    <h3>UNI - AI Core</h3>
+                    <p>Interní asistent pro automatizaci tasků. Analyzuje kód, generuje boilerplate a hlídá systémové logy během vývoje.</p>
+                    <a href="#" class="studio-link">Více info <i data-lucide="chevron-right" size="16"></i></a>
                 </div>
             </div>
-        </section>
 
-        <section id="about" style="min-height: 70vh;">
-            <div class="reveal" style="max-width: 800px;">
-                <h2>Behind the code</h2>
-                <p class="subtitle" style="margin-bottom: 2rem; color: var(--text-main);">
-                    Vývoj her není jen o psaní skriptů, je to o pocitu, kterej hráč má, když to poprvý zapne.
-                </p>
-                <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;">
-                    Moje hlavní zaměření je Roblox Studio a Luau, ale rád experimentuju s čímkoliv novým. Když zrovna nekódím mechaniky, ladím level design nebo se snažím donutit AI, aby dělala nudnou práci za mě.
-                </p>
-                
-                <div class="socials">
-                    <a href="#" class="social-icon" title="YouTube"><i data-lucide="youtube" size="24"></i></a>
-                    <a href="#" class="social-icon" title="Discord"><i data-lucide="message-square" size="24"></i></a>
-                    <a href="#" class="social-icon" title="Twitter/X"><i data-lucide="twitter" size="24"></i></a>
+            <div class="studio-card">
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600" class="card-img" alt="Tech">
+                <div class="card-body">
+                    <h3>Environmentální Nástroje</h3>
+                    <p>Sada pluginů pro rychlejší generování terénu a dynamické rozmísťování vegetace přímo v enginu.</p>
+                    <a href="#" class="studio-link">Github <i data-lucide="chevron-right" size="16"></i></a>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+
+    <footer id="studio">
+        <div class="footer-content reveal">
+            <a href="#" class="nav-logo" style="justify-content: center;">
+                <i data-lucide="hexagon" size="24" color="#00e5ff"></i> Sketchy<span>Games</span>
+            </a>
+            <p>Herní vývojář z Česka. Místo psaní dlouhých řečí radši píšu kód a ladím nasvícení.</p>
+            <div class="socials">
+                <a href="#"><i data-lucide="github"></i></a>
+                <a href="#"><i data-lucide="youtube"></i></a>
+                <a href="#"><i data-lucide="message-square"></i></a>
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 3rem; opacity: 0.5;">© 2026 Sketchy Games Studio. Všechna práva vyhrazena.</p>
+        </div>
+    </footer>
 
     <script>
-        // Init ikon
         lucide.createIcons();
 
-        // Reveal animace při scrollování
+        // Navbar blur on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll reveal animace
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 100;
+                var elementVisible = 150;
 
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add("active");
@@ -243,10 +430,9 @@
         }
 
         window.addEventListener("scroll", reveal);
-        // Spustit hned po načtení
-        setTimeout(reveal, 100);
+        reveal(); // Init check
 
-        // Plynulý scroll pro navigaci
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
