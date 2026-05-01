@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy Games Studio</title>
+    <title>Sketchy Studio | Deep Dive</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
         :root {
-            --bg: #030407;
-            --accent: #ffffff;
-            --accent-dim: #5eead4;
-            --card-bg: rgba(255, 255, 255, 0.02);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f8fafc;
-            --text-muted: #64748b;
+            --bg: #010810;
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.4);
+            --text: #ffffff;
+            --text-dim: #8ba2ad;
+            --glass: rgba(2, 12, 27, 0.7);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,272 +24,316 @@
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            line-height: 1.5;
+            background: radial-gradient(circle at center, #021a30 0%, #010810 100%);
         }
 
-        /* Textura na pozadí */
-        .grain {
+        /* Ta textura, co si pamatuju */
+        .texture-overlay {
             position: fixed;
             inset: 0;
-            z-index: 99;
+            z-index: 100;
             pointer-events: none;
-            opacity: 0.04;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+        }
+
+        /* Vodní částice v pozadí */
+        #water-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* Navigace */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 2rem 6%;
+            padding: 25px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            background: linear-gradient(to bottom, var(--bg), transparent);
+            background: linear-gradient(to bottom, rgba(1, 8, 16, 0.8), transparent);
+            backdrop-filter: blur(8px);
         }
 
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: -1px;
+        .nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            color: var(--text);
+            text-decoration: none;
         }
+        .nav-logo span { color: var(--accent); }
 
-        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-links { display: flex; gap: 40px; align-items: center; }
         .nav-links a {
             text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            color: var(--text-dim);
             font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: 0.3s;
         }
         .nav-links a:hover { color: var(--accent); }
 
-        .social-icons-top { display: flex; gap: 1.2rem; margin-left: 1rem; border-left: 1px solid var(--border); padding-left: 1.5rem; }
-        .social-icons-top a { color: var(--text-muted); transition: 0.3s; }
-        .social-icons-top a:hover { color: var(--accent-dim); transform: translateY(-2px); }
-
-        /* Hero */
+        /* Hero sekce */
         .hero {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 6%;
+            align-items: center;
+            text-align: center;
             position: relative;
+            z-index: 10;
         }
 
         .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(3.5rem, 12vw, 8rem);
-            font-weight: 700;
-            line-height: 0.9;
-            letter-spacing: -4px;
-            margin-bottom: 2rem;
-            opacity: 0;
-            transform: scale(0.9);
-            animation: heroLoad 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            transition: transform 0.1s ease-out;
         }
 
-        @keyframes heroLoad {
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .hero p {
-            font-size: clamp(1rem, 2vw, 1.3rem);
-            color: var(--text-muted);
-            max-width: 600px;
-            font-weight: 300;
-            opacity: 0;
-            animation: fadeIn 1s 0.5s forwards;
-        }
-
-        /* Projekty Grid */
-        .section-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--accent-dim);
-            margin-bottom: 2rem;
-            display: block;
-        }
-
-        .work { padding: 100px 6%; }
-
-        .project-grid {
+        /* Projekty s top animací */
+        .projects { padding: 100px 6%; position: relative; z-index: 10; }
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
         }
 
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 3rem;
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
+            padding: 40px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
-            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
         }
 
         .card:hover {
-            border-color: rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.04);
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+        }
+
+        .card i { color: var(--accent); margin-bottom: 20px; display: block; }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 15px; }
+        .card p { color: var(--text-dim); line-height: 1.6; }
+
+        /* O mně sekce */
+        .about {
+            padding: 150px 6%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .about-box {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), transparent);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        /* Footer s linky */
+        footer {
+            padding: 100px 6% 40px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(to top, #010810, transparent);
+        }
+
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .social-link {
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .social-link:hover {
+            opacity: 1;
+            color: var(--accent);
             transform: translateY(-5px);
         }
 
-        .card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin: 1.5rem 0 1rem; }
-        .card p { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+        .social-link span { font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; }
 
-        .card-footer { display: flex; justify-content: space-between; align-items: center; }
-        .tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
-
-        /* O mně */
-        .about { padding: 100px 6%; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
-        .about-img { 
-            height: 600px; 
-            background: linear-gradient(135deg, #0f172a, #020617); 
-            border-radius: 20px; 
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Footer */
-        footer {
-            padding: 100px 6% 50px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .footer-socials { display: flex; justify-content: center; gap: 3rem; margin-bottom: 4rem; }
-        .footer-socials a { color: var(--text); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; transition: 0.3s; }
-        .footer-socials a:hover { color: var(--accent-dim); transform: skewX(-10deg); }
-
-        .copyright { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; }
-
-        /* Scroll Anims */
-        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1s all ease; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        @keyframes fadeIn { to { opacity: 1; } }
-
         @media (max-width: 768px) {
-            .about { grid-template-columns: 1fr; gap: 40px; }
+            .about { grid-template-columns: 1fr; }
             .nav-links { display: none; }
-            .project-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="grain"></div>
+    <div class="texture-overlay"></div>
+    <canvas id="water-particles"></canvas>
 
     <nav>
-        <div class="logo">SKETCHY STUDIO</div>
+        <a href="#" class="nav-logo">SKETCHY<span>STUDIO</span></a>
         <div class="nav-links">
-            <a href="#work">PROJEKTY</a>
-            <a href="#about">O MNĚ</a>
-            <div class="social-icons-top">
-                <a href="https://youtube.com" target="_blank"><i data-lucide="youtube" size="18"></i></a>
-                <a href="https://instagram.com" target="_blank"><i data-lucide="instagram" size="18"></i></a>
-                <a href="https://discord.com" target="_blank"><i data-lucide="message-square" size="18"></i></a>
-            </div>
+            <a href="#work">Projekty</a>
+            <a href="#about">Studio</a>
+            <a href="#contact">Kontakt</a>
         </div>
     </nav>
 
     <section class="hero">
-        <span class="section-label" style="opacity: 0; animation: fadeIn 1s 0.3s forwards;">Independent Game Developer</span>
-        <h1>BEYOND<br>THE LIMITS.</h1>
-        <p>Stavím digitální zážitky, které definují novou úroveň imerze. Zaměřeno na špičkový level design a technickou preciznost.</p>
+        <h1 id="hero-title">DEEP WORK</h1>
+        <p style="color: var(--accent); letter-spacing: 8px; font-weight: 700;">GAME DEVELOPER & DESIGNER</p>
     </section>
 
-    <section id="work" class="work">
-        <span class="section-label reveal">Portfolio</span>
-        <div class="project-grid">
-            <div class="card reveal" style="transition-delay: 0.1s;">
-                <span class="tag">01 / Roblox Horror</span>
+    <section id="work" class="projects">
+        <div class="grid">
+            <div class="card reveal">
+                <i data-lucide="anchor" size="32"></i>
                 <h3>Project Eklipsa</h3>
-                <p>Nová definice survival horroru. Custom lighting engine a AI, která se učí z vašich chyb.</p>
-                <div class="card-footer">
-                    <i data-lucide="arrow-right-circle" size="24"></i>
-                </div>
+                <p>Nelineární survival zážitek v hlubinách oceánu. Práce s procedurálním generováním a dynamickým zvukem.</p>
             </div>
-
-            <div class="card reveal" style="transition-delay: 0.2s;">
-                <span class="tag">02 / Physics</span>
-                <h3>Kinematics v2</h3>
-                <p>Framework pro pohyb postav, který přináší pocit váhy a realismu do každého kroku.</p>
-                <div class="card-footer">
-                    <i data-lucide="arrow-right-circle" size="24"></i>
-                </div>
+            <div class="card reveal">
+                <i data-lucide="cpu" size="32"></i>
+                <h3>Kinematics Engine</h3>
+                <p>Můj vlastní framework pro pohyb postav. Realistická setrvačnost a plynulé přechody mezi animacemi.</p>
             </div>
-
-            <div class="card reveal" style="transition-delay: 0.3s;">
-                <span class="tag">03 / Environment</span>
-                <h3>The Void Station</h3>
-                <p>Prostředí postavené s důrazem na storytelling skrze detaily a nasvícení scény.</p>
-                <div class="card-footer">
-                    <i data-lucide="arrow-right-circle" size="24"></i>
-                </div>
+            <div class="card reveal">
+                <i data-lucide="layers" size="32"></i>
+                <h3>Level Design Kit</h3>
+                <p>Sada nástrojů pro tvorbu atmosférických prostředí. Od nasvícení až po optimalizaci meshí.</p>
             </div>
         </div>
     </section>
 
-    <section id="about" class="about">
-        <div class="about-img reveal">
-            <i data-lucide="cpu" size="80" style="opacity: 0.1;"></i>
+    <section id="about" class="about reveal">
+        <div class="about-box">
+            <h2 style="font-family: Montserrat; font-size: 2.5rem; margin-bottom: 20px;">O MNĚ</h2>
+            <p style="color: var(--text-dim); line-height: 1.8;">
+                Jsem vývojář her, kterého fascinuje hloubka – doslova i přeneseně. Zaměřuji se na projekty, které mají atmosféru, co se dá krájet. Moje práce v Roblox Studiu a Luau je o posouvání limitů toho, co hráči od platformy očekávají.
+            </p>
         </div>
-        <div class="about-text reveal">
-            <span class="section-label">Bio</span>
-            <h2 style="font-family: 'Space Grotesk'; font-size: 3rem; margin-bottom: 2rem;">Vize a kód v jednom.</h2>
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Hry pro mě nejsou jen produkt, je to médium pro vyprávění příběhů a vytváření emocí. Každý skript, který napíšu, má svůj účel.</p>
-            <p style="color: var(--text-muted);">Soustředím se na propojování moderních technologií s unikátním vizuálním stylem. Můj proces začíná u čistého kódu a končí u atmosféry, která hráče pohltí.</p>
+        <div style="padding-left: 20px;">
+            <p style="font-size: 1.2rem; border-left: 3px solid var(--accent); padding-left: 20px; color: var(--text-dim);">
+                "Kód je jen nástroj k vytvoření světa, ve kterém se lidé zapomenou."
+            </p>
         </div>
     </section>
 
-    <footer>
-        <div class="footer-socials reveal">
-            <a href="https://youtube.com" target="_blank">YOUTUBE</a>
-            <a href="https://discord.com" target="_blank">DISCORD</a>
-            <a href="https://instagram.com" target="_blank">INSTAGRAM</a>
+    <footer id="contact">
+        <div class="social-grid">
+            <a href="https://youtube.com" class="social-link">
+                <i data-lucide="youtube" size="30"></i>
+                <span>YOUTUBE</span>
+            </a>
+            <a href="https://discord.com" class="social-link">
+                <i data-lucide="message-square" size="30"></i>
+                <span>DISCORD</span>
+            </a>
+            <a href="https://instagram.com" class="social-link">
+                <i data-lucide="instagram" size="30"></i>
+                <span>INSTAGRAM</span>
+            </a>
         </div>
-        <div class="copyright">
-            © 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.
-        </div>
+        <p style="opacity: 0.3; font-size: 0.7rem; letter-spacing: 2px;">© 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.</p>
     </footer>
 
     <script>
-        // Inicializace ikon
         lucide.createIcons();
 
-        // Scroll Reveal Logic
-        const observerOptions = {
-            threshold: 0.15
-        };
+        // --- Vodní částice (lepší verze) ---
+        const canvas = document.getElementById('water-particles');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
 
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * -1 - 0.5; // Stoupají nahoru jako bublinky
+                this.opacity = Math.random() * 0.4;
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < 80; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        init();
+        animate();
+
+        // --- Parallax na nadpis (ten movement co jsi chtěl) ---
+        window.addEventListener('scroll', () => {
+            const title = document.getElementById('hero-title');
+            let scroll = window.scrollY;
+            title.style.transform = `translateY(${scroll * 0.4}px) rotate(${scroll * 0.02}deg)`;
+            title.style.opacity = 1 - (scroll / 600);
+        });
+
+        // --- Reveal animace ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // Jemný Parallax pro hero text
-        window.addEventListener('scroll', () => {
-            const h1 = document.querySelector('h1');
-            const scroll = window.scrollY;
-            h1.style.transform = `translateY(${scroll * 0.2}px) scale(${1 - scroll * 0.0005})`;
-            h1.style.opacity = `${1 - scroll * 0.002}`;
-        });
     </script>
 </body>
 </html>
