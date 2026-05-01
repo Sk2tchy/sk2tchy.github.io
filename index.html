@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +9,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
         :root {
-            --bg: #010810;
+            --bg: #01050a;
+            --bg-radial: #021224;
             --accent: #00f2ff;
-            --accent-glow: rgba(0, 242, 255, 0.4);
+            --accent-glow: rgba(0, 242, 255, 0.2);
             --text: #ffffff;
             --text-dim: #8ba2ad;
-            --glass: rgba(2, 12, 27, 0.7);
+            --glass: rgba(2, 12, 27, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.04);
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,174 +27,157 @@
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            background: radial-gradient(circle at center, #021a30 0%, #010810 100%);
+            background: radial-gradient(circle at top center, var(--bg-radial) 0%, var(--bg) 100%);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Ta textura, co si pamatuju */
+        /* Atmosphere */
         .texture-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0.05;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+            position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.04;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
 
-        /* Vodní částice v pozadí */
         #water-particles {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
         }
 
-        /* Navigace */
+        /* Navbar */
         nav {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 25px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: linear-gradient(to bottom, rgba(1, 8, 16, 0.8), transparent);
-            backdrop-filter: blur(8px);
+            position: fixed; top: 0; width: 100%; padding: 2rem 5vw; display: flex;
+            justify-content: space-between; align-items: center; z-index: 1000;
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--glass-border);
+            transition: all 0.4s var(--ease);
         }
+
+        nav.scrolled { padding: 1.2rem 5vw; background: rgba(1, 5, 10, 0.8); }
 
         .nav-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            color: var(--text);
-            text-decoration: none;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px;
+            font-size: 1.2rem; color: var(--text); text-decoration: none;
         }
         .nav-logo span { color: var(--accent); }
 
-        .nav-links { display: flex; gap: 40px; align-items: center; }
+        .nav-links { display: flex; gap: 3rem; }
         .nav-links a {
-            text-decoration: none;
-            color: var(--text-dim);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
+            text-decoration: none; color: var(--text-dim); font-weight: 600; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s var(--ease);
         }
         .nav-links a:hover { color: var(--accent); }
 
-        /* Hero sekce */
+        /* Hero */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            z-index: 10;
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center; position: relative; z-index: 10;
         }
 
         .hero h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(3rem, 10vw, 7rem);
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
-            transition: transform 0.1s ease-out;
+            font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 10vw, 8rem);
+            font-weight: 900; line-height: 0.9; margin-bottom: 1.5rem; letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, #8ba2ad);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            will-change: transform;
         }
 
-        /* Projekty s top animací */
-        .projects { padding: 100px 6%; position: relative; z-index: 10; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+        .hero-subtitle {
+            color: var(--accent); letter-spacing: 6px; font-weight: 700; font-size: 0.85rem;
+            text-transform: uppercase;
         }
+
+        /* Section Global */
+        section { padding: 8rem 5vw; position: relative; z-index: 10; }
+        .section-header { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; margin-bottom: 4rem; font-weight: 900; letter-spacing: -1px; }
+
+        /* Projects Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 2rem; }
 
         .card {
-            background: var(--glass);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 40px;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 3rem; position: relative; overflow: hidden; cursor: pointer;
+            backdrop-filter: blur(10px); transition: all 0.6s var(--ease);
         }
 
         .card:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+            border-color: rgba(0, 242, 255, 0.3); transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 242, 255, 0.05);
         }
 
-        .card i { color: var(--accent); margin-bottom: 20px; display: block; }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 15px; }
-        .card p { color: var(--text-dim); line-height: 1.6; }
+        .card-icon { color: var(--accent); margin-bottom: 2rem; transition: transform 0.4s var(--ease); }
+        .card:hover .card-icon { transform: scale(1.1); }
+        
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 1rem; }
+        .card p { color: var(--text-dim); line-height: 1.7; font-size: 0.95rem; }
 
-        /* O mně sekce */
-        .about {
-            padding: 150px 6%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-            position: relative;
-            z-index: 10;
+        /* Modal System (The tricky part you requested) */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 2, 5, 0.95); backdrop-filter: blur(20px);
+            z-index: 2000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease);
         }
 
-        .about-box {
-            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), transparent);
-            border: 1px solid var(--border);
-            padding: 40px;
-            border-radius: 20px;
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+        .modal-content {
+            background: var(--bg); border: 1px solid var(--glass-border); width: 90%; max-width: 1000px;
+            max-height: 85vh; overflow-y: auto; border-radius: 24px; padding: 4rem; position: relative;
+            transform: translateY(40px) scale(0.95); transition: all 0.5s var(--ease);
         }
 
-        /* Footer s linky */
-        footer {
-            padding: 100px 6% 40px;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            background: linear-gradient(to top, #010810, transparent);
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+        .close-btn {
+            position: absolute; top: 2rem; right: 2rem; background: rgba(255,255,255,0.05); border: none;
+            color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: 0.3s;
         }
+        .close-btn:hover { background: var(--accent); color: black; }
 
-        .social-grid {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin-bottom: 50px;
-        }
+        /* === PROJECT LAYOUT UTILITY CLASSES === */
+        .cms-flow { display: flex; flex-direction: column; gap: 2.5rem; color: var(--text-dim); line-height: 1.8; }
+        
+        /* Alignment */
+        .align-left { text-align: left; margin: 0; }
+        .align-center { text-align: center; margin: 0 auto; max-width: 800px; }
+        .align-right { text-align: right; margin: 0 0 0 auto; }
+        .align-center-left { text-align: left; max-width: 70%; margin: 0 auto 0 0; } /* Between center and left */
+        
+        /* Typography styles */
+        .text-gradient { background: linear-gradient(135deg, var(--accent), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .text-accent { color: var(--accent); }
+        .title-large { font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: 900; color: white; line-height: 1.1; margin-bottom: 0.5rem; }
+        
+        /* Grids & Images */
+        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+        .img-placeholder { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; width: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); font-size: 0.8rem; letter-spacing: 2px; }
+        .img-tall { aspect-ratio: 4/3; }
+        .img-wide { aspect-ratio: 16/9; }
 
-        .social-link {
-            color: var(--text);
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            opacity: 0.6;
-            transition: 0.3s;
-        }
+        /* About Section */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .quote-box { font-size: 1.5rem; border-left: 2px solid var(--accent); padding-left: 2rem; color: var(--text); font-style: italic; }
 
-        .social-link:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: translateY(-5px);
-        }
+        /* Footer */
+        footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .socials { display: flex; gap: 2rem; }
+        .socials a { color: var(--text-dim); transition: 0.3s; }
+        .socials a:hover { color: var(--accent); transform: translateY(-3px); }
+        .copyright { font-size: 0.75rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
 
-        .social-link span { font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; }
-
-        .reveal { opacity: 0; transform: translateY(50px); transition: 1s all ease; }
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(40px); transition: 1s var(--ease); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
         @media (max-width: 768px) {
-            .about { grid-template-columns: 1fr; }
             .nav-links { display: none; }
+            .hero h1 { font-size: 3rem; }
+            .grid-half, .about-grid { grid-template-columns: 1fr; }
+            .align-center-left { max-width: 100%; }
+            footer { flex-direction: column; gap: 2rem; text-align: center; }
         }
     </style>
 </head>
@@ -200,95 +186,135 @@
     <div class="texture-overlay"></div>
     <canvas id="water-particles"></canvas>
 
-    <nav>
+    <nav id="navbar">
         <a href="#" class="nav-logo">SKETCHY<span>STUDIO</span></a>
         <div class="nav-links">
-            <a href="#work">Projekty</a>
-            <a href="#about">Studio</a>
-            <a href="#contact">Kontakt</a>
+            <a href="#work">Projects</a>
+            <a href="#about">Philosophy</a>
+            <a href="#contact">Connect</a>
         </div>
     </nav>
 
     <section class="hero">
         <h1 id="hero-title">DEEP WORK</h1>
-        <p style="color: var(--accent); letter-spacing: 8px; font-weight: 700;">GAME DEVELOPER & DESIGNER</p>
+        <p class="hero-subtitle">Engineering the Void</p>
     </section>
 
-    <section id="work" class="projects">
+    <section id="work">
+        <h2 class="section-header reveal">SELECTED WORKS</h2>
         <div class="grid">
-            <div class="card reveal">
-                <i data-lucide="anchor" size="32"></i>
-                <h3>Project Eklipsa</h3>
-                <p>Nelineární survival zážitek v hlubinách oceánu. Práce s procedurálním generováním a dynamickým zvukem.</p>
+            <!-- Project 1 -->
+            <div class="card reveal" onclick="openModal('project1')">
+                <i data-lucide="anchor" size="40" class="card-icon"></i>
+                <h3>Project Eclipse</h3>
+                <p>Non-linear survival experience in the deep ocean. Focused on procedural generation and dynamic audio propagation.</p>
             </div>
-            <div class="card reveal">
-                <i data-lucide="cpu" size="32"></i>
+            <!-- Project 2 -->
+            <div class="card reveal" style="transition-delay: 0.1s;" onclick="openModal('project2')">
+                <i data-lucide="cpu" size="40" class="card-icon"></i>
                 <h3>Kinematics Engine</h3>
-                <p>Můj vlastní framework pro pohyb postav. Realistická setrvačnost a plynulé přechody mezi animacemi.</p>
+                <p>Custom movement framework focusing on realistic inertia, procedural animation, and fluid state transitions.</p>
             </div>
-            <div class="card reveal">
-                <i data-lucide="layers" size="32"></i>
+            <!-- Project 3 -->
+            <div class="card reveal" style="transition-delay: 0.2s;" onclick="openModal('project3')">
+                <i data-lucide="layers" size="40" class="card-icon"></i>
                 <h3>Level Design Kit</h3>
-                <p>Sada nástrojů pro tvorbu atmosférických prostředí. Od nasvícení až po optimalizaci meshí.</p>
+                <p>A suite of tools for crafting atmospheric environments. From volumetric lighting setups to mesh optimization.</p>
             </div>
         </div>
     </section>
 
-    <section id="about" class="about reveal">
-        <div class="about-box">
-            <h2 style="font-family: Montserrat; font-size: 2.5rem; margin-bottom: 20px;">O MNĚ</h2>
-            <p style="color: var(--text-dim); line-height: 1.8;">
-                Jsem vývojář her, kterého fascinuje hloubka – doslova i přeneseně. Zaměřuji se na projekty, které mají atmosféru, co se dá krájet. Moje práce v Roblox Studiu a Luau je o posouvání limitů toho, co hráči od platformy očekávají.
-            </p>
-        </div>
-        <div style="padding-left: 20px;">
-            <p style="font-size: 1.2rem; border-left: 3px solid var(--accent); padding-left: 20px; color: var(--text-dim);">
-                "Kód je jen nástroj k vytvoření světa, ve kterém se lidé zapomenou."
-            </p>
+    <section id="about">
+        <div class="about-grid reveal">
+            <div>
+                <h2 class="section-header" style="margin-bottom: 2rem;">THE STUDIO</h2>
+                <p style="color: var(--text-dim); line-height: 1.8; margin-bottom: 2rem; max-width: 90%;">
+                    I am a game developer fascinated by depth—both literally and figuratively. I focus on projects that possess a tangible atmosphere. My work in game engines is about pushing the boundaries of what players expect from the platform.
+                </p>
+                <p class="text-accent" style="font-weight: 700; letter-spacing: 1px; font-size: 0.9rem;">CRAFTING DIGITAL REALITIES // EST. 2026</p>
+            </div>
+            <div class="quote-box">
+                "Code is merely the scaffolding. The goal is to build a world so immersive, players forget they are looking at a screen."
+            </div>
         </div>
     </section>
 
     <footer id="contact">
-        <div class="social-grid">
-            <a href="https://youtube.com" class="social-link">
-                <i data-lucide="youtube" size="30"></i>
-                <span>YOUTUBE</span>
-            </a>
-            <a href="https://discord.com" class="social-link">
-                <i data-lucide="message-square" size="30"></i>
-                <span>DISCORD</span>
-            </a>
-            <a href="https://instagram.com" class="social-link">
-                <i data-lucide="instagram" size="30"></i>
-                <span>INSTAGRAM</span>
-            </a>
+        <div class="copyright">© 2026 SKETCHY STUDIO. ALL RIGHTS RESERVED.</div>
+        <div class="socials">
+            <a href="#"><i data-lucide="youtube"></i></a>
+            <a href="#"><i data-lucide="twitter"></i></a>
+            <a href="#"><i data-lucide="github"></i></a>
         </div>
-        <p style="opacity: 0.3; font-size: 0.7rem; letter-spacing: 2px;">© 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.</p>
     </footer>
+
+    <!-- MODAL SYSTEM -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content" id="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal()"><i data-lucide="x" size="20"></i></button>
+            
+            <!-- Modal Body Content -->
+            <div id="modal-body" class="cms-flow">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
 
     <script>
         lucide.createIcons();
 
-        // --- Vodní částice (lepší verze) ---
+        // --- Navbar Scroll Effect ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- Parallax on Hero ---
+        window.addEventListener('scroll', () => {
+            const title = document.getElementById('hero-title');
+            let scroll = window.scrollY;
+            title.style.transform = `translateY(${scroll * 0.3}px)`;
+            title.style.opacity = 1 - (scroll / 600);
+        });
+
+        // --- Reveal Animations ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- Advanced Water Particles ---
         const canvas = document.getElementById('water-particles');
         const ctx = canvas.getContext('2d');
         let particlesArray = [];
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedY = Math.random() * -1 - 0.5; // Stoupají nahoru jako bublinky
-                this.opacity = Math.random() * 0.4;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = Math.random() * -0.8 - 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.3; // Slight horizontal sway
+                this.opacity = Math.random() * 0.5 + 0.1;
             }
             update() {
                 this.y += this.speedY;
-                if (this.y < 0) {
-                    this.y = canvas.height;
+                this.x += this.speedX;
+                if (this.y < -10) {
+                    this.y = canvas.height + 10;
                     this.x = Math.random() * canvas.width;
                 }
             }
@@ -300,40 +326,84 @@
             }
         }
 
-        function init() {
+        function initParticles() {
             particlesArray = [];
-            for (let i = 0; i < 80; i++) {
-                particlesArray.push(new Particle());
-            }
+            for (let i = 0; i < 60; i++) particlesArray.push(new Particle());
         }
 
-        function animate() {
+        function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particlesArray.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
         }
-        init();
-        animate();
+        initParticles();
+        animateParticles();
 
-        // --- Parallax na nadpis (ten movement co jsi chtěl) ---
-        window.addEventListener('scroll', () => {
-            const title = document.getElementById('hero-title');
-            let scroll = window.scrollY;
-            title.style.transform = `translateY(${scroll * 0.4}px) rotate(${scroll * 0.02}deg)`;
-            title.style.opacity = 1 - (scroll / 600);
-        });
+        // --- CMS / Modal Logic ---
+        
+        // This is where you configure your project content using the layout classes
+        const projectData = {
+            project1: `
+                <div class="align-center-left">
+                    <h2 class="title-large text-gradient">Project Eclipse</h2>
+                    <p class="text-accent" style="letter-spacing: 2px; font-weight: 700; margin-bottom: 2rem;">DEEP SEA SURVIVAL</p>
+                </div>
+                
+                <p class="align-left">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                
+                <div class="img-placeholder img-wide">IMAGE PLACEHOLDER (16:9)</div>
+                
+                <div class="grid-half">
+                    <div>
+                        <h3 class="text-gradient" style="font-size: 1.5rem; margin-bottom: 1rem;">Procedural Audio</h3>
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                    </div>
+                    <div class="img-placeholder img-tall">IMAGE (4:3)</div>
+                </div>
 
-        // --- Reveal animace ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
+                <div class="align-center" style="margin-top: 2rem;">
+                    <h3 style="color: white; margin-bottom: 1rem;">Conclusion</h3>
+                    <p>Sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+                </div>
+            `,
+            project2: `
+                <div class="align-center">
+                    <h2 class="title-large text-gradient">Kinematics Engine</h2>
+                    <p class="text-accent" style="margin-bottom: 2rem;">PHYSICS FRAMEWORK</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet dictum sit amet justo donec enim diam vulputate.</p>
+                </div>
+                <div class="grid-half">
+                    <div class="img-placeholder img-tall">IMAGE (4:3)</div>
+                    <div class="img-placeholder img-tall">IMAGE (4:3)</div>
+                </div>
+            `,
+            project3: `
+                <div class="align-left">
+                    <h2 class="title-large">Level Design Kit</h2>
+                    <hr style="border: none; border-top: 1px solid var(--glass-border); margin: 2rem 0;">
+                    <p>Volutpat maecenas volutpat blandit aliquam etiam. Tempor orci dapibus ultrices in iaculis nunc sed augue.</p>
+                    <div class="img-placeholder img-wide" style="margin-top: 2rem;">HERO IMAGE</div>
+                </div>
+            `
+        };
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        const modal = document.getElementById('modal');
+        const modalBody = document.getElementById('modal-body');
+
+        function openModal(projectId) {
+            modalBody.innerHTML = projectData[projectId];
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Stop background scrolling
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+            setTimeout(() => modalBody.innerHTML = '', 500); // Clear content after animation
+        }
+
+        // Close modal on click outside
+        modal.addEventListener('click', closeModal);
     </script>
 </body>
 </html>
