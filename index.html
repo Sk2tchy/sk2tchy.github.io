@@ -3,434 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketchy Games | Studio</title>
+    <title>Sketchy Games | Official Studio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Open+Sans:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
         :root {
-            --bg-deep: #030712;
-            --bg-mid: #0b1426;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-cyan: #06b6d4;
-            --glass-bg: rgba(11, 20, 38, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg: #010409;
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.3);
+            --text: #ffffff;
+            --text-dim: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        
         body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Open Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            background: radial-gradient(circle at 50% 50%, #0a192f 0%, #010409 100%);
         }
 
-        h1, h2, h3, h4, .nav-logo, .tagline {
-            font-family: 'Montserrat', sans-serif;
+        /* Vlastní kurzor - mega moderní prvek */
+        #cursor {
+            position: fixed;
+            width: 20px; height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease, width 0.3s, height 0.3s;
+            mix-blend-mode: difference;
         }
 
-        /* Systémová textura */
-        .texture-overlay {
+        /* Textura a částice */
+        canvas#particles {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .texture {
             position: fixed;
             inset: 0;
-            z-index: 50;
+            z-index: 2;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>');
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.03"/></svg>');
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
-
-        /* --- NAVIGACE --- */
+        /* Navigace */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 1.5rem 5%;
+            padding: 30px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            transition: var(--transition);
-        }
-        nav.scrolled {
-            background: rgba(3, 7, 18, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 1rem 5%;
-            border-bottom: 1px solid var(--glass-border);
         }
 
-        .nav-logo {
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
             font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            text-decoration: none;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
-        .nav-logo span { color: var(--accent-cyan); font-weight: 500; }
 
-        .nav-links { display: flex; gap: 3rem; }
+        .nav-links { display: flex; gap: 40px; }
         .nav-links a {
-            color: var(--text-main);
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            transition: color 0.3s;
+            transition: 0.3s;
         }
-        .nav-links a:hover { color: var(--accent-cyan); }
+        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 
-        /* --- HERO --- */
+        /* Hero sekce s Parallaxem */
         .hero {
-            position: relative;
-            height: 100vh;
+            height: 110vh;
             display: flex;
             align-items: center;
-            padding: 0 5%;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            z-index: 3;
+        }
+
+        .hero-content h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 10vw, 6rem);
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #fff 30%, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Projekty - Grid System */
+        .projects-section { padding: 100px 6%; position: relative; z-index: 3; }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 4px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
             overflow: hidden;
         }
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background: url('https://images.unsplash.com/photo-1618331835717-801e976710b2?q=80&w=1920') center/cover;
-            z-index: -2;
-            transform: scale(1.02);
-        }
-        .hero-gradient {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, rgba(3,7,18,0.95) 0%, rgba(3,7,18,0.6) 50%, transparent 100%),
-                        linear-gradient(0deg, var(--bg-deep) 0%, transparent 40%);
-            z-index: -1;
-        }
-        .hero-content {
-            max-width: 650px;
-            z-index: 1;
-        }
-        .tagline {
-            color: var(--accent-cyan);
-            font-weight: 700;
-            letter-spacing: 4px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-        }
-        .hero h1 { font-size: clamp(3rem, 6vw, 4.5rem); line-height: 1.05; margin-bottom: 1.5rem; letter-spacing: -1px; }
-        .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 3rem; line-height: 1.7; font-weight: 300; }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 36px;
-            background: var(--text-main);
-            color: var(--bg-deep);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 2px;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover { background: var(--accent-cyan); transform: translateY(-2px); }
 
-        /* --- STUDIO O MNĚ --- */
-        .about-section {
-            padding: 8rem 5%;
-            background: var(--bg-deep);
-            position: relative;
+        .project-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--accent);
+            transform: translateY(-10px);
         }
-        .about-grid {
-            max-width: 1200px;
-            margin: 0 auto;
+
+        .project-card i { color: var(--accent); margin-bottom: 20px; }
+        .project-card h3 { font-family: 'Syncopate', sans-serif; margin-bottom: 15px; font-size: 1.1rem; }
+        .project-card p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 0.9rem; }
+
+        /* O mně - Cinematic */
+        .about-section {
+            padding: 150px 6%;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
             align-items: center;
+            gap: 80px;
+            z-index: 3;
+            position: relative;
         }
-        .about-text h2 { font-size: 2.5rem; margin-bottom: 1.5rem; }
-        .about-text p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.8; font-size: 1.05rem; }
-        .about-image {
-            width: 100%;
+
+        .about-visual {
             height: 500px;
-            background: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1000') center/cover;
-            border-radius: 4px;
+            background: linear-gradient(45deg, #0a192f, #00d2ff22);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
         }
-        .about-image::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: inset 0 0 50px rgba(3,7,18,0.5);
-            border: 1px solid var(--glass-border);
-        }
 
-        /* --- PROJEKTY / HRY --- */
-        .projects {
-            padding: 6rem 5% 10rem;
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .section-header { text-align: center; margin-bottom: 4rem; }
-        .section-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .game-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            display: block;
-        }
-        .game-card:hover {
-            border-color: var(--accent-cyan);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .card-img-wrap { width: 100%; height: 240px; overflow: hidden; position: relative; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; opacity: 0.8; }
-        .game-card:hover .card-img { transform: scale(1.05); opacity: 1; }
-        
-        .card-body { padding: 2rem; }
-        .card-tag { color: var(--accent-cyan); font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .card-body h3 { font-size: 1.5rem; margin-bottom: 12px; }
-        .card-body p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
-
-        /* --- MODAL (Vyskakovací okno) --- */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(3, 7, 18, 0.9);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none;
-            transition: var(--transition);
-            padding: 2rem;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content {
-            background: var(--bg-mid);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            width: 100%; max-width: 900px;
-            max-height: 90vh; overflow-y: auto;
-            transform: translateY(30px) scale(0.95);
-            transition: var(--transition);
-            position: relative;
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
-        
-        .modal-close {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border);
-            color: white; width: 40px; height: 40px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 10; transition: 0.3s;
-        }
-        .modal-close:hover { background: var(--accent-cyan); color: #000; }
-
-        .modal-img { width: 100%; height: 400px; object-fit: cover; }
-        .modal-body { padding: 3rem; }
-        .modal-body h2 { font-size: 2.5rem; margin-bottom: 1rem; }
-        .modal-body p { color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; }
-
-        /* --- FOOTER --- */
+        /* Footer & Socials */
         footer {
-            background: var(--bg-mid);
-            border-top: 1px solid var(--glass-border);
-            padding: 5rem 5% 3rem;
+            padding: 80px 6%;
+            border-top: 1px solid var(--border);
             text-align: center;
+            position: relative;
+            z-index: 3;
         }
-        .socials { display: flex; justify-content: center; gap: 1.5rem; margin: 2rem 0; }
-        .socials a {
-            color: var(--text-main);
-            background: rgba(255,255,255,0.03);
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            transition: var(--transition);
-            border: 1px solid var(--glass-border);
-        }
-        .socials a:hover {
-            color: var(--bg-deep);
-            background: var(--text-main);
-            transform: translateY(-5px);
-        }
-        .copyright { color: var(--text-muted); font-size: 0.85rem; }
 
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
+        .social-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .social-bar a {
+            color: var(--text);
+            transition: 0.4s;
+            opacity: 0.5;
+        }
+
+        .social-bar a:hover {
+            opacity: 1;
+            color: var(--accent);
+            transform: scale(1.2);
+        }
+
+        .copy {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* Animace Scroll Reveal */
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1s all ease; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        @media (max-width: 900px) {
-            .about-grid { grid-template-columns: 1fr; }
-            .about-image { height: 350px; }
-            .nav-links { display: none; }
+        @media (max-width: 768px) {
+            .about-section { grid-template-columns: 1fr; }
+            .project-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="texture-overlay"></div>
 
-    <nav id="navbar">
-        <a href="#" class="nav-logo">
-            <i data-lucide="gamepad-2" size="28" color="#06b6d4"></i>
-            Sketchy<span>Studio</span>
-        </a>
+    <div id="cursor"></div>
+    <div class="texture"></div>
+    <canvas id="particles"></canvas>
+
+    <nav>
+        <div class="logo">Sketchy</div>
         <div class="nav-links">
-            <a href="#about">O mně</a>
-            <a href="#games">Hry a Projekty</a>
+            <a href="#projects">Work</a>
+            <a href="#about">Studio</a>
+            <a href="#contact">Join</a>
         </div>
     </nav>
 
     <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-content reveal active">
-            <span class="tagline">Nezávislý Vývoj her</span>
-            <h1>Tvořím světy,<br>které mají hloubku.</h1>
-            <p>Jsem herní vývojář a level designer. Mým cílem není jen psát kód, ale vytvářet pohlcující atmosféru a plynulou hratelnost, která hráče nepustí.</p>
-            <a href="#games" class="btn">Prozkoumat projekty</a>
+        <div class="hero-content">
+            <h1 id="parallax-title">IMMERSE<br>INTO VOID</h1>
+            <p style="letter-spacing: 5px; color: var(--accent); font-weight: 800; font-size: 0.8rem;">GAMEDEV STUDIO / LEVEL DESIGN</p>
+        </div>
+    </section>
+
+    <section id="projects" class="projects-section">
+        <div class="project-grid">
+            <div class="project-card reveal">
+                <i data-lucide="waves" size="40"></i>
+                <h3>Project Eklipsa</h3>
+                <p>Deep-sea horror experience postavený na custom rendering pipeline v Roblox Studiu. Atmosféra, ze které mrazí.</p>
+                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">DISCOVER MORE</div>
+            </div>
+
+            <div class="project-card reveal">
+                <i data-lucide="Zap" size="40"></i>
+                <h3>Movement v2</h3>
+                <p>Nová generace pohybu postav. Kinematika, procedurální animace a framework pro plynulý parkour.</p>
+                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">VIEW SOURCE</div>
+            </div>
+
+            <div class="project-card reveal">
+                <i data-lucide="layout" size="40"></i>
+                <h3>Unknown Assets</h3>
+                <p>Knihovna optimalizovaných PBR materiálů a modelů pro herní vývojáře, co chtějí AAA look.</p>
+                <div class="btn-lite" style="color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">ACCESS REPO</div>
+            </div>
         </div>
     </section>
 
     <section id="about" class="about-section">
-        <div class="about-grid reveal">
-            <div class="about-text">
-                <span class="tagline">Kdo za tím stojí</span>
-                <h2>Jeden vývojář,<br>kompletní vize.</h2>
-                <p>Sketchy Games Studio není obrovská korporace. Je to prostor pro realizaci mých vlastních nápadů. Specializuji se na vývoj v Roblox Studiu, ale neomezuji se pouze na něj. Od návrhu prostředí, přes programování herních mechanik, až po finální optimalizaci.</p>
-                <p>Zakládám si na čistém vizuálu, moderních principech game designu a technické preciznosti. Každý projekt je pro mě příležitostí posunout hranice toho, co je v daném enginu možné.</p>
+        <div class="about-visual reveal">
+            <i data-lucide="box" size="100" style="opacity: 0.1; position: absolute;"></i>
+            <div style="text-align: center; z-index: 2;">
+                <span style="font-family: 'Syncopate'; font-size: 3rem; color: var(--accent);">SK</span>
             </div>
-            <div class="about-image"></div>
+        </div>
+        <div class="about-text reveal">
+            <h2 style="font-family: 'Syncopate'; margin-bottom: 30px;">O MNĚ</h2>
+            <p style="margin-bottom: 20px; color: var(--text-dim);">Jsem vývojář her, co věří, že technická dokonalost a umělecká vize musí jít ruku v ruce. Neřeším jen aby kód fungoval, řeším jak se hráč u monitoru cítí.</p>
+            <p style="color: var(--text-dim);">Vše co vidíš, je výsledek hodin ladění shaderů, skriptování AI a stavění světů od úplnýho základu. Tohle je Sketchy Games Studio.</p>
         </div>
     </section>
-
-    <section id="games" class="projects">
-        <div class="section-header reveal">
-            <span class="tagline">Databáze her</span>
-            <h2>Vybrané Projekty</h2>
-        </div>
-        <div class="grid reveal">
-            <!-- Projekt 1 -->
-            <div class="game-card" onclick="openModal('Project Eklipsa', 'Atmosférická survival hra zasazená do nehostinného prostředí. Hlavní důraz je kladen na průzkum, správu surovin a únik před vysoce adaptivní umělou inteligencí nepřátel. Hra využívá pokročilého systému dynamického osvětlení a custom sound engine pro maximální pohlcení.', 'https://images.unsplash.com/photo-1551817958-c5b51e108bf8?q=80&w=1600', 'Survival Horror')">
-                <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1551817958-c5b51e108bf8?q=80&w=800" class="card-img" alt="Eklipsa"></div>
-                <div class="card-body">
-                    <span class="card-tag">Survival Horror</span>
-                    <h3>Project Eklipsa</h3>
-                    <p>Ponoř se do neznáma. Hra s pokročilým osvětlením a adaptivní AI nepřátel.</p>
-                </div>
-            </div>
-
-            <!-- Projekt 2 -->
-            <div class="game-card" onclick="openModal('Neon Drift', 'Rychlá a vizuálně ohromující závodní hra s neonovou estetikou. Systém řízení byl vyvinut od nuly pro absolutní přesnost. Projekt zahrnuje procedurální generování tratí a integraci online žebříčků.', 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600', 'Arcade Racing')">
-                <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800" class="card-img" alt="Neon"></div>
-                <div class="card-body">
-                    <span class="card-tag">Arcade Racing</span>
-                    <h3>Neon Drift</h3>
-                    <p>Čistý adrenalin. Vlastní fyzikální model vozidel a procedurální tratě.</p>
-                </div>
-            </div>
-
-            <!-- Projekt 3 -->
-            <div class="game-card" onclick="openModal('Void Station', 'Příběhová adventura odehrávající se na opuštěné vesmírné stanici. Projekt sloužil primárně jako demonstrace level designu, nasvícení scén a optimalizace PBR textur v uzavřeném prostředí.', 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1600', 'Story Adventure')">
-                <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800" class="card-img" alt="Void"></div>
-                <div class="card-body">
-                    <span class="card-tag">Story Adventure</span>
-                    <h3>Void Station</h3>
-                    <p>Demonstrace atmosférického level designu a práce s PBR materiály.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modal struktura -->
-    <div class="modal-overlay" id="projectModal" onclick="closeModal(event)">
-        <div class="modal-content">
-            <div class="modal-close" onclick="forceCloseModal()"><i data-lucide="x"></i></div>
-            <img src="" id="m-img" class="modal-img" alt="Preview">
-            <div class="modal-body">
-                <span class="tagline" id="m-tag"></span>
-                <h2 id="m-title">Title</h2>
-                <p id="m-desc">Description</p>
-                <button class="btn">Play Demo <i data-lucide="external-link" size="18"></i></button>
-            </div>
-        </div>
-    </div>
 
     <footer>
-        <a href="#" class="nav-logo" style="justify-content: center; margin-bottom: 2rem;">
-            <i data-lucide="gamepad-2" size="28" color="#06b6d4"></i> Sketchy<span>Studio</span>
-        </a>
-        <div class="socials">
-            <a href="#" title="YouTube"><i data-lucide="youtube"></i></a>
-            <a href="#" title="Discord"><i data-lucide="message-square"></i></a>
-            <a href="#" title="Instagram"><i data-lucide="instagram"></i></a>
+        <div class="social-bar">
+            <a href="#"><i data-lucide="youtube"></i></a>
+            <a href="#"><i data-lucide="instagram"></i></a>
+            <a href="#"><i data-lucide="message-square"></i></a>
         </div>
-        <p class="copyright">© 2026 Sketchy Games Studio. Všechna práva vyhrazena.</p>
+        <p class="copy">© 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.</p>
     </footer>
 
     <script>
         lucide.createIcons();
 
-        // Navigace scroll efekt
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
+        // --- Custom Cursor Logic ---
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        // Scroll animace
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) reveals[i].classList.add("active");
+        document.querySelectorAll('a, .project-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(2.5)';
+                cursor.style.background = 'rgba(0, 210, 255, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursor.style.background = 'transparent';
+            });
+        });
+
+        // --- Particles System (Subnautica feel) ---
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 210, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
-        window.addEventListener("scroll", reveal);
-        reveal();
 
-        // Modal logika
-        const modal = document.getElementById('projectModal');
-        function openModal(title, desc, img, tag) {
-            document.getElementById('m-title').innerText = title;
-            document.getElementById('m-desc').innerText = desc;
-            document.getElementById('m-img').src = img;
-            document.getElementById('m-tag').innerText = tag;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Zamezí scrollování stránky v pozadí
+        function init() {
+            for (let i = 0; i < 100; i++) {
+                particlesArray.push(new Particle());
+            }
         }
-        function closeModal(e) {
-            if (e.target === modal) forceCloseModal();
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animate);
         }
-        function forceCloseModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
+        init();
+        animate();
+
+        // --- Parallax Title ---
+        window.addEventListener('scroll', () => {
+            let value = window.scrollY;
+            document.getElementById('parallax-title').style.transform = `translateY(${value * 0.5}px)`;
+        });
+
+        // --- Reveal on Scroll ---
+        window.addEventListener('scroll', () => {
+            let reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(reveal => {
+                let windowHeight = window.innerHeight;
+                let revealTop = reveal.getBoundingClientRect().top;
+                if (revealTop < windowHeight - 100) {
+                    reveal.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
