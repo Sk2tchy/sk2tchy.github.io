@@ -1,280 +1,339 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKETCHY | Studio</title>
+    <title>Sketchy Studio | Deep Dive</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
         :root {
-            --bg: #000000;
+            --bg: #010810;
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.4);
             --text: #ffffff;
-            --muted: #666666;
-            --surface: #0a0a0a;
+            --text-dim: #8ba2ad;
+            --glass: rgba(2, 12, 27, 0.7);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         body {
-            background-color: var(--bg);
+            background: var(--bg);
             color: var(--text);
-            font-family: 'Manrope', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            background: radial-gradient(circle at center, #021a30 0%, #010810 100%);
         }
 
-        /* Ta tvoje textura */
-        .noise-overlay {
+        /* Ta textura, co si pamatuju */
+        .texture-overlay {
             position: fixed;
             inset: 0;
-            z-index: 9999;
+            z-index: 100;
             pointer-events: none;
             opacity: 0.05;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>');
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
 
-        /* Navbar */
+        /* Vodní částice v pozadí */
+        #water-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Navigace */
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 2.5rem 5vw;
+            padding: 25px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-            mix-blend-mode: difference;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(1, 8, 16, 0.8), transparent);
+            backdrop-filter: blur(8px);
         }
 
-        .logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.05em; text-transform: uppercase; }
-        .nav-links { display: flex; gap: 3rem; }
-        .nav-links a { 
-            text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; 
-            text-transform: uppercase; letter-spacing: 0.05em;
-            position: relative; overflow: hidden;
+        .nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            color: var(--text);
+            text-decoration: none;
         }
-        
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px;
-            background: currentColor; transform: translateX(-101%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .nav-links a:hover::after { transform: translateX(0); }
+        .nav-logo span { color: var(--accent); }
 
-        /* Cinematic Hero */
+        .nav-links { display: flex; gap: 40px; align-items: center; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* Hero sekce */
         .hero {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 5vw;
-            position: relative;
-        }
-
-        .hero-bg {
-            position: absolute; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
-            opacity: 0; transition: opacity 2s ease;
-        }
-
-        .title-mask { overflow: hidden; display: block; line-height: 1.1; }
-        .title-mask span {
-            display: block;
-            transform: translateY(110%);
-            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        h1 { font-size: clamp(4rem, 12vw, 12rem); font-weight: 800; letter-spacing: -0.04em; text-transform: uppercase; margin-left: -0.5vw; }
-        .subtitle { font-size: clamp(1rem, 2vw, 1.5rem); color: var(--muted); font-weight: 400; margin-top: 2rem; max-width: 600px; }
-
-        /* Projects Section */
-        .projects-wrapper {
-            padding-top: 20vh;
-            background: var(--bg);
+            align-items: center;
+            text-align: center;
             position: relative;
             z-index: 10;
         }
 
-        .section-title {
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--muted);
-            padding: 0 5vw;
-            margin-bottom: 3rem;
-            font-weight: 600;
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            transition: transform 0.1s ease-out;
         }
 
-        .project-row {
-            display: block;
-            width: 100%;
-            height: 75vh;
+        /* Projekty s top animací */
+        .projects { padding: 100px 6%; position: relative; z-index: 10; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 40px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            text-decoration: none;
-            color: white;
             cursor: pointer;
         }
 
-        .project-bg {
-            position: absolute; inset: 0;
-            background-color: var(--surface);
-            background-size: cover; background-position: center;
-            transform: scale(1);
-            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1;
-        }
-        
-        /* Sem pak hodis ty fotky z enginu */
-        #p1 .project-bg { background-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%230a0a0a"/></svg>'); }
-        #p2 .project-bg { background-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%230f0f0f"/></svg>'); }
-
-        .project-content {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 4rem 5vw; z-index: 2;
-            display: flex; justify-content: space-between; align-items: flex-end;
+        .card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
         }
 
-        .project-row:hover .project-bg { transform: scale(1.05); }
+        .card i { color: var(--accent); margin-bottom: 20px; display: block; }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 15px; }
+        .card p { color: var(--text-dim); line-height: 1.6; }
 
-        .project-title { font-size: 4rem; font-weight: 800; letter-spacing: -0.02em; transform: translateY(20px); opacity: 0; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .project-meta { color: var(--muted); font-size: 1rem; transform: translateY(20px); opacity: 0; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s; }
+        /* O mně sekce */
+        .about {
+            padding: 150px 6%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
 
-        .project-row:hover .project-title, 
-        .project-row:hover .project-meta { transform: translateY(0); opacity: 1; }
+        .about-box {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), transparent);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 20px;
+        }
 
-        /* Footer */
+        /* Footer s linky */
         footer {
-            padding: 10vh 5vw;
-            display: flex; justify-content: space-between; align-items: flex-end;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 2px;
+            padding: 100px 6% 40px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(to top, #010810, transparent);
         }
 
-        .socials { display: flex; gap: 2rem; }
-        .socials a { color: var(--text); transition: opacity 0.3s; }
-        .socials a:hover { opacity: 0.5; }
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
 
-        .copyright { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .social-link {
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
 
-        /* Animacni tridy */
-        .is-loaded .title-mask span { transform: translateY(0); }
-        .is-loaded .hero-bg { opacity: 1; }
+        .social-link:hover {
+            opacity: 1;
+            color: var(--accent);
+            transform: translateY(-5px);
+        }
 
-        .reveal-up { transform: translateY(50px); opacity: 0; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal-up.in-view { transform: translateY(0); opacity: 1; }
+        .social-link span { font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; }
+
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1s all ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 768px) {
+            .about { grid-template-columns: 1fr; }
             .nav-links { display: none; }
-            .project-content { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .project-row:hover .project-title, .project-row:hover .project-meta { transform: none; opacity: 1; }
-            .project-title, .project-meta { opacity: 1; transform: translateY(0); font-size: 2.5rem; }
-            footer { flex-direction: column; align-items: flex-start; gap: 3rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="noise-overlay"></div>
+    <div class="texture-overlay"></div>
+    <canvas id="water-particles"></canvas>
 
     <nav>
-        <div class="logo">Sketchy</div>
+        <a href="#" class="nav-logo">SKETCHY<span>STUDIO</span></a>
         <div class="nav-links">
-            <a href="#work">Work</a>
+            <a href="#work">Projekty</a>
             <a href="#about">Studio</a>
-            <a href="#contact">Contact</a>
+            <a href="#contact">Kontakt</a>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="hero-bg" data-speed="0.5"></div>
-        <h1>
-            <span class="title-mask"><span>Architect</span></span>
-            <span class="title-mask" style="transition-delay: 0.1s;"><span>Of The Void</span></span>
-        </h1>
-        <div class="title-mask" style="transition-delay: 0.3s;">
-            <p class="subtitle">Building immersive digital environments and complex game mechanics. Independent game development studio.</p>
+    <section class="hero">
+        <h1 id="hero-title">DEEP WORK</h1>
+        <p style="color: var(--accent); letter-spacing: 8px; font-weight: 700;">GAME DEVELOPER & DESIGNER</p>
+    </section>
+
+    <section id="work" class="projects">
+        <div class="grid">
+            <div class="card reveal">
+                <i data-lucide="anchor" size="32"></i>
+                <h3>Project Eklipsa</h3>
+                <p>Nelineární survival zážitek v hlubinách oceánu. Práce s procedurálním generováním a dynamickým zvukem.</p>
+            </div>
+            <div class="card reveal">
+                <i data-lucide="cpu" size="32"></i>
+                <h3>Kinematics Engine</h3>
+                <p>Můj vlastní framework pro pohyb postav. Realistická setrvačnost a plynulé přechody mezi animacemi.</p>
+            </div>
+            <div class="card reveal">
+                <i data-lucide="layers" size="32"></i>
+                <h3>Level Design Kit</h3>
+                <p>Sada nástrojů pro tvorbu atmosférických prostředí. Od nasvícení až po optimalizaci meshí.</p>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <main class="projects-wrapper" id="work">
-        <div class="section-title reveal-up">Selected Projects</div>
-
-        <a href="#" class="project-row reveal-up" id="p1">
-            <div class="project-bg" data-speed="0.2"></div>
-            <div class="project-content">
-                <div class="project-title">Project Eclipse</div>
-                <div class="project-meta">Technical Breakdown / Engine / 2026</div>
-            </div>
-        </a>
-
-        <a href="#" class="project-row reveal-up" id="p2">
-            <div class="project-bg" data-speed="0.2"></div>
-            <div class="project-content">
-                <div class="project-title">Velocity Core</div>
-                <div class="project-meta">Kinematics / Physics / 2025</div>
-            </div>
-        </a>
-    </main>
+    <section id="about" class="about reveal">
+        <div class="about-box">
+            <h2 style="font-family: Montserrat; font-size: 2.5rem; margin-bottom: 20px;">O MNĚ</h2>
+            <p style="color: var(--text-dim); line-height: 1.8;">
+                Jsem vývojář her, kterého fascinuje hloubka – doslova i přeneseně. Zaměřuji se na projekty, které mají atmosféru, co se dá krájet. Moje práce v Roblox Studiu a Luau je o posouvání limitů toho, co hráči od platformy očekávají.
+            </p>
+        </div>
+        <div style="padding-left: 20px;">
+            <p style="font-size: 1.2rem; border-left: 3px solid var(--accent); padding-left: 20px; color: var(--text-dim);">
+                "Kód je jen nástroj k vytvoření světa, ve kterém se lidé zapomenou."
+            </p>
+        </div>
+    </section>
 
     <footer id="contact">
-        <div>
-            <div class="section-title" style="padding:0; margin-bottom: 2rem;">Connect</div>
-            <div class="socials">
-                <a href="#"><i data-lucide="twitter"></i></a>
-                <a href="#"><i data-lucide="github"></i></a>
-                <a href="#"><i data-lucide="youtube"></i></a>
-            </div>
+        <div class="social-grid">
+            <a href="https://youtube.com" class="social-link">
+                <i data-lucide="youtube" size="30"></i>
+                <span>YOUTUBE</span>
+            </a>
+            <a href="https://discord.com" class="social-link">
+                <i data-lucide="message-square" size="30"></i>
+                <span>DISCORD</span>
+            </a>
+            <a href="https://instagram.com" class="social-link">
+                <i data-lucide="instagram" size="30"></i>
+                <span>INSTAGRAM</span>
+            </a>
         </div>
-        <div class="copyright">© 2026 Sketchy Studio</div>
+        <p style="opacity: 0.3; font-size: 0.7rem; letter-spacing: 2px;">© 2026 SKETCHY GAMES STUDIO. VŠECHNA PRÁVA VYHRAZENA.</p>
     </footer>
 
     <script>
         lucide.createIcons();
 
-        // Spusteni uvodni animace
-        window.onload = () => {
-            requestAnimationFrame(() => {
-                document.body.classList.add('is-loaded');
-            });
-        };
+        // --- Vodní částice (lepší verze) ---
+        const canvas = document.getElementById('water-particles');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
 
-        // Profi parallax a maskovani na scroll
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                    scrollObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        document.querySelectorAll('.reveal-up').forEach(el => scrollObserver.observe(el));
-
-        // Smooth Parallax
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            
-            // Hero parallax fade
-            const hero = document.querySelector('.hero');
-            if(scrolled < window.innerHeight) {
-                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
-                hero.style.opacity = 1 - (scrolled / window.innerHeight) * 1.5;
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * -1 - 0.5; // Stoupají nahoru jako bublinky
+                this.opacity = Math.random() * 0.4;
             }
-
-            // Image parallax
-            document.querySelectorAll('.project-bg').forEach(bg => {
-                const speed = bg.getAttribute('data-speed');
-                const parent = bg.parentElement;
-                const rect = parent.getBoundingClientRect();
-                
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    const yPos = (rect.top - window.innerHeight/2) * speed;
-                    bg.style.transform = `translateY(${yPos}px) scale(1.1)`;
+            update() {
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
                 }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < 80; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => {
+                p.update();
+                p.draw();
             });
+            requestAnimationFrame(animate);
+        }
+        init();
+        animate();
+
+        // --- Parallax na nadpis (ten movement co jsi chtěl) ---
+        window.addEventListener('scroll', () => {
+            const title = document.getElementById('hero-title');
+            let scroll = window.scrollY;
+            title.style.transform = `translateY(${scroll * 0.4}px) rotate(${scroll * 0.02}deg)`;
+            title.style.opacity = 1 - (scroll / 600);
         });
+
+        // --- Reveal animace ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
