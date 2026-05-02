@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sketchy Studio | Deep Dive</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -20,11 +20,12 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         
-        body {
+        body, html {
             background: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Zabrání rozbití šířky na mobilu */
+            width: 100%;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -32,33 +33,33 @@
         .cinematic-glow {
             position: absolute; top: -20vh; left: 50%; transform: translateX(-50%);
             width: 150vw; height: 80vh; pointer-events: none; z-index: 0;
-            background: radial-gradient(ellipse at top center, rgba(0, 242, 255, 0.15) 0%, rgba(2, 18, 36, 0.3) 40%, transparent 70%);
+            background: radial-gradient(ellipse at top center, rgba(0, 242, 255, 0.1) 0%, rgba(2, 18, 36, 0.2) 40%, transparent 70%);
         }
 
-        /* Custom Cursor - Hidden on Touch Devices */
+        /* Subtle Custom Cursor */
         .cursor-dot {
-            position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
+            position: fixed; top: 0; left: 0; width: 4px; height: 4px; 
             background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--accent);
+            transform: translate(-50%, -50%); box-shadow: 0 0 8px var(--accent);
             transition: width 0.3s, height 0.3s, background 0.3s;
         }
         .cursor-aura {
-            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
-            border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 50%; pointer-events: none; z-index: 9998;
-            transform: translate(-50%, -50%); transition: 0.15s ease-out;
-            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1);
+            position: fixed; top: 0; left: 0; width: 30px; height: 30px;
+            border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 50%; pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%); transition: 0.1s ease-out;
+            background: rgba(0, 242, 255, 0.02);
         }
-        .hovering .cursor-dot { width: 12px; height: 12px; background: white; box-shadow: 0 0 20px white; }
-        .hovering .cursor-aura { width: 60px; height: 60px; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
+        .hovering .cursor-dot { width: 8px; height: 8px; background: white; box-shadow: 0 0 15px white; }
+        .hovering .cursor-aura { width: 50px; height: 50px; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
 
-        @media (pointer: coarse) { /* Disable custom cursor on mobile/touch */
+        @media (pointer: coarse) {
             * { cursor: auto !important; }
             .cursor-dot, .cursor-aura { display: none !important; }
         }
 
         /* Atmosphere */
         .texture-overlay {
-            position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.04; mix-blend-mode: overlay;
+            position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay;
             background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
         #water-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
@@ -69,122 +70,137 @@
             justify-content: space-between; align-items: center; z-index: 1000;
             transition: all 0.5s var(--expo); border-bottom: 1px solid transparent;
         }
-        nav.scrolled { padding: 1rem 5vw; background: rgba(1, 5, 10, 0.6); backdrop-filter: blur(20px); border-bottom-color: var(--glass-border); }
+        nav.scrolled { padding: 1rem 5vw; background: rgba(1, 5, 10, 0.8); backdrop-filter: blur(20px); border-bottom-color: var(--glass-border); }
         .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; color: var(--text); text-decoration: none; }
         .nav-logo span { color: var(--accent); }
 
         /* Hero */
         .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; perspective: 1000px; }
-        
-        .hero-content {
-            display: flex; flex-direction: column; align-items: center;
-            transform-style: preserve-3d; will-change: transform, opacity, filter;
-        }
-
+        .hero-content { display: flex; flex-direction: column; align-items: center; transform-style: preserve-3d; will-change: transform, opacity, filter; }
         .hero h1 {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(4rem, 12vw, 10rem);
-            font-weight: 900; line-height: 0.85; margin-bottom: 1.5rem; letter-spacing: -3px;
+            font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900; line-height: 0.9; margin-bottom: 1.5rem; letter-spacing: -2px;
             background: linear-gradient(180deg, #ffffff 0%, #60798a 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 15px 30px rgba(0, 242, 255, 0.15));
+            filter: drop-shadow(0 15px 30px rgba(0, 242, 255, 0.1));
         }
-        .hero-subtitle { color: var(--accent); letter-spacing: 8px; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; text-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        .hero-subtitle { color: var(--accent); letter-spacing: 6px; font-weight: 700; font-size: clamp(0.7rem, 2vw, 0.9rem); text-transform: uppercase; }
 
         /* General Section */
-        section { padding: 10rem 5vw; position: relative; z-index: 10; }
-        .section-header { font-family: 'Montserrat', sans-serif; font-size: 3rem; margin-bottom: 5rem; font-weight: 900; letter-spacing: -1px; }
+        section { padding: 8rem 5vw; position: relative; z-index: 10; width: 100%; }
+        .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 3rem; font-weight: 900; letter-spacing: -1px; }
 
-        /* Projects Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; perspective: 1000px; }
-        .card-wrapper { transform-style: preserve-3d; }
+        /* HORIZONTAL PROJECTS SLIDER */
+        .projects-slider {
+            display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 3rem; padding-top: 1rem;
+            scroll-behavior: smooth; scroll-snap-type: x mandatory;
+            /* Schování scrollbaru */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .projects-slider::-webkit-scrollbar { display: none; }
+        
+        .card-wrapper {
+            flex: 0 0 400px; /* Pevná šířka karty */
+            scroll-snap-align: start;
+            perspective: 1000px;
+        }
         
         .card {
             background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 3.5rem 3rem; position: relative; overflow: hidden;
+            padding: 3rem 2.5rem; position: relative; overflow: hidden;
             backdrop-filter: blur(12px); transform-style: preserve-3d;
-            transition: transform 0.1s; box-shadow: 0 30px 50px rgba(0,0,0,0.5); height: 100%;
+            transition: transform 0.1s; box-shadow: 0 20px 40px rgba(0,0,0,0.4); height: 100%;
+            display: flex; flex-direction: column;
         }
 
         .card::before {
             content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.3s;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.08), transparent 40%);
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.06), transparent 40%);
         }
         .card:hover::before { opacity: 1; }
-        .card::after {
-            content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.3s; border-radius: inherit;
-            padding: 1px; background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.4), transparent 40%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+        .card-content { position: relative; z-index: 1; transform: translateZ(30px); pointer-events: none; }
+        .card-icon { color: var(--accent); margin-bottom: 2rem; filter: drop-shadow(0 0 10px rgba(0,242,255,0.2)); }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 1rem; color: white; }
+        .card p { color: var(--text-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 2rem; flex-grow: 1; }
+        
+        .btn-view {
+            align-self: flex-start; background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600;
+            font-size: 0.8rem; letter-spacing: 1px; transition: 0.3s; pointer-events: auto; text-transform: uppercase;
         }
-        .card:hover::after { opacity: 1; }
-
-        .card-content { position: relative; z-index: 1; transform: translateZ(40px); pointer-events: none; }
-        .card-icon { color: var(--accent); margin-bottom: 2.5rem; filter: drop-shadow(0 0 10px rgba(0,242,255,0.4)); }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 2rem; margin-bottom: 1rem; color: white; }
-        .card p { color: var(--text-dim); line-height: 1.7; font-size: 1rem; }
+        .card:hover .btn-view { background: var(--accent); color: var(--bg); }
 
         /* Modal System */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 2, 6, 0.8); backdrop-filter: blur(0px);
+            position: fixed; inset: 0; background: rgba(0, 2, 6, 0.9); backdrop-filter: blur(0px);
             z-index: 2000; display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.6s var(--expo), backdrop-filter 0.6s var(--expo);
+            opacity: 0; pointer-events: none; transition: opacity 0.4s var(--expo), backdrop-filter 0.4s var(--expo);
         }
-        .modal-overlay.active { opacity: 1; pointer-events: all; backdrop-filter: blur(25px); }
+        .modal-overlay.active { opacity: 1; pointer-events: all; backdrop-filter: blur(15px); }
 
         .modal-content {
-            background: #01050a; border: 1px solid rgba(0, 242, 255, 0.2); width: 100%; max-width: 1200px;
-            height: 100vh; max-height: 85vh; overflow-y: auto; border-radius: 24px; padding: 5rem; position: relative;
-            transform: translateY(100px) scale(0.9); opacity: 0; transition: all 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
-            box-shadow: 0 0 100px rgba(0,242,255,0.05);
+            background: #01050a; border: 1px solid rgba(0, 242, 255, 0.15); width: 95%; max-width: 1000px;
+            height: 90vh; max-height: 850px; overflow-y: auto; overflow-x: hidden; border-radius: 20px; padding: 4rem; position: relative;
+            transform: translateY(50px) scale(0.95); opacity: 0; transition: all 0.5s var(--expo);
         }
         .modal-overlay.active .modal-content { transform: translateY(0) scale(1); opacity: 1; }
         
         .close-btn {
-            position: absolute; top: 2.5rem; right: 2.5rem; background: transparent; border: 1px solid var(--glass-border);
-            color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+            position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.05); border: none;
+            color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 10;
         }
         .close-btn:hover { background: var(--accent); color: black; transform: rotate(90deg); }
 
-        /* CMS Framework */
-        .cms-flow { display: flex; flex-direction: column; gap: 3rem; color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; }
+        /* CMS Framework (Optimized for Mobile) */
+        .cms-flow { display: flex; flex-direction: column; gap: 2.5rem; color: var(--text-dim); line-height: 1.8; font-size: 1rem; }
         .align-center { text-align: center; margin: 0 auto; max-width: 800px; }
-        .align-left { text-align: left; }
         .text-gradient { background: linear-gradient(135deg, var(--accent), #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
-        .title-large { font-family: 'Montserrat', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: white; line-height: 1; margin-bottom: 0.5rem; letter-spacing: -1px; }
-        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .title-large { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; color: white; line-height: 1.1; margin-bottom: 0.5rem; letter-spacing: -1px; }
+        
+        /* Flex Grid that breaks nicely on mobile */
+        .flex-grid { display: flex; gap: 3rem; align-items: center; }
+        .flex-grid > * { flex: 1; }
         
         .img-placeholder { 
-            background: rgba(0, 242, 255, 0.02); border: 1px solid rgba(0,242,255,0.1); border-radius: 16px; width: 100%; 
-            display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; 
-            position: relative; overflow: hidden; 
+            background: rgba(0, 242, 255, 0.02); border: 1px solid rgba(0,242,255,0.1); border-radius: 12px; width: 100%; 
+            display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 0.8rem; letter-spacing: 2px; 
+            position: relative; overflow: hidden; text-align: center; padding: 2rem;
         }
-        .img-placeholder::after { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shine 3s infinite; }
-        @keyframes shine { 100% { left: 200%; } }
         .img-tall { aspect-ratio: 4/5; } .img-wide { aspect-ratio: 16/9; }
 
-        /* Animations */
-        .reveal { opacity: 0; transform: translateY(80px) scale(0.95); filter: blur(15px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        /* Footer (Professional) */
+        footer {
+            padding: 4rem 5vw; border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: flex-end;
+            position: relative; z-index: 10; background: linear-gradient(to top, rgba(1,5,10,1), transparent);
+        }
+        .legal p { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 0.5rem; }
+        .legal p strong { color: white; font-weight: 600; }
+        .socials { display: flex; gap: 1.5rem; }
+        .socials a { color: var(--text-dim); transition: 0.3s; }
+        .socials a:hover { color: var(--accent); transform: translateY(-3px); }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: rgba(0,242,255,0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
+        /* --- MOBILE OVERRIDES --- */
         @media (max-width: 768px) {
-            .grid-half { grid-template-columns: 1fr; }
-            .modal-content { padding: 2.5rem; }
+            section { padding: 6rem 5vw; }
+            .card-wrapper { flex: 0 0 85vw; } /* Na mobilu karta zabere skoro celou šířku */
+            
+            .modal-content { padding: 2rem 1.5rem; height: 95vh; border-radius: 12px; }
+            
+            /* Stacking text and images cleanly on mobile */
+            .flex-grid { flex-direction: column; gap: 2rem; }
+            .img-tall { aspect-ratio: 16/9; } /* Na mobilu nevypadá vysoká fotka dobře, změníme poměr */
+            
+            footer { flex-direction: column; align-items: center; text-align: center; gap: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Light Source -->
     <div class="cinematic-glow"></div>
-
-    <!-- Custom Cursor -->
     <div class="cursor-dot" id="cursor-dot"></div>
     <div class="cursor-aura" id="cursor-aura"></div>
-
     <div class="texture-overlay"></div>
     <canvas id="water-particles"></canvas>
 
@@ -200,96 +216,113 @@
     </section>
 
     <section id="work">
-        <h2 class="section-header reveal">SELECTED WORKS</h2>
-        <div class="grid" id="project-grid">
-            <!-- Cards are injected here dynamically by JavaScript -->
+        <h2 class="section-header">SELECTED WORKS</h2>
+        <!-- Horizontální slider místo sčítání pod sebou -->
+        <div class="projects-slider" id="project-slider">
+            <!-- Vygenerováno přes JS -->
         </div>
     </section>
 
+    <!-- Profesionální Footer -->
+    <footer>
+        <div class="legal">
+            <p><strong>© 2026 SKETCHY STUDIO.</strong> Všechna práva vyhrazena.</p>
+            <p>IČO: 12345678 (Zde bude doplněno)</p>
+            <p>Made with focus.</p>
+        </div>
+        <div class="socials">
+            <a href="#" class="interactive"><i data-lucide="youtube"></i></a>
+            <a href="#" class="interactive"><i data-lucide="twitter"></i></a>
+            <a href="#" class="interactive"><i data-lucide="github"></i></a>
+        </div>
+    </footer>
+
     <div class="modal-overlay" id="modal">
         <div class="modal-content" id="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn interactive" onclick="closeModal()"><i data-lucide="x" size="24"></i></button>
+            <button class="close-btn interactive" onclick="closeModal()"><i data-lucide="x" size="20"></i></button>
             <div id="modal-body" class="cms-flow"></div>
         </div>
     </div>
 
     <script>
-        // --- 1. DYNAMIC PROJECT DATABASE ---
-        // Tady přidáváš nové projekty. Nic jiného v HTML upravovat nemusíš.
+        // --- PROJEKTOVÁ DATA ---
         const projectData = [
             {
-                id: 'project-eclipse',
-                icon: 'anchor',
-                title: 'Project Eclipse',
-                shortDesc: 'Non-linear survival experience in the deep ocean. Focused on procedural generation and dynamic audio propagation.',
+                id: 'eclipse', icon: 'anchor', title: 'Project Eclipse',
+                shortDesc: 'Nelineární survival zážitek v hlubinách oceánu. Práce s procedurálním generováním.',
                 modalHTML: `
                     <div class="align-center">
-                        <h2 class="title-large text-gradient interactive">Project Eclipse</h2>
-                        <p style="color: var(--accent); letter-spacing: 4px; font-weight: 700; margin-bottom: 4rem;">DEEP SEA SURVIVAL</p>
+                        <h2 class="title-large text-gradient">Project Eclipse</h2>
+                        <p style="color: var(--accent); letter-spacing: 2px; font-weight: 700; margin-bottom: 2rem;">DEEP SEA SURVIVAL</p>
                     </div>
-                    <div class="img-placeholder img-wide interactive">CINEMATIC TRAILER (16:9)</div>
-                    <div class="grid-half" style="margin-top: 2rem;">
+                    <div class="img-placeholder img-wide">CINEMATICKÝ TRAILER (16:9)</div>
+                    <div class="flex-grid" style="margin-top: 2rem;">
                         <div>
-                            <h3 class="text-gradient interactive" style="font-size: 2rem; margin-bottom: 1.5rem;">Procedural Audio</h3>
-                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                            <h3 class="text-gradient" style="font-size: 1.5rem; margin-bottom: 1rem;">Procedurální Audio</h3>
+                            <p>Systém, který počítá odrazy zvuku pod vodou v reálném čase. Poskytuje hráči orientaci čistě na základě echolokace.</p>
                         </div>
-                        <div class="img-placeholder img-tall interactive">PROCESS SHOT (4:5)</div>
+                        <div class="img-placeholder img-tall">UKÁZKA KÓDU / EDITORU</div>
                     </div>
                 `
             },
             {
-                id: 'kinematics',
-                icon: 'cpu',
-                title: 'Kinematics Engine',
-                shortDesc: 'Custom movement framework focusing on realistic inertia, procedural animation, and fluid state transitions.',
-                modalHTML: `
-                    <div class="align-left">
-                        <h2 class="title-large text-gradient interactive">Kinematics Engine</h2>
-                        <p style="color: var(--text-dim); margin: 1.5rem 0;">A deep dive into building a robust, physically simulated character controller from scratch.</p>
-                    </div>
-                    <div class="grid-half">
-                        <div class="img-placeholder img-tall interactive">DIAGRAM (4:5)</div>
-                        <div class="img-placeholder img-tall interactive">STATE MACHINE (4:5)</div>
-                    </div>
-                `
-            },
-            {
-                id: 'level-design',
-                icon: 'layers',
-                title: 'Level Design Kit',
-                shortDesc: 'A suite of tools for crafting atmospheric environments. From volumetric lighting setups to mesh optimization.',
+                id: 'kinematics', icon: 'cpu', title: 'Kinematics Engine',
+                shortDesc: 'Vlastní framework pro pohyb postav. Realistická setrvačnost a plynulé přechody.',
                 modalHTML: `
                     <div class="align-center">
-                        <h2 class="title-large interactive">Level Design Kit</h2>
-                        <p style="margin-top: 1rem;">Crafting worlds that breathe.</p>
+                        <h2 class="title-large text-gradient">Kinematics Engine</h2>
+                        <p style="color: var(--text-dim); margin: 1.5rem 0;">Fyzikálně přesný character controller vytvořený od nuly.</p>
                     </div>
-                    <div class="img-placeholder img-wide interactive" style="margin-top: 2rem;">ENVIRONMENT SHOWCASE (16:9)</div>
+                    <div class="flex-grid">
+                        <div class="img-placeholder img-tall">DIAGRAM POHYBU</div>
+                        <div class="img-placeholder img-tall">STATE MACHINE</div>
+                    </div>
+                `
+            },
+            {
+                id: 'level-design', icon: 'layers', title: 'Level Design Kit',
+                shortDesc: 'Sada nástrojů pro tvorbu atmosférických prostředí. Od nasvícení až po optimalizaci.',
+                modalHTML: `
+                    <div class="align-center">
+                        <h2 class="title-large">Level Design Kit</h2>
+                        <p style="margin-top: 1rem;">Nástroje pro rychlejší iteraci a stavbu světů.</p>
+                    </div>
+                    <div class="img-placeholder img-wide" style="margin-top: 2rem;">UKÁZKA PROSTŘEDÍ</div>
+                `
+            },
+            {
+                id: 'ui-system', icon: 'layout', title: 'Holographic UI',
+                shortDesc: 'Minimalistický a responzivní uživatelský interface postavený pro VR a PC integraci.',
+                modalHTML: `
+                    <div class="align-center">
+                        <h2 class="title-large text-gradient">Holographic UI</h2>
+                        <p style="margin-top: 1rem;">Interface, který nepřekáží, ale komunikuje.</p>
+                    </div>
                 `
             }
-            // Chceš přidat 4. projekt? Jen sem zkopíruj blok a uprav texty!
         ];
 
-        // --- 2. GENERATE PROJECTS TO HTML ---
-        const grid = document.getElementById('project-grid');
-        projectData.forEach((proj, index) => {
-            const delay = index * 0.1; // Každý projekt se animuje o kousek později
-            grid.innerHTML += `
-                <div class="card-wrapper reveal interactive" style="transition-delay: ${delay}s" onclick="openModal('${proj.id}')">
-                    <div class="card">
+        // Generování HTML karet
+        const slider = document.getElementById('project-slider');
+        projectData.forEach(proj => {
+            slider.innerHTML += `
+                <div class="card-wrapper">
+                    <div class="card interactive" onclick="openModal('${proj.id}')">
                         <div class="card-content">
-                            <i data-lucide="${proj.icon}" size="48" class="card-icon"></i>
+                            <i data-lucide="${proj.icon}" size="40" class="card-icon"></i>
                             <h3>${proj.title}</h3>
                             <p>${proj.shortDesc}</p>
+                            <button class="btn-view">Zobrazit detaily</button>
                         </div>
                     </div>
                 </div>
             `;
         });
-        lucide.createIcons(); // Vykreslí ikony po vygenerování HTML
+        lucide.createIcons();
 
-        // --- 3. CUSTOM CURSOR LOGIC ---
-        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-        if (!isTouchDevice) {
+        // --- CUSTOM CURSOR ---
+        const isTouch = window.matchMedia("(pointer: coarse)").matches;
+        if (!isTouch) {
             const dot = document.getElementById('cursor-dot');
             const aura = document.getElementById('cursor-aura');
             let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
@@ -301,91 +334,96 @@
             });
 
             function animateAura() {
-                auraX += (mouseX - auraX) * 0.15; auraY += (mouseY - auraY) * 0.15;
+                auraX += (mouseX - auraX) * 0.2; auraY += (mouseY - auraY) * 0.2;
                 aura.style.left = auraX + 'px'; aura.style.top = auraY + 'px';
                 requestAnimationFrame(animateAura);
             }
             animateAura();
 
-            document.querySelectorAll('.interactive').forEach(el => {
-                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            // Hover event delegace pro dynamické elementy
+            document.body.addEventListener('mouseover', e => {
+                if(e.target.closest('.interactive')) document.body.classList.add('hovering');
+            });
+            document.body.addEventListener('mouseout', e => {
+                if(e.target.closest('.interactive')) document.body.classList.remove('hovering');
+            });
+            
+            // 3D Card Hover Effect (Pouze na desktopu pro výkon)
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    
+                    const centerX = rect.width / 2; const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5; 
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                });
             });
         }
 
-        // --- 4. 3D CARD HOVER ENGINE ---
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-                
-                const centerX = rect.width / 2; const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -8; 
-                const rotateY = ((x - centerX) / centerX) * 8;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-            });
+        // --- DRAG TO SCROLL (Myší na desktopu posouvat slider) ---
+        let isDown = false; let startX; let scrollLeft;
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true; slider.style.cursor = 'grabbing';
+            startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => { isDown = false; slider.style.cursor = 'none'; });
+        slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'none'; });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // Rychlost dragu
+            slider.scrollLeft = scrollLeft - walk;
         });
 
-        // --- 5. CINEMATIC SCROLL (Sinking into the void) ---
+        // --- CINEMATIC SCROLL ---
         window.addEventListener('scroll', () => {
             const content = document.getElementById('hero-content');
             const nav = document.getElementById('navbar');
             let scroll = window.scrollY;
             
-            // Text propadající se do prázdna
-            let z = scroll * -2; // letí dozadu
-            let y = scroll * 0.8; // letí dolů
-            let rotateX = scroll * 0.05; // rotuje dozadu
-            
-            content.style.transform = `translate3d(0, ${y}px, ${z}px) rotateX(${rotateX}deg)`;
-            content.style.opacity = Math.max(0, 1 - (scroll / 500));
-            content.style.filter = `blur(${scroll * 0.03}px)`;
+            if(!isTouch) { // Na mobilu necháme hero statický kvůli výkonu
+                content.style.transform = `translate3d(0, ${scroll * 0.5}px, ${scroll * -1}px) rotateX(${scroll * 0.05}deg)`;
+                content.style.opacity = Math.max(0, 1 - (scroll / 400));
+            }
 
             if (scroll > 50) nav.classList.add('scrolled');
             else nav.classList.remove('scrolled');
         });
 
-        // --- 6. BLUR-REVEAL ANIMATION ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // --- 7. WATER PARTICLES ---
+        // --- WATER PARTICLES (Lehce upraveno pro mobilní výkon) ---
         const canvas = document.getElementById('water-particles');
         const ctx = canvas.getContext('2d');
         let particlesArray = [];
-        let mouseX = 0, mouseY = 0;
+        let pMouseX = 0, pMouseY = 0;
 
-        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
+        if(!isTouch) window.addEventListener('mousemove', e => { pMouseX = e.clientX; pMouseY = e.clientY; });
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
                 this.size = Math.random() * 2 + 0.5; this.baseY = Math.random() * -1 - 0.2;
-                this.speedY = this.baseY; this.speedX = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.1;
+                this.speedY = this.baseY; this.speedX = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.4 + 0.1;
             }
             update() {
-                let dx = mouseX - this.x; let dy = mouseY - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 150 && !isTouchDevice) { // Vyhýbání myši funguje jen na desktopu
-                    this.x -= (dx / distance) * ((150 - distance) / 150) * 5;
-                    this.y -= (dy / distance) * ((150 - distance) / 150) * 5;
+                if(!isTouch) {
+                    let dx = pMouseX - this.x; let dy = pMouseY - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 100) {
+                        this.x -= (dx / distance) * 2; this.y -= (dy / distance) * 2;
+                    }
                 }
                 this.y += this.speedY; this.x += this.speedX;
-                this.speedY = this.speedY * 0.95 + this.baseY * 0.05;
                 if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
             }
             draw() {
@@ -393,7 +431,10 @@
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-        for (let i = 0; i < 80; i++) particlesArray.push(new Particle());
+        // Méně částic na mobilu pro lepší framerate
+        const particleCount = isTouch ? 30 : 60;
+        for (let i = 0; i < particleCount; i++) particlesArray.push(new Particle());
+        
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particlesArray.forEach(p => { p.update(); p.draw(); });
@@ -401,32 +442,23 @@
         }
         animateParticles();
 
-        // --- 8. DYNAMIC MODAL SYSTEM ---
+        // --- MODAL SYSTEM ---
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modal-body');
 
         function openModal(projectId) {
             const project = projectData.find(p => p.id === projectId);
             if(!project) return;
-            
             modalBody.innerHTML = project.modalHTML;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
-            // Re-bind hover pro nový obsah (pokud nejsme na mobilu)
-            if (!isTouchDevice) {
-                document.querySelectorAll('#modal .interactive').forEach(el => {
-                    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-                    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-                });
-            }
         }
 
         function closeModal() {
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
             document.body.classList.remove('hovering');
-            setTimeout(() => modalBody.innerHTML = '', 600);
+            setTimeout(() => modalBody.innerHTML = '', 400);
         }
         modal.addEventListener('click', closeModal);
     </script>
