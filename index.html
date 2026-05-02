@@ -10,7 +10,6 @@
 
         :root {
             --bg: #01050a;
-            --bg-radial: #021224;
             --accent: #00f2ff;
             --text: #ffffff;
             --text-dim: #8ba2ad;
@@ -19,18 +18,24 @@
             --expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         
         body {
             background: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
-            background: radial-gradient(circle at top center, var(--bg-radial) 0%, var(--bg) 100%);
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Cursor */
+        /* Top lighting effect */
+        .cinematic-glow {
+            position: absolute; top: -20vh; left: 50%; transform: translateX(-50%);
+            width: 150vw; height: 80vh; pointer-events: none; z-index: 0;
+            background: radial-gradient(ellipse at top center, rgba(0, 242, 255, 0.15) 0%, rgba(2, 18, 36, 0.3) 40%, transparent 70%);
+        }
+
+        /* Custom Cursor - Hidden on Touch Devices */
         .cursor-dot {
             position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
             background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
@@ -46,12 +51,16 @@
         .hovering .cursor-dot { width: 12px; height: 12px; background: white; box-shadow: 0 0 20px white; }
         .hovering .cursor-aura { width: 60px; height: 60px; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
 
+        @media (pointer: coarse) { /* Disable custom cursor on mobile/touch */
+            * { cursor: auto !important; }
+            .cursor-dot, .cursor-aura { display: none !important; }
+        }
+
         /* Atmosphere */
         .texture-overlay {
             position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.04; mix-blend-mode: overlay;
             background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
-
         #water-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
         /* Navbar */
@@ -60,22 +69,24 @@
             justify-content: space-between; align-items: center; z-index: 1000;
             transition: all 0.5s var(--expo); border-bottom: 1px solid transparent;
         }
-        nav.scrolled {
-            padding: 1rem 5vw; background: rgba(1, 5, 10, 0.6); backdrop-filter: blur(20px); border-bottom-color: var(--glass-border);
-        }
-
+        nav.scrolled { padding: 1rem 5vw; background: rgba(1, 5, 10, 0.6); backdrop-filter: blur(20px); border-bottom-color: var(--glass-border); }
         .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; color: var(--text); text-decoration: none; }
         .nav-logo span { color: var(--accent); }
 
         /* Hero */
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; perspective: 1000px; }
+        
+        .hero-content {
+            display: flex; flex-direction: column; align-items: center;
+            transform-style: preserve-3d; will-change: transform, opacity, filter;
+        }
+
         .hero h1 {
             font-family: 'Montserrat', sans-serif; font-size: clamp(4rem, 12vw, 10rem);
             font-weight: 900; line-height: 0.85; margin-bottom: 1.5rem; letter-spacing: -3px;
-            background: linear-gradient(180deg, #ffffff 0%, #3a4a54 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #60798a 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
-            will-change: transform, filter;
+            filter: drop-shadow(0 15px 30px rgba(0, 242, 255, 0.15));
         }
         .hero-subtitle { color: var(--accent); letter-spacing: 8px; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; text-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
 
@@ -83,37 +94,32 @@
         section { padding: 10rem 5vw; position: relative; z-index: 10; }
         .section-header { font-family: 'Montserrat', sans-serif; font-size: 3rem; margin-bottom: 5rem; font-weight: 900; letter-spacing: -1px; }
 
-        /* 3D Interactive Cards Grid */
+        /* Projects Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; perspective: 1000px; }
-
         .card-wrapper { transform-style: preserve-3d; }
         
         .card {
             background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px;
             padding: 3.5rem 3rem; position: relative; overflow: hidden;
             backdrop-filter: blur(12px); transform-style: preserve-3d;
-            transition: transform 0.1s; /* Quick response to JS */
-            box-shadow: 0 30px 50px rgba(0,0,0,0.5);
-            height: 100%;
+            transition: transform 0.1s; box-shadow: 0 30px 50px rgba(0,0,0,0.5); height: 100%;
         }
 
-        /* The localized glow effect tracking the mouse */
         .card::before {
             content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.3s;
             background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.08), transparent 40%);
         }
         .card:hover::before { opacity: 1; }
-        .card::after { /* Glow border */
+        .card::after {
             content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.3s; border-radius: inherit;
             padding: 1px; background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.4), transparent 40%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
         }
         .card:hover::after { opacity: 1; }
 
-        .card-content { position: relative; z-index: 1; transform: translateZ(40px); /* Pushes content forward in 3D space */ }
+        .card-content { position: relative; z-index: 1; transform: translateZ(40px); pointer-events: none; }
         .card-icon { color: var(--accent); margin-bottom: 2.5rem; filter: drop-shadow(0 0 10px rgba(0,242,255,0.4)); }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 2rem; margin-bottom: 1rem; }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 2rem; margin-bottom: 1rem; color: white; }
         .card p { color: var(--text-dim); line-height: 1.7; font-size: 1rem; }
 
         /* Modal System */
@@ -131,38 +137,49 @@
             box-shadow: 0 0 100px rgba(0,242,255,0.05);
         }
         .modal-overlay.active .modal-content { transform: translateY(0) scale(1); opacity: 1; }
-
+        
         .close-btn {
             position: absolute; top: 2.5rem; right: 2.5rem; background: transparent; border: 1px solid var(--glass-border);
-            color: white; width: 50px; height: 50px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; transition: 0.3s;
+            color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s;
         }
         .close-btn:hover { background: var(--accent); color: black; transform: rotate(90deg); }
 
         /* CMS Framework */
         .cms-flow { display: flex; flex-direction: column; gap: 3rem; color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; }
         .align-center { text-align: center; margin: 0 auto; max-width: 800px; }
-        .text-gradient { background: linear-gradient(135deg, var(--accent), #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .title-large { font-family: 'Montserrat', sans-serif; font-size: 4rem; font-weight: 900; color: white; line-height: 1; margin-bottom: 0.5rem; letter-spacing: -1px; }
+        .align-left { text-align: left; }
+        .text-gradient { background: linear-gradient(135deg, var(--accent), #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .title-large { font-family: 'Montserrat', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: white; line-height: 1; margin-bottom: 0.5rem; letter-spacing: -1px; }
         .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-        .img-placeholder { background: rgba(0, 242, 255, 0.02); border: 1px solid rgba(0,242,255,0.1); border-radius: 16px; width: 100%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; position: relative; overflow: hidden; }
+        
+        .img-placeholder { 
+            background: rgba(0, 242, 255, 0.02); border: 1px solid rgba(0,242,255,0.1); border-radius: 16px; width: 100%; 
+            display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; 
+            position: relative; overflow: hidden; 
+        }
         .img-placeholder::after { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shine 3s infinite; }
         @keyframes shine { 100% { left: 200%; } }
         .img-tall { aspect-ratio: 4/5; } .img-wide { aspect-ratio: 16/9; }
 
-        /* Apple-style Blur Reveal Animation */
+        /* Animations */
         .reveal { opacity: 0; transform: translateY(80px) scale(0.95); filter: blur(15px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .reveal.active { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: rgba(0,242,255,0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+        @media (max-width: 768px) {
+            .grid-half { grid-template-columns: 1fr; }
+            .modal-content { padding: 2.5rem; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Light Source -->
+    <div class="cinematic-glow"></div>
 
     <!-- Custom Cursor -->
     <div class="cursor-dot" id="cursor-dot"></div>
@@ -176,43 +193,16 @@
     </nav>
 
     <section class="hero">
-        <h1 id="hero-title" class="interactive">DEEP WORK</h1>
-        <p class="hero-subtitle" id="hero-sub">Engineering the Void</p>
+        <div class="hero-content" id="hero-content">
+            <h1 class="interactive">DEEP WORK</h1>
+            <p class="hero-subtitle">Engineering the Void</p>
+        </div>
     </section>
 
     <section id="work">
         <h2 class="section-header reveal">SELECTED WORKS</h2>
-        <div class="grid">
-            <!-- Card 1 -->
-            <div class="card-wrapper reveal interactive" onclick="openModal('project1')">
-                <div class="card">
-                    <div class="card-content">
-                        <i data-lucide="anchor" size="48" class="card-icon"></i>
-                        <h3>Project Eclipse</h3>
-                        <p>Non-linear survival experience in the deep ocean. Focused on procedural generation and dynamic audio propagation.</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="card-wrapper reveal interactive" style="transition-delay: 0.1s;" onclick="openModal('project2')">
-                <div class="card">
-                    <div class="card-content">
-                        <i data-lucide="cpu" size="48" class="card-icon"></i>
-                        <h3>Kinematics Engine</h3>
-                        <p>Custom movement framework focusing on realistic inertia, procedural animation, and fluid state transitions.</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="card-wrapper reveal interactive" style="transition-delay: 0.2s;" onclick="openModal('project3')">
-                <div class="card">
-                    <div class="card-content">
-                        <i data-lucide="layers" size="48" class="card-icon"></i>
-                        <h3>Level Design Kit</h3>
-                        <p>A suite of tools for crafting atmospheric environments. From volumetric lighting setups to mesh optimization.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="grid" id="project-grid">
+            <!-- Cards are injected here dynamically by JavaScript -->
         </div>
     </section>
 
@@ -224,80 +214,143 @@
     </div>
 
     <script>
-        lucide.createIcons();
+        // --- 1. DYNAMIC PROJECT DATABASE ---
+        // Tady přidáváš nové projekty. Nic jiného v HTML upravovat nemusíš.
+        const projectData = [
+            {
+                id: 'project-eclipse',
+                icon: 'anchor',
+                title: 'Project Eclipse',
+                shortDesc: 'Non-linear survival experience in the deep ocean. Focused on procedural generation and dynamic audio propagation.',
+                modalHTML: `
+                    <div class="align-center">
+                        <h2 class="title-large text-gradient interactive">Project Eclipse</h2>
+                        <p style="color: var(--accent); letter-spacing: 4px; font-weight: 700; margin-bottom: 4rem;">DEEP SEA SURVIVAL</p>
+                    </div>
+                    <div class="img-placeholder img-wide interactive">CINEMATIC TRAILER (16:9)</div>
+                    <div class="grid-half" style="margin-top: 2rem;">
+                        <div>
+                            <h3 class="text-gradient interactive" style="font-size: 2rem; margin-bottom: 1.5rem;">Procedural Audio</h3>
+                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                        </div>
+                        <div class="img-placeholder img-tall interactive">PROCESS SHOT (4:5)</div>
+                    </div>
+                `
+            },
+            {
+                id: 'kinematics',
+                icon: 'cpu',
+                title: 'Kinematics Engine',
+                shortDesc: 'Custom movement framework focusing on realistic inertia, procedural animation, and fluid state transitions.',
+                modalHTML: `
+                    <div class="align-left">
+                        <h2 class="title-large text-gradient interactive">Kinematics Engine</h2>
+                        <p style="color: var(--text-dim); margin: 1.5rem 0;">A deep dive into building a robust, physically simulated character controller from scratch.</p>
+                    </div>
+                    <div class="grid-half">
+                        <div class="img-placeholder img-tall interactive">DIAGRAM (4:5)</div>
+                        <div class="img-placeholder img-tall interactive">STATE MACHINE (4:5)</div>
+                    </div>
+                `
+            },
+            {
+                id: 'level-design',
+                icon: 'layers',
+                title: 'Level Design Kit',
+                shortDesc: 'A suite of tools for crafting atmospheric environments. From volumetric lighting setups to mesh optimization.',
+                modalHTML: `
+                    <div class="align-center">
+                        <h2 class="title-large interactive">Level Design Kit</h2>
+                        <p style="margin-top: 1rem;">Crafting worlds that breathe.</p>
+                    </div>
+                    <div class="img-placeholder img-wide interactive" style="margin-top: 2rem;">ENVIRONMENT SHOWCASE (16:9)</div>
+                `
+            }
+            // Chceš přidat 4. projekt? Jen sem zkopíruj blok a uprav texty!
+        ];
 
-        // --- Custom Cursor Logic ---
-        const dot = document.getElementById('cursor-dot');
-        const aura = document.getElementById('cursor-aura');
-        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-        let auraX = mouseX, auraY = mouseY;
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
+        // --- 2. GENERATE PROJECTS TO HTML ---
+        const grid = document.getElementById('project-grid');
+        projectData.forEach((proj, index) => {
+            const delay = index * 0.1; // Každý projekt se animuje o kousek později
+            grid.innerHTML += `
+                <div class="card-wrapper reveal interactive" style="transition-delay: ${delay}s" onclick="openModal('${proj.id}')">
+                    <div class="card">
+                        <div class="card-content">
+                            <i data-lucide="${proj.icon}" size="48" class="card-icon"></i>
+                            <h3>${proj.title}</h3>
+                            <p>${proj.shortDesc}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
+        lucide.createIcons(); // Vykreslí ikony po vygenerování HTML
 
-        // Smooth trailing for the aura
-        function animateAura() {
-            auraX += (mouseX - auraX) * 0.15;
-            auraY += (mouseY - auraY) * 0.15;
-            aura.style.left = auraX + 'px';
-            aura.style.top = auraY + 'px';
-            requestAnimationFrame(animateAura);
+        // --- 3. CUSTOM CURSOR LOGIC ---
+        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+        if (!isTouchDevice) {
+            const dot = document.getElementById('cursor-dot');
+            const aura = document.getElementById('cursor-aura');
+            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+            let auraX = mouseX, auraY = mouseY;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+            });
+
+            function animateAura() {
+                auraX += (mouseX - auraX) * 0.15; auraY += (mouseY - auraY) * 0.15;
+                aura.style.left = auraX + 'px'; aura.style.top = auraY + 'px';
+                requestAnimationFrame(animateAura);
+            }
+            animateAura();
+
+            document.querySelectorAll('.interactive').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
         }
-        animateAura();
 
-        // Hover states for cursor
-        document.querySelectorAll('.interactive').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-        });
-
-        // --- 3D Card Hover & Dynamic Glow Engine ---
+        // --- 4. 3D CARD HOVER ENGINE ---
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; // Mouse X inside card
-                const y = e.clientY - rect.top;  // Mouse Y inside card
-                
-                // Update CSS variables for the glow effect
+                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
                 card.style.setProperty('--mouse-x', `${x}px`);
                 card.style.setProperty('--mouse-y', `${y}px`);
-
-                // Calculate 3D tilt
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -8; // Max 8 degrees rotation
+                
+                const centerX = rect.width / 2; const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -8; 
                 const rotateY = ((x - centerX) / centerX) * 8;
-
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
             });
-
             card.addEventListener('mouseleave', () => {
                 card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
             });
         });
 
-        // --- Hero Parallax & Dynamic Typography ---
+        // --- 5. CINEMATIC SCROLL (Sinking into the void) ---
         window.addEventListener('scroll', () => {
-            const title = document.getElementById('hero-title');
-            const sub = document.getElementById('hero-sub');
+            const content = document.getElementById('hero-content');
             const nav = document.getElementById('navbar');
             let scroll = window.scrollY;
             
-            title.style.transform = `translateY(${scroll * 0.4}px) scale(${1 + scroll * 0.0005})`;
-            title.style.opacity = 1 - (scroll / 500);
-            title.style.filter = `blur(${scroll * 0.02}px)`; // Blurs out on scroll
+            // Text propadající se do prázdna
+            let z = scroll * -2; // letí dozadu
+            let y = scroll * 0.8; // letí dolů
+            let rotateX = scroll * 0.05; // rotuje dozadu
             
-            sub.style.transform = `translateY(${scroll * 0.2}px)`;
-            sub.style.opacity = 1 - (scroll / 400);
+            content.style.transform = `translate3d(0, ${y}px, ${z}px) rotateX(${rotateX}deg)`;
+            content.style.opacity = Math.max(0, 1 - (scroll / 500));
+            content.style.filter = `blur(${scroll * 0.03}px)`;
 
             if (scroll > 50) nav.classList.add('scrolled');
             else nav.classList.remove('scrolled');
         });
 
-        // --- Blur-Reveal Scroll Animation ---
+        // --- 6. BLUR-REVEAL ANIMATION ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -307,102 +360,66 @@
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // --- Highly Interactive Water Particles ---
+        // --- 7. WATER PARTICLES ---
         const canvas = document.getElementById('water-particles');
         const ctx = canvas.getContext('2d');
         let particlesArray = [];
+        let mouseX = 0, mouseY = 0;
 
+        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.baseY = Math.random() * -1 - 0.2;
-                this.speedY = this.baseY;
-                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5; this.baseY = Math.random() * -1 - 0.2;
+                this.speedY = this.baseY; this.speedX = (Math.random() - 0.5) * 0.5;
                 this.opacity = Math.random() * 0.5 + 0.1;
             }
             update() {
-                // Interactive physics (dodging the mouse)
-                let dx = mouseX - this.x;
-                let dy = mouseY - this.y;
+                let dx = mouseX - this.x; let dy = mouseY - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let force = (150 - distance) / 150; // 150px radius
-
-                if (distance < 150) {
-                    this.x -= forceDirectionX * force * 5;
-                    this.y -= forceDirectionY * force * 5;
+                if (distance < 150 && !isTouchDevice) { // Vyhýbání myši funguje jen na desktopu
+                    this.x -= (dx / distance) * ((150 - distance) / 150) * 5;
+                    this.y -= (dy / distance) * ((150 - distance) / 150) * 5;
                 }
-
-                // Normal movement
-                this.y += this.speedY;
-                this.x += this.speedX;
-                
-                // Return to original speed gracefully
+                this.y += this.speedY; this.x += this.speedX;
                 this.speedY = this.speedY * 0.95 + this.baseY * 0.05;
-
-                if (this.y < -10) {
-                    this.y = canvas.height + 10;
-                    this.x = Math.random() * canvas.width;
-                }
+                if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
             }
             draw() {
                 ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-
-        function initParticles() {
-            particlesArray = [];
-            for (let i = 0; i < 80; i++) particlesArray.push(new Particle());
-        }
+        for (let i = 0; i < 80; i++) particlesArray.push(new Particle());
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particlesArray.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animateParticles);
         }
-        initParticles(); animateParticles();
+        animateParticles();
 
-        // --- Modal ---
-        const projectData = {
-            project1: `
-                <div class="align-center">
-                    <h2 class="title-large text-gradient interactive">Project Eclipse</h2>
-                    <p style="color: var(--accent); letter-spacing: 4px; font-weight: 700; margin-bottom: 4rem;">DEEP SEA SURVIVAL</p>
-                </div>
-                <div class="img-placeholder img-wide interactive">CINEMATIC TRAILER (16:9)</div>
-                <div class="grid-half" style="margin-top: 2rem;">
-                    <div>
-                        <h3 class="text-gradient interactive" style="font-size: 2rem; margin-bottom: 1.5rem;">Procedural Audio</h3>
-                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
-                    </div>
-                    <div class="img-placeholder img-tall interactive">PROCESS SHOT (4:5)</div>
-                </div>
-            `
-            // You can add project2, project3 here just like before
-        };
-
+        // --- 8. DYNAMIC MODAL SYSTEM ---
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modal-body');
 
         function openModal(projectId) {
-            if(!projectData[projectId]) return;
-            modalBody.innerHTML = projectData[projectId];
+            const project = projectData.find(p => p.id === projectId);
+            if(!project) return;
+            
+            modalBody.innerHTML = project.modalHTML;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Re-bind interactive class for new elements
-            document.querySelectorAll('#modal .interactive').forEach(el => {
-                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-            });
+            // Re-bind hover pro nový obsah (pokud nejsme na mobilu)
+            if (!isTouchDevice) {
+                document.querySelectorAll('#modal .interactive').forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+                });
+            }
         }
 
         function closeModal() {
