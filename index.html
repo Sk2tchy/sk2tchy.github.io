@@ -14,7 +14,7 @@
             --text: #ffffff;
             --text-dim: #7a8d9c;
             --glass: rgba(5, 10, 20, 0.3);
-            --glass-border: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.05);
             --expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -27,27 +27,31 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Dark Cinematic Background */
+        /* Cinematic Elements */
         .cinematic-glow {
-            position: absolute; top: -10vh; left: 50%; transform: translateX(-50%);
-            width: 100vw; height: 60vh; pointer-events: none; z-index: 0;
-            background: radial-gradient(ellipse at top center, rgba(0, 242, 255, 0.05) 0%, rgba(1, 3, 8, 0) 60%);
+            position: absolute; top: -20vh; left: 50%; transform: translateX(-50%);
+            width: 150vw; height: 80vh; pointer-events: none; z-index: 0;
+            background: radial-gradient(ellipse at top center, rgba(0, 242, 255, 0.1) 0%, rgba(2, 18, 36, 0.2) 40%, transparent 70%);
+        }
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
         }
 
-        /* Clean Minimal Cursor */
-        #cursor-dot {
+        /* Refined Custom Cursor */
+        #cursor {
             position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
             background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s;
+            transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--accent);
+            transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s, box-shadow 0.2s;
         }
-        body.hovering #cursor-dot { 
-            width: 40px; height: 40px; background: rgba(0, 242, 255, 0.05); 
-            border: 1px solid rgba(0, 242, 255, 0.4); backdrop-filter: blur(2px); 
+        body.hovering #cursor { 
+            width: 35px; height: 35px; background: transparent; 
+            border: 1px solid var(--accent); box-shadow: none;
         }
 
         @media (pointer: coarse) {
             * { cursor: auto !important; }
-            #cursor-dot { display: none !important; }
+            #cursor { display: none !important; }
         }
 
         /* Navbar */
@@ -68,105 +72,98 @@
             font-weight: 900; letter-spacing: -3px; line-height: 0.9;
             background: linear-gradient(180deg, #ffffff 0%, #4a5c6e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0, 242, 255, 0.1));
         }
         .hero-subtitle { color: var(--accent); letter-spacing: 12px; text-transform: uppercase; font-weight: 600; margin-top: 1.5rem; font-size: 0.75rem; }
 
-        /* General Section Formatting */
+        /* General Section */
         section { padding: 6rem 5vw; width: 100%; position: relative; z-index: 20; }
         .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 3rem; }
 
         /* About Section */
-        .about-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-            max-width: 1200px; margin: 0 auto;
-        }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1200px; margin: 0 auto; }
         .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 1.5rem; }
         .about-text strong { color: white; font-weight: 600; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .stat-box { 
-            background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; 
-            border-radius: 16px; display: flex; flex-direction: column; gap: 0.5rem;
-        }
+        .stat-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px; display: flex; flex-direction: column; gap: 0.5rem; }
         .stat-box span { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
         .stat-box label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Smooth Slider Engine */
-        .slider-container {
-            display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 3rem;
-            scrollbar-width: none; cursor: grab;
-        }
+        /* Advanced Project Slider */
+        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 3rem; scrollbar-width: none; cursor: grab; perspective: 1000px; }
         .slider-container::-webkit-scrollbar { display: none; }
         .slider-container:active { cursor: grabbing; }
 
+        .card-wrapper { flex: 0 0 380px; transform-style: preserve-3d; }
         .card {
-            flex: 0 0 380px; background: var(--glass); border: 1px solid var(--glass-border);
-            padding: 3rem 2.5rem; border-radius: 20px; transition: border-color 0.3s;
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 3rem 2.5rem; border-radius: 20px; transition: transform 0.1s;
             display: flex; flex-direction: column; user-select: none;
+            backdrop-filter: blur(12px); position: relative; overflow: hidden; height: 100%;
         }
-        .card:hover { border-color: rgba(0, 242, 255, 0.2); }
         
-        .card-icon { color: var(--accent); margin-bottom: 2rem; pointer-events: none; }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; margin-bottom: 1rem; pointer-events: none; }
-        .card p { color: var(--text-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 2.5rem; flex-grow: 1; pointer-events: none; }
+        /* Interactive 3D Glow (Desktop only) */
+        @media (hover: hover) and (pointer: fine) {
+            .card::before {
+                content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.3s;
+                background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.08), transparent 40%);
+            }
+            .card:hover::before { opacity: 1; }
+        }
+
+        .card-content { position: relative; z-index: 1; pointer-events: none; display: flex; flex-direction: column; height: 100%; }
+        .card-icon { color: var(--accent); margin-bottom: 2rem; filter: drop-shadow(0 0 10px rgba(0,242,255,0.2)); }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; margin-bottom: 1rem; color: white; }
+        .card p { color: var(--text-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 2.5rem; flex-grow: 1; }
 
         .btn-more {
             align-self: flex-start; padding: 0.8rem 1.5rem; border: 1px solid rgba(255,255,255,0.1);
-            color: white; border-radius: 8px; font-weight: 600; font-size: 0.8rem; 
+            color: white; border-radius: 8px; font-weight: 600; font-size: 0.8rem; background: transparent;
             transition: 0.3s; pointer-events: auto; text-transform: uppercase; letter-spacing: 1px;
         }
         .card:hover .btn-more { background: white; color: black; border-color: white; }
 
-        /* Mobile Optimized Modal */
+        /* Modal / Detail View */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(1, 3, 8, 0.95); z-index: 5000;
-            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(5px);
         }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
         .modal-content {
             width: 100%; max-width: 1000px; height: 100vh; max-height: 90vh; background: #010308;
             border-radius: 24px; padding: 4rem; overflow-y: auto; overflow-x: hidden; position: relative;
-            transform: scale(0.95); transition: 0.4s var(--expo); border: 1px solid var(--glass-border);
+            transform: scale(0.95) translateY(20px); transition: 0.4s var(--expo); border: 1px solid var(--glass-border);
         }
-        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
         
-        .close-btn {
-            position: absolute; top: 2rem; right: 2rem; background: transparent; border: none;
-            color: var(--text-dim); padding: 0.5rem; transition: 0.3s; z-index: 10;
-        }
-        .close-btn:hover { color: white; transform: scale(1.1); }
+        .close-btn { position: absolute; top: 2rem; right: 2rem; background: transparent; border: none; color: var(--text-dim); padding: 0.5rem; transition: 0.3s; z-index: 10; }
+        .close-btn:hover { color: var(--accent); transform: scale(1.1); }
 
         .modal-body { display: flex; flex-direction: column; gap: 3rem; }
         .modal-header h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 0.5rem; }
         .modal-header span { color: var(--accent); font-weight: 600; letter-spacing: 2px; font-size: 0.9rem; text-transform: uppercase; }
         .modal-desc { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; max-width: 700px; }
         
-        /* Realistic Image/Video blocks */
         .media-block { background: #030812; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #1a2938; font-weight: 700; letter-spacing: 2px; }
-        
+
         /* Minimal Footer */
-        footer {
-            padding: 4rem 5vw; border-top: 1px solid var(--glass-border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .footer-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; }
         .footer-logo span { color: var(--text-dim); font-weight: 400; font-size: 0.9rem; margin-left: 1rem; }
         .social-links { display: flex; gap: 1.5rem; }
         .social-links a { color: var(--text-dim); transition: 0.3s; }
         .social-links a:hover { color: white; transform: translateY(-3px); }
 
-        /* MOBILE FIXES */
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             section { padding: 4rem 5vw; }
             .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-            
-            /* Native horizontal scroll for mobile */
-            .slider-container { scroll-snap-type: x mandatory; padding-bottom: 2rem; }
-            .card { flex: 0 0 85vw; scroll-snap-align: center; padding: 2rem 1.5rem; }
-            
+            .slider-container { scroll-snap-type: x mandatory; padding-bottom: 2rem; gap: 1rem; }
+            .card-wrapper { flex: 0 0 85vw; scroll-snap-align: center; }
+            .card { padding: 2rem 1.5rem; }
             .modal-content { padding: 2rem 1.5rem; height: 95vh; border-radius: 16px; }
             .close-btn { top: 1rem; right: 1rem; }
-            
             footer { flex-direction: column; gap: 2rem; text-align: center; }
             .footer-logo span { display: block; margin-top: 0.5rem; margin-left: 0; }
         }
@@ -175,7 +172,8 @@
 <body>
 
     <div class="cinematic-glow"></div>
-    <div id="cursor-dot"></div>
+    <canvas id="particles-canvas"></canvas>
+    <div id="cursor"></div>
 
     <nav>
         <a href="#" class="nav-logo interactive">SKETCHY<span>STUDIO</span></a>
@@ -188,7 +186,6 @@
         </div>
     </div>
 
-    <!-- NEW ABOUT SECTION -->
     <section id="about">
         <h2 class="section-title">THE ARCHITECT</h2>
         <div class="about-grid">
@@ -212,7 +209,7 @@
     <section id="projects">
         <h2 class="section-title">SELECTED WORKS</h2>
         <div class="slider-container" id="slider">
-            <!-- Dynamic projects injected here -->
+            <!-- Dynamically generated -->
         </div>
     </section>
 
@@ -233,7 +230,6 @@
     </div>
 
     <script>
-        // PROJECT DATABASE
         const projects = [
             { 
                 id: 'eclipse', title: 'Project Eclipse', type: 'Survival Horror', icon: 'anchor', 
@@ -252,29 +248,54 @@
             }
         ];
 
-        // RENDER CARDS
         const slider = document.getElementById('slider');
         projects.forEach(p => {
             slider.innerHTML += `
-                <div class="card interactive" onclick="openModal('${p.id}')">
-                    <i data-lucide="${p.icon}" size="36" class="card-icon"></i>
-                    <h3>${p.title}</h3>
-                    <p>${p.desc}</p>
-                    <button class="btn-more">View Details</button>
+                <div class="card-wrapper">
+                    <div class="card interactive" onclick="openModal('${p.id}')">
+                        <div class="card-content">
+                            <i data-lucide="${p.icon}" size="36" class="card-icon"></i>
+                            <h3>${p.title}</h3>
+                            <p>${p.desc}</p>
+                            <button class="btn-more">View Details</button>
+                        </div>
+                    </div>
                 </div>
             `;
         });
         lucide.createIcons();
 
-        // CLEAN CURSOR LOGIC
+        // 3D Card Effect & Glow
         const isTouch = window.matchMedia("(pointer: coarse)").matches;
         if (!isTouch) {
-            const dot = document.getElementById('cursor-dot');
-            document.addEventListener('mousemove', (e) => {
-                dot.style.left = e.clientX + 'px'; 
-                dot.style.top = e.clientY + 'px';
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                    
+                    // Glow follow
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    
+                    // 3D Tilt
+                    const centerX = rect.width / 2; const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5; 
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                });
             });
-            // Hover states
+        }
+
+        // Custom Cursor
+        if (!isTouch) {
+            const cursor = document.getElementById('cursor');
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px'; 
+                cursor.style.top = e.clientY + 'px';
+            });
             document.body.addEventListener('mouseover', e => {
                 if(e.target.closest('.interactive')) document.body.classList.add('hovering');
             });
@@ -283,12 +304,10 @@
             });
         }
 
-        // SMOOTH DESKTOP DRAG SLIDER
+        // Smooth Drag Slider (Desktop)
         let isDown = false; let startX; let scrollLeft;
         slider.addEventListener('mousedown', (e) => {
-            isDown = true; 
-            startX = e.pageX - slider.offsetLeft; 
-            scrollLeft = slider.scrollLeft;
+            isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
         });
         slider.addEventListener('mouseleave', () => { isDown = false; });
         slider.addEventListener('mouseup', () => { isDown = false; });
@@ -296,20 +315,45 @@
             if (!isDown) return;
             e.preventDefault();
             const x = e.pageX - slider.offsetLeft;
-            const walk = (x - startX) * 1.5; // Scroll speed multiplier
-            slider.scrollLeft = scrollLeft - walk;
+            slider.scrollLeft = scrollLeft - (x - startX) * 1.5;
         });
 
-        // HERO PARALLAX
-        window.addEventListener('scroll', () => {
-            if(isTouch) return; // Save battery/performance on mobile
-            const h = document.getElementById('hero-wrap');
-            let s = window.scrollY;
-            h.style.transform = `translateY(${s * 0.3}px)`;
-            h.style.opacity = Math.max(0, 1 - s/500);
-        });
+        // Ambient Particles
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
 
-        // MODAL LOGIC
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedY = Math.random() * -0.5 - 0.1;
+                this.opacity = Math.random() * 0.3 + 0.1;
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        
+        const pCount = isTouch ? 25 : 60; // Less particles on mobile for performance
+        for(let i=0; i<pCount; i++) particles.push(new Particle());
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Modal Handling
         function openModal(id) {
             const p = projects.find(x => x.id === id);
             document.getElementById('modal-body').innerHTML = `
@@ -317,23 +361,21 @@
                     <h2>${p.title}</h2>
                     <span>${p.type}</span>
                 </div>
-                <div class="media-block">MAIN_SHOWCASE_VIDEO.MP4</div>
+                <div class="media-block">[PLACEHOLDER_VIDEO_HERO]</div>
                 <p class="modal-desc">${p.fullDesc}</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                    <div class="media-block" style="aspect-ratio: 4/3;">DEV_LOG_1.JPG</div>
-                    <div class="media-block" style="aspect-ratio: 4/3;">SYSTEM_NODE_GRAPH.JPG</div>
+                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_IMAGE_1]</div>
+                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_IMAGE_2]</div>
                 </div>
             `;
             document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
             document.body.style.overflow = 'auto';
             document.body.classList.remove('hovering');
         }
-        document.getElementById('modal').addEventListener('click', closeModal);
     </script>
 </body>
 </html>
