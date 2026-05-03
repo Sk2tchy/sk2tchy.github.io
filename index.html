@@ -27,20 +27,19 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Texture Overlay - Adds "Sketchy" cinematic feel */
+        /* Texture Overlay */
         .noise-overlay {
             position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.02; mix-blend-mode: overlay;
             background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
 
-        /* Cinematic Particles */
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
-        /* Smooth Custom Cursor */
+        /* Cursor */
         #cursor {
             position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
             background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate3d(-50%, -50%, 0); /* Hardware accelerated */
+            transform: translate3d(-50%, -50%, 0);
             transition: width 0.3s var(--expo), height 0.3s var(--expo), background 0.3s var(--expo), border 0.3s var(--expo);
             will-change: transform, width, height;
         }
@@ -51,7 +50,7 @@
 
         @media (pointer: coarse) {
             * { cursor: auto !important; }
-            #cursor, .noise-overlay { display: none !important; } /* Cleaned for mobile */
+            #cursor, .noise-overlay { display: none !important; }
         }
 
         /* Navbar */
@@ -62,12 +61,12 @@
         .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; text-decoration: none; color: white; }
         .nav-logo span { color: var(--accent); }
 
-        /* Animation Classes */
+        /* Animation */
         .reveal { opacity: 0; transform: translateY(40px); transition: 1s var(--expo); will-change: opacity, transform; }
         .reveal.active { opacity: 1; transform: translateY(0); }
         .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; }
 
-        /* Hero Section */
+        /* Hero */
         .hero { 
             height: 100vh; display: flex; flex-direction: column; justify-content: center; 
             align-items: center; text-align: center; position: relative; z-index: 10;
@@ -88,11 +87,10 @@
         }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* General Section */
+        /* About Section */
         section { padding: 8rem 5vw; width: 100%; position: relative; z-index: 20; }
         .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 4rem; }
 
-        /* About Section */
         .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1200px; margin: 0 auto; }
         .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 1.5rem; }
         .about-text strong { color: white; font-weight: 600; }
@@ -102,10 +100,9 @@
         .stat-box span { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
         .stat-box label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Slider & Cards - Glitch-Free & Professional */
+        /* Slider & Cards */
         .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 4rem; scrollbar-width: none; cursor: grab; }
         .slider-container::-webkit-scrollbar { display: none; }
-        .slider-container:active { cursor: grabbing; }
 
         .card-wrapper { flex: 0 0 420px; }
         .card {
@@ -113,11 +110,9 @@
             padding: 3rem; display: flex; flex-direction: column; height: 100%;
             transition: transform 0.4s var(--expo), border-color 0.4s var(--expo), box-shadow 0.4s var(--expo);
             user-select: none; position: relative; overflow: hidden;
-            /* Hardware acceleration to stop glitching */
             will-change: transform; transform: translateZ(0); 
         }
         
-        /* Smooth Hover effect replacing the glitchy 3D tilt */
         .card:hover {
             transform: translateY(-10px) translateZ(0);
             border-color: rgba(0, 242, 255, 0.15);
@@ -135,7 +130,7 @@
             color: var(--accent); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;
             display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
         }
-        .card:hover .btn-more { gap: 1rem; } /* Pushes arrow on hover */
+        .card:hover .btn-more { gap: 1rem; }
 
         /* Modal */
         .modal-overlay {
@@ -146,7 +141,7 @@
         
         .modal-content {
             width: 100%; max-width: 1100px; height: 100vh; max-height: 90vh; background: transparent;
-            padding: 2rem 4rem; overflow-y: auto; overflow-x: hidden; position: relative;
+            padding: 2rem 4rem; overflow-y: auto; position: relative;
             transform: scale(0.98) translateY(20px); transition: 0.5s var(--expo);
         }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
@@ -160,25 +155,20 @@
         .modal-header span { color: var(--accent); font-weight: 600; letter-spacing: 2px; font-size: 0.9rem; text-transform: uppercase; }
         .modal-desc { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; max-width: 800px; }
         
-        .media-block { background: #040914; border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #1a2938; font-weight: 700; letter-spacing: 2px; }
+        .media-block { background: #040914; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; width: 100%; aspect-ratio: 16/9; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #1a2938; font-weight: 700; letter-spacing: 2px; }
+        .media-block img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Minimal Footer */
         footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .footer-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; }
         .social-links { display: flex; gap: 1.5rem; }
         .social-links a { color: var(--text-dim); transition: 0.3s; }
         .social-links a:hover { color: white; transform: translateY(-3px); }
 
-        /* Mobile */
         @media (max-width: 768px) {
             section { padding: 5rem 5vw; }
             .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .slider-container { scroll-snap-type: x mandatory; padding-bottom: 2rem; gap: 1rem; }
-            .card-wrapper { flex: 0 0 85vw; scroll-snap-align: center; }
-            .card { padding: 2.5rem 2rem; }
+            .card-wrapper { flex: 0 0 85vw; }
             .modal-content { padding: 5rem 1.5rem 2rem 1.5rem; height: 100vh; max-height: 100vh; }
-            .close-btn { top: 1rem; right: 1rem; width: 40px; height: 40px; }
-            footer { flex-direction: column; gap: 2rem; text-align: center; }
         }
     </style>
 </head>
@@ -197,6 +187,7 @@
         <p class="hero-subtitle">Independent Game Developer</p>
     </div>
 
+    <!-- Osobní sekce zůstává samostatná -->
     <section id="about">
         <h2 class="section-title reveal">THE ARCHITECT</h2>
         <div class="about-grid">
@@ -217,11 +208,10 @@
         </div>
     </section>
 
+    <!-- Dynamická sekce projektů -->
     <section id="projects">
         <h2 class="section-title reveal">SELECTED WORKS</h2>
-        <div class="slider-container reveal delay-1" id="slider">
-            <!-- Generated via JS -->
-        </div>
+        <div class="slider-container reveal delay-1" id="slider"></div>
     </section>
 
     <footer>
@@ -241,12 +231,43 @@
     </div>
 
     <script>
+        // --- KONFIGURACE PROJEKTŮ ---
+        // Zde si přidávej/upravuj projekty. 
+        // icon: název z lucide-icons, mainImage: URL hlavního obrázku, gallery: pole URL obrázků
         const projects = [
-            { id: 'eclipse', title: 'Project Eclipse', type: 'Survival Horror', icon: 'anchor', desc: 'A non-linear survival experience set in the crushing depths of the ocean. Focused heavily on dynamic audio propagation.', fullDesc: 'Project Eclipse is an ongoing experiment in deep-sea horror. The game uses a custom procedural audio engine that calculates sound reflection in real-time underwater, forcing the player to navigate pure darkness using echolocation.' },
-            { id: 'kinematics', title: 'Kinematics Engine', type: 'Core System', icon: 'cpu', desc: 'A custom character controller framework prioritizing realistic inertia and fluid state transitions.', fullDesc: 'Built entirely from scratch, this kinematics engine bypasses standard rigid-body constraints. It features predictive footing and momentum preservation during high-speed maneuvers.' },
-            { id: 'neon', title: 'Neon District', type: 'Environment Tool', icon: 'layers', desc: 'Procedural city generation algorithm optimized for dense, cyberpunk-styled vertical environments.', fullDesc: 'A toolset designed to generate infinite, highly detailed city blocks. It handles structural logic and dynamic lighting setup automatically, drastically reducing level design iteration time.' }
+            { 
+                id: 'eclipse', 
+                title: 'Project Eclipse', 
+                type: 'Survival Horror', 
+                icon: 'anchor', 
+                desc: 'A non-linear survival experience set in the crushing depths of the ocean.', 
+                fullDesc: 'Project Eclipse is an ongoing experiment in deep-sea horror. The game uses a custom procedural audio engine that calculates sound reflection in real-time underwater.',
+                mainImage: 'https://via.placeholder.com/1200x675/040914/00f2ff?text=Project+Eclipse+Preview', // Sem dej URL obrázku
+                gallery: ['https://via.placeholder.com/800x600/040914', 'https://via.placeholder.com/800x600/040914']
+            },
+            { 
+                id: 'kinematics', 
+                title: 'Kinematics Engine', 
+                type: 'Core System', 
+                icon: 'cpu', 
+                desc: 'A custom character controller framework prioritizing realistic inertia.', 
+                fullDesc: 'Built entirely from scratch, this kinematics engine bypasses standard rigid-body constraints. It features predictive footing and momentum preservation.',
+                mainImage: 'https://via.placeholder.com/1200x675/040914/00f2ff?text=Kinematics+Engine',
+                gallery: []
+            },
+            { 
+                id: 'neon', 
+                title: 'Neon District', 
+                type: 'Environment Tool', 
+                icon: 'layers', 
+                desc: 'Procedural city generation algorithm optimized for dense environments.', 
+                fullDesc: 'A toolset designed to generate infinite, highly detailed city blocks. It handles structural logic and dynamic lighting setup automatically.',
+                mainImage: 'https://via.placeholder.com/1200x675/040914/00f2ff?text=Neon+District',
+                gallery: []
+            }
         ];
 
+        // Generování karet do slideru
         const slider = document.getElementById('slider');
         projects.forEach(p => {
             slider.innerHTML += `
@@ -262,16 +283,12 @@
         });
         lucide.createIcons();
 
-        // Cursor Logic (Performance Optimized)
+        // Cursor
         const isTouch = window.matchMedia("(pointer: coarse)").matches;
         if (!isTouch) {
             const cursor = document.getElementById('cursor');
-            let mouseX = 0, mouseY = 0;
-            
             document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX; mouseY = e.clientY;
-                // Using transform instead of left/top for 60fps cursor
-                cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+                cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
             });
             document.body.addEventListener('mouseover', e => {
                 if(e.target.closest('.interactive')) document.body.classList.add('hovering');
@@ -281,19 +298,17 @@
             });
         }
 
-        // Scroll Reveal Animations (Intersection Observer)
-        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        // Scroll Reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    observer.unobserve(entry.target); // Animate only once
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Smooth Drag Slider
+        // Drag Slider
         let isDown = false; let startX; let scrollLeft;
         slider.addEventListener('mousedown', (e) => {
             isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
@@ -307,7 +322,7 @@
             slider.scrollLeft = scrollLeft - (x - startX) * 1.5;
         });
 
-        // Ambient Particles (Optimized)
+        // Particles
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -330,10 +345,7 @@
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-        
-        const pCount = isTouch ? 20 : 50; 
-        for(let i=0; i<pCount; i++) particles.push(new Particle());
-        
+        for(let i=0; i<(isTouch?20:50); i++) particles.push(new Particle());
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
@@ -341,24 +353,31 @@
         }
         animate();
 
-        // Modal Handling
+        // Modal Handling s podporou obrázků
         function openModal(id) {
             const p = projects.find(x => x.id === id);
+            
+            // Příprava galerie obrázků
+            let galleryHTML = '';
+            if(p.gallery && p.gallery.length > 0) {
+                galleryHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    ${p.gallery.map(img => `<div class="media-block" style="aspect-ratio: 4/3;"><img src="${img}" alt="gallery"></div>`).join('')}
+                </div>`;
+            }
+
             document.getElementById('modal-body').innerHTML = `
                 <div class="modal-header">
                     <h2>${p.title}</h2>
                     <span>${p.type}</span>
                 </div>
-                <div class="media-block">[PLACEHOLDER_MAIN_VISUAL]</div>
-                <p class="modal-desc">${p.fullDesc}</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_GALLERY_1]</div>
-                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_GALLERY_2]</div>
+                <div class="media-block">
+                    <img src="${p.mainImage}" alt="${p.title} cover">
                 </div>
+                <p class="modal-desc">${p.fullDesc}</p>
+                ${galleryHTML}
             `;
             document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
-            if(!isTouch) document.body.classList.remove('hovering'); // Reset cursor
         }
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
