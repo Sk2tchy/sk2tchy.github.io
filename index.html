@@ -1,331 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sketchy Studio | Professional Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sketchy Studio | Dev Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
         :root {
             --bg: #010308;
             --accent: #00f2ff;
-            --text: #ffffff;
             --text-dim: #7a8d9c;
-            --glass: rgba(5, 10, 20, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.05);
             --expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        body, html { 
-            background: var(--bg); color: var(--text); 
+        body { 
+            background: var(--bg); color: white; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden; width: 100%;
-            -webkit-font-smoothing: antialiased; scroll-behavior: smooth;
+            overflow-x: hidden; line-height: 1.6;
         }
 
-        /* Ambient Overlays */
-        .vignette { position: fixed; inset: 0; z-index: 50; pointer-events: none; background: radial-gradient(circle, transparent 20%, rgba(1,3,8,0.8) 100%); }
-        .noise { position: fixed; inset: 0; z-index: 51; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
-        
-        /* Animated Fog Overlay (Sinking effect) */
-        .fog-layer {
-            position: fixed; inset: 0; z-index: 45; pointer-events: none;
-            background: linear-gradient(180deg, transparent, rgba(0, 242, 255, 0.03) 50%, rgba(1, 3, 8, 0.5) 100%);
-            transform: translateY(100%); transition: transform 1.5s var(--expo);
-            will-change: transform;
-        }
-
-        #particles-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        /* Overlays */
+        .vignette { position: fixed; inset: 0; z-index: 50; pointer-events: none; background: radial-gradient(circle, transparent 30%, rgba(1,3,8,0.9) 100%); }
+        .fog-overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: linear-gradient(to bottom, transparent, rgba(0,242,255,0.02)); opacity: 0; transition: 1s var(--expo); }
+        #particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
         /* Cursor */
         #cursor {
-            position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: var(--accent);
-            border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate3d(-50%, -50%, 0); will-change: transform;
-            transition: width 0.4s var(--expo), height 0.4s var(--expo), background 0.4s var(--expo);
+            position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+            transition: width 0.3s var(--expo), height 0.3s var(--expo), background 0.3s var(--expo);
+            box-shadow: 0 0 15px var(--accent);
         }
-        body.hovering #cursor { width: 45px; height: 45px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); }
+        body.hovering #cursor { width: 50px; height: 50px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); box-shadow: none; }
 
-        @media (pointer: coarse) { * { cursor: auto !important; } #cursor { display: none; } }
-
-        /* Nav */
+        /* Navigation */
         nav { position: fixed; top: 0; width: 100%; padding: 2rem 5vw; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; color: white; text-decoration: none; letter-spacing: 2px; }
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-        .nav-links a:hover { color: white; }
+        .logo { font-family: 'Montserrat'; font-size: 1.2rem; letter-spacing: 4px; text-decoration: none; color: white; }
+        .logo span { color: var(--accent); }
 
         /* Hero */
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; perspective: 1000px; }
-        .hero-wrap { will-change: transform, opacity; transition: transform 0.1s linear; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 900; line-height: 0.9; letter-spacing: -4px; background: linear-gradient(180deg, #fff, #222); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: var(--accent); letter-spacing: 10px; text-transform: uppercase; font-size: 0.7rem; margin-top: 1rem; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero-content { will-change: transform, opacity; }
+        .hero h1 { font-family: 'Montserrat'; font-size: clamp(3rem, 10vw, 8rem); line-height: 0.85; letter-spacing: -4px; margin-bottom: 2rem; }
+        
+        .scroll-indicator {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0.6;
+        }
+        .mouse { width: 22px; height: 35px; border: 2px solid white; border-radius: 20px; position: relative; }
+        .wheel { width: 2px; height: 6px; background: white; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); animation: scroll 2s infinite; }
+        @keyframes scroll { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(15px); } }
 
-        /* Sections */
-        section { padding: 10rem 5vw; position: relative; z-index: 60; }
-        .reveal { opacity: 0; transform: translateY(30px); transition: 1.5s var(--expo); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* Stats Section */
+        .stats-row { display: flex; gap: 3rem; margin-top: 2rem; }
+        .stat-item { border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; }
+        .stat-item h4 { font-family: 'Montserrat'; font-size: 1.5rem; color: var(--accent); }
+        .stat-item p { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); }
 
-        /* About */
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1200px; margin: 0 auto; }
-        .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 2rem; }
-        .stat-box { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 12px; transition: 0.3s; }
-        .stat-box:hover { background: rgba(0, 242, 255, 0.02); border-color: var(--accent); }
-
-        /* Projects Slider & 3D Cards */
-        .projects-wrapper { position: relative; width: 100%; }
-        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding: 2rem 0 4rem; scrollbar-width: none; scroll-behavior: smooth; }
+        /* Projects */
+        section { padding: 8rem 5vw; position: relative; z-index: 60; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
+        
+        .slider-wrapper { position: relative; width: 100%; }
+        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding: 2rem 0; scrollbar-width: none; scroll-behavior: smooth; }
         .slider-container::-webkit-scrollbar { display: none; }
 
-        .card-wrapper { flex: 0 0 400px; transform-style: preserve-3d; perspective: 1000px; }
         .card {
-            background: #02050a; border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 3.5rem 2.5rem; height: 100%; position: relative; overflow: hidden;
-            transition: transform 0.15s ease-out, border-color 0.3s; will-change: transform;
-            display: flex; flex-direction: column;
+            flex: 0 0 400px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px; padding: 3rem; position: relative; overflow: hidden;
+            transition: border-color 0.4s, transform 0.2s var(--expo); transform-style: preserve-3d;
         }
-        .card-glow {
-            position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: opacity 0.3s;
-            background: radial-gradient(circle at var(--x) var(--y), rgba(0, 242, 255, 0.15), transparent 50%);
-        }
+        .card:hover { border-color: var(--accent); }
+        .card-glow { position: absolute; inset: 0; background: radial-gradient(circle at var(--mx) var(--my), rgba(0,242,255,0.1), transparent 50%); opacity: 0; transition: opacity 0.3s; }
         .card:hover .card-glow { opacity: 1; }
-        .card-inner { position: relative; z-index: 2; pointer-events: none; }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin: 1.5rem 0 1rem; }
-        .card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
         
-        .btn-open { 
-            background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white;
-            padding: 0.8rem 1.5rem; border-radius: 30px; font-size: 0.7rem; text-transform: uppercase;
-            letter-spacing: 2px; pointer-events: all; transition: 0.3s; align-self: flex-start;
-        }
-        .btn-open:hover { background: white; color: black; }
+        .card-content { pointer-events: none; }
+        .card h3 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 1.5rem 0 1rem; }
+        .card p { color: var(--text-dim); font-size: 0.9rem; }
 
-        /* Slider Nav Arrows */
-        .slider-nav { position: absolute; top: -4rem; right: 0; display: flex; gap: 1rem; }
-        .nav-arrow { 
-            width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--glass-border);
-            display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;
-        }
-        .nav-arrow:hover { background: var(--accent); color: black; border-color: var(--accent); }
+        /* Arrows lower */
+        .slider-arrows { display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end; }
+        .arrow { width: 45px; height: 45px; border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .arrow:hover { background: white; color: black; }
 
-        /* Modal */
-        .modal { 
-            position: fixed; inset: 0; z-index: 10000; background: rgba(1,3,8,0.98); 
-            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s var(--expo);
-        }
-        .modal.active { opacity: 1; pointer-events: all; }
-        .modal-content { width: 90%; max-width: 900px; color: white; text-align: left; }
-        .close-modal { position: absolute; top: 2rem; right: 2rem; color: white; }
+        /* Footer / Socials */
+        footer { padding: 6rem 5vw; display: flex; flex-direction: column; align-items: center; gap: 3rem; border-top: 1px solid rgba(255,255,255,0.05); }
+        .social-row { display: flex; gap: 3rem; }
+        .social-link { color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; transition: 0.4s; }
+        .social-link:hover { color: var(--accent); transform: translateY(-5px); text-shadow: 0 0 15px var(--accent); }
 
         @media (max-width: 768px) {
-            .nav-links, .slider-nav { display: none; }
-            .about-grid { grid-template-columns: 1fr; }
-            .card-wrapper { flex: 0 0 85vw; }
-            section { padding: 5rem 5vw; }
+            .card { flex: 0 0 85vw; }
+            .stats-row { flex-direction: column; gap: 1.5rem; }
+            .hero h1 { font-size: 4rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="vignette"></div>
-    <div class="noise"></div>
-    <div class="fog-layer" id="fog"></div>
-    <canvas id="particles-canvas"></canvas>
+    <div class="fog-overlay" id="fog"></div>
+    <canvas id="particles"></canvas>
     <div id="cursor"></div>
 
     <nav>
-        <a href="#" class="nav-logo interactive">SKETCHY<span>STUDIO</span></a>
-        <div class="nav-links">
-            <a href="#about" class="interactive">About</a>
-            <a href="#projects" class="interactive">Projects</a>
-            <a href="#contact" class="interactive">Contact</a>
-        </div>
+        <a href="#" class="logo interactive">SKETCHY<span>STUDIO</span></a>
     </nav>
 
     <div class="hero">
-        <div class="hero-wrap" id="hero-wrap">
-            <h1 class="interactive">ENGINEERING<br>THE VOID</h1>
-            <p>Independent Game Developer</p>
+        <div class="hero-content" id="hero-content">
+            <h1 class="interactive">CREATING<br>DIGITAL WORLDS</h1>
+            <div class="stats-row">
+                <div class="stat-item"><h4>6+</h4><p>Years in Dev</p></div>
+                <div class="stat-item"><h4>12</h4><p>Active Projects</p></div>
+                <div class="stat-item"><h4>30k+</h4><p>Lines of Code</p></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"><div class="wheel"></div></div>
+            <p style="font-size: 0.6rem; letter-spacing: 2px;">SCROLL TO EXPLORE</p>
         </div>
     </div>
-
-    <section id="about">
-        <div class="about-grid">
-            <div class="reveal">
-                <h2 style="font-family: 'Montserrat'; font-size: 3rem; margin-bottom: 2rem;">THE ARCHITECT</h2>
-                <div class="about-text">
-                    <p>I build systems-driven experiences focused on atmosphere and mechanics. My work sits at the intersection of technical art and gameplay engineering.</p>
-                    <p>Specializing in <strong>Unity & Unreal Engine</strong>, I focus on creating tools and games that push the boundaries of immersion.</p>
-                </div>
-            </div>
-            <div class="reveal delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="stat-box interactive"><span>6+</span><br><small>Years Exp</small></div>
-                <div class="stat-box interactive"><span>12</span><br><small>Projects</small></div>
-            </div>
-        </div>
-    </section>
 
     <section id="projects">
-        <div class="projects-wrapper">
-            <h2 class="reveal" style="font-family: 'Montserrat'; font-size: 3rem; margin-bottom: 4rem;">SELECTED WORKS</h2>
-            
-            <div class="slider-nav reveal">
-                <button class="nav-arrow interactive" onclick="moveSlider(-1)"><i data-lucide="arrow-left"></i></button>
-                <button class="nav-arrow interactive" onclick="moveSlider(1)"><i data-lucide="arrow-right"></i></button>
-            </div>
+        <div class="section-header">
+            <h2 style="font-family: 'Montserrat'; font-size: 2.5rem;">WORKS</h2>
+        </div>
 
+        <div class="slider-wrapper">
             <div class="slider-container" id="slider">
-                <!-- Cards will be injected here -->
+                <!-- Projects via JS -->
+            </div>
+            <div class="slider-arrows">
+                <div class="arrow interactive" onclick="scrollS(-1)"><i data-lucide="chevron-left"></i></div>
+                <div class="arrow interactive" onclick="scrollS(1)"><i data-lucide="chevron-right"></i></div>
             </div>
         </div>
     </section>
 
-    <div class="modal" id="modal">
-        <button class="close-modal interactive" onclick="closeModal()"><i data-lucide="x" size="40"></i></button>
-        <div class="modal-content" id="modal-content"></div>
-    </div>
+    <footer>
+        <h3 style="font-family: 'Montserrat'; letter-spacing: 2px;">JOIN THE VOID</h3>
+        <div class="social-row">
+            <a href="#" class="social-link interactive"><i data-lucide="youtube"></i> YouTube</a>
+            <a href="#" class="social-link interactive"><i data-lucide="message-square"></i> Discord</a>
+            <a href="#" class="social-link interactive"><i data-lucide="instagram"></i> Instagram</a>
+        </div>
+        <p style="color: #222; font-size: 0.7rem; margin-top: 4rem;">© 2026 SKETCHY STUDIO. ALL RIGHTS RESERVED.</p>
+    </footer>
 
     <script>
         const projects = [
-            { id: 1, title: "Project Eclipse", desc: "Atmospheric deep-sea exploration engine with procedural audio.", icon: "anchor" },
-            { id: 2, title: "Kinematics Core", desc: "Advanced character movement framework for high-speed action.", icon: "zap" },
-            { id: 3, title: "Void Shader Lab", desc: "Collection of stylized post-process effects for horror games.", icon: "framer" },
-            { id: 4, title: "Neon District", desc: "Procedural city generator for cyberpunk environments.", icon: "building" }
+            { title: "Ocean Deep", desc: "A psychological horror set in a submarine.", icon: "waves" },
+            { title: "Kinetic UI", desc: "Open-source library for fluid interface animations.", icon: "mouse-pointer-2" },
+            { title: "Project Ghost", desc: "Experimental stealth-action mechanics in UE5.", icon: "eye-off" },
+            { title: "Voxel Engine", desc: "Custom C++ renderer for infinite worlds.", icon: "box" }
         ];
 
         const slider = document.getElementById('slider');
         projects.forEach(p => {
             slider.innerHTML += `
-                <div class="card-wrapper">
-                    <div class="card interactive" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                        <div class="card-glow"></div>
-                        <div class="card-inner">
-                            <i data-lucide="${p.icon}" class="card-icon" color="#00f2ff"></i>
-                            <h3>${p.title}</h3>
-                            <p>${p.desc}</p>
-                            <button class="btn-open" onclick="openModal(${p.id})">Details</button>
-                        </div>
+                <div class="card interactive" onmousemove="tilt(event, this)" onmouseleave="untilt(this)" onclick="console.log('Project Clicked')">
+                    <div class="card-glow"></div>
+                    <div class="card-content">
+                        <i data-lucide="${p.icon}" color="#00f2ff"></i>
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
                     </div>
                 </div>
             `;
         });
         lucide.createIcons();
 
-        // --- 3D TILT EFFECT (Glitch-Free) ---
-        function handleTilt(e, card) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        // 3D Tilt & Glow
+        function tilt(e, el) {
+            const r = el.getBoundingClientRect();
+            const x = e.clientX - r.left;
+            const y = e.clientY - r.top;
+            el.style.setProperty('--mx', `${x}px`);
+            el.style.setProperty('--my', `${y}px`);
             
-            card.style.setProperty('--x', `${x}px`);
-            card.style.setProperty('--y', `${y}px`);
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotX = (y - centerY) / 10;
-            const rotY = (centerX - x) / 10;
-
-            requestAnimationFrame(() => {
-                card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
-            });
+            const rx = (y - r.height/2) / -15;
+            const ry = (x - r.width/2) / 15;
+            el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
         }
 
-        function resetTilt(card) {
-            requestAnimationFrame(() => {
-                card.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-            });
+        function untilt(el) {
+            el.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
         }
 
-        // --- SINKING & FOG EFFECT ---
+        // Sinking Animation
         window.addEventListener('scroll', () => {
-            const scroll = window.scrollY;
-            const hero = document.getElementById('hero-wrap');
+            const s = window.scrollY;
+            const hero = document.getElementById('hero-content');
             const fog = document.getElementById('fog');
-
-            // Hero sinks slowly
-            hero.style.transform = `translateY(${scroll * 0.3}px)`;
-            hero.style.opacity = 1 - (scroll / 600);
-
-            // Fog rises
-            const fogProgress = Math.min(scroll / 800, 1);
-            fog.style.transform = `translateY(${100 - (fogProgress * 100)}%)`;
+            
+            hero.style.transform = `translateY(${s * 0.35}px)`;
+            hero.style.opacity = 1 - (s / 500);
+            
+            if(s > 100) {
+                fog.style.opacity = Math.min((s - 100) / 500, 0.8);
+            } else {
+                fog.style.opacity = 0;
+            }
         });
 
-        // --- SLIDER NAV ---
-        function moveSlider(dir) {
-            const cardWidth = 432; // card + gap
-            slider.scrollLeft += dir * cardWidth;
+        // Slider Nav
+        function scrollS(dir) {
+            slider.scrollBy({ left: dir * 432, behavior: 'smooth' });
         }
 
-        // --- MODAL ---
-        function openModal(id) {
-            const p = projects.find(x => x.id === id);
-            document.getElementById('modal-content').innerHTML = `
-                <h1 style="font-family: 'Montserrat'; font-size: 4rem; margin-bottom: 2rem;">${p.title}</h1>
-                <p style="color: var(--text-dim); font-size: 1.2rem; line-height: 1.8;">[PLACEHOLDER] Detailed archive for ${p.title}. Projects technical specs, breakdown and media gallery would go here.</p>
-            `;
-            document.getElementById('modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // --- CURSOR & REVEALS ---
-        const cursor = document.getElementById('cursor');
+        // Cursor
+        const cur = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
-            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+            cur.style.left = e.clientX + 'px';
+            cur.style.top = e.clientY + 'px';
         });
-
-        document.addEventListener('mouseover', e => {
+        document.body.addEventListener('mouseover', e => {
             if(e.target.closest('.interactive')) document.body.classList.add('hovering');
         });
-        document.addEventListener('mouseout', e => {
+        document.body.addEventListener('mouseout', e => {
             if(e.target.closest('.interactive')) document.body.classList.remove('hovering');
         });
 
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // --- PARTICLES ---
-        const canvas = document.getElementById('particles-canvas');
+        // Particles
+        const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
+        let pts = [];
+        function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = res; res();
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5;
-                this.speed = Math.random() * 0.5 + 0.1;
-                this.opacity = Math.random() * 0.5;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-            }
-            update() {
-                this.y -= this.speed;
-                if(this.y < 0) this.y = canvas.height;
-            }
+        class Pt {
+            constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.5; this.v = Math.random()*0.4; }
+            up() { this.y -= this.v; if(this.y < 0) this.y = canvas.height; }
+            dr() { ctx.fillStyle = "rgba(0,242,255,0.2)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, 7); ctx.fill(); }
         }
-        for(let i=0; i<50; i++) particles.push(new Particle());
-        function anim() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(anim);
-        }
+        for(let i=0; i<60; i++) pts.push(new Pt());
+        function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach(p=>{p.up();p.dr();}); requestAnimationFrame(anim); }
         anim();
     </script>
 </body>
