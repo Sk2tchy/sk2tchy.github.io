@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Independent Developer | Portfolio</title>
+    <title>Sketchy Studio | Professional Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
@@ -18,7 +18,6 @@
             --expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Base & Reset */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         body, html { 
             background: var(--bg); color: var(--text); 
@@ -27,146 +26,113 @@
             -webkit-font-smoothing: antialiased; scroll-behavior: smooth;
         }
 
-        /* Professional Overlays (Noise + Vignette) */
-        .vignette-overlay {
-            position: fixed; inset: 0; z-index: 50; pointer-events: none;
-            background: radial-gradient(circle at center, transparent 40%, rgba(1, 3, 8, 0.9) 100%);
-        }
-        .noise-overlay {
-            position: fixed; inset: 0; z-index: 51; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+        /* Ambient Overlays */
+        .vignette { position: fixed; inset: 0; z-index: 50; pointer-events: none; background: radial-gradient(circle, transparent 20%, rgba(1,3,8,0.8) 100%); }
+        .noise { position: fixed; inset: 0; z-index: 51; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+        
+        /* Animated Fog Overlay (Sinking effect) */
+        .fog-layer {
+            position: fixed; inset: 0; z-index: 45; pointer-events: none;
+            background: linear-gradient(180deg, transparent, rgba(0, 242, 255, 0.03) 50%, rgba(1, 3, 8, 0.5) 100%);
+            transform: translateY(100%); transition: transform 1.5s var(--expo);
+            will-change: transform;
         }
 
-        /* Cinematic Particles */
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #particles-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
-        /* Smooth Custom Cursor */
+        /* Cursor */
         #cursor {
-            position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
-            background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate3d(-50%, -50%, 0); 
-            transition: width 0.3s var(--expo), height 0.3s var(--expo), background 0.3s var(--expo), border 0.3s var(--expo);
-            will-change: transform, width, height; box-shadow: 0 0 10px var(--accent);
+            position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            transform: translate3d(-50%, -50%, 0); will-change: transform;
+            transition: width 0.4s var(--expo), height 0.4s var(--expo), background 0.4s var(--expo);
         }
-        body.hovering #cursor { 
-            width: 40px; height: 40px; background: rgba(0, 242, 255, 0.05); 
-            border: 1px solid rgba(0, 242, 255, 0.4); backdrop-filter: blur(2px); box-shadow: none;
-        }
+        body.hovering #cursor { width: 45px; height: 45px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); }
 
-        @media (pointer: coarse) { * { cursor: auto !important; } #cursor { display: none !important; } }
+        @media (pointer: coarse) { * { cursor: auto !important; } #cursor { display: none; } }
 
-        /* Navigation with Links */
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 2.5rem 5vw; 
-            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
-            background: linear-gradient(to bottom, rgba(1,3,8,0.8), transparent);
-        }
-        .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; text-decoration: none; color: white; }
-        .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 2.5rem; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; transition: 0.3s; }
+        /* Nav */
+        nav { position: fixed; top: 0; width: 100%; padding: 2rem 5vw; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; color: white; text-decoration: none; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
         .nav-links a:hover { color: white; }
 
-        /* Animation Classes */
-        .reveal { opacity: 0; transform: translateY(40px); transition: 1s var(--expo); will-change: opacity, transform; }
+        /* Hero */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; perspective: 1000px; }
+        .hero-wrap { will-change: transform, opacity; transition: transform 0.1s linear; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 900; line-height: 0.9; letter-spacing: -4px; background: linear-gradient(180deg, #fff, #222); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--accent); letter-spacing: 10px; text-transform: uppercase; font-size: 0.7rem; margin-top: 1rem; }
+
+        /* Sections */
+        section { padding: 10rem 5vw; position: relative; z-index: 60; }
+        .reveal { opacity: 0; transform: translateY(30px); transition: 1.5s var(--expo); }
         .reveal.active { opacity: 1; transform: translateY(0); }
-        .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; }
 
-        /* Hero Section with Sinking Effect */
-        .hero { 
-            height: 100vh; display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; text-align: center; position: relative; z-index: 10;
-        }
-        .hero-content {
-            display: flex; flex-direction: column; align-items: center;
-            will-change: transform, opacity; /* Optimalizace pro parallax */
-        }
-        .hero h1 {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 12vw, 9rem);
-            font-weight: 900; letter-spacing: -3px; line-height: 0.9;
-            background: linear-gradient(180deg, #ffffff 0%, #3a4b5c 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero-subtitle { 
-            color: var(--accent); letter-spacing: 12px; text-transform: uppercase; 
-            font-weight: 600; margin-top: 1.5rem; font-size: 0.75rem; 
-        }
+        /* About */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1200px; margin: 0 auto; }
+        .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 2rem; }
+        .stat-box { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 12px; transition: 0.3s; }
+        .stat-box:hover { background: rgba(0, 242, 255, 0.02); border-color: var(--accent); }
 
-        /* General Section */
-        section { padding: 8rem 5vw; width: 100%; position: relative; z-index: 20; }
-        .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 4rem; }
-
-        /* About Section */
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1200px; margin: 0 auto; }
-        .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 1.5rem; }
-        .about-text strong { color: white; font-weight: 600; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .stat-box { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.5rem; transition: 0.3s; }
-        .stat-box:hover { border-color: rgba(0, 242, 255, 0.2); background: rgba(0, 242, 255, 0.02); }
-        .stat-box span { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
-        .stat-box label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Projects Slider & 3D Interactive Cards */
-        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 4rem; scrollbar-width: none; cursor: grab; perspective: 1200px; }
+        /* Projects Slider & 3D Cards */
+        .projects-wrapper { position: relative; width: 100%; }
+        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding: 2rem 0 4rem; scrollbar-width: none; scroll-behavior: smooth; }
         .slider-container::-webkit-scrollbar { display: none; }
-        .slider-container:active { cursor: grabbing; }
 
-        .card-wrapper { flex: 0 0 420px; transform-style: preserve-3d; }
-        
+        .card-wrapper { flex: 0 0 400px; transform-style: preserve-3d; perspective: 1000px; }
         .card {
-            background: #02050a; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;
-            padding: 3rem; display: flex; flex-direction: column; height: 100%;
-            position: relative; overflow: hidden; user-select: none;
-            /* 3D Tilt CSS Variables assigned via JS */
-            transform: rotateX(var(--rotX, 0deg)) rotateY(var(--rotY, 0deg)) scale(var(--scale, 1));
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s;
-            transform-style: preserve-3d; will-change: transform;
+            background: #02050a; border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 3.5rem 2.5rem; height: 100%; position: relative; overflow: hidden;
+            transition: transform 0.15s ease-out, border-color 0.3s; will-change: transform;
+            display: flex; flex-direction: column;
         }
-        .card:hover { --scale: 1.02; border-color: rgba(255,255,255,0.1); z-index: 10; }
-
-        /* Mouse Follow Glow Effect */
-        .card::before {
-            content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.4s; pointer-events: none;
-            background: radial-gradient(800px circle at var(--mouseX, 50%) var(--mouseY, 50%), rgba(0, 242, 255, 0.08), transparent 40%);
+        .card-glow {
+            position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: opacity 0.3s;
+            background: radial-gradient(circle at var(--x) var(--y), rgba(0, 242, 255, 0.15), transparent 50%);
         }
-        .card:hover::before { opacity: 1; }
-
-        .card-content { position: relative; z-index: 1; transform: translateZ(30px); pointer-events: none; display: flex; flex-direction: column; height: 100%; }
-        .card-icon { color: var(--accent); margin-bottom: 2.5rem; opacity: 0.8; transition: 0.3s; }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 1rem; color: white; letter-spacing: -0.5px; }
-        .card p { color: var(--text-dim); line-height: 1.7; font-size: 1rem; margin-bottom: 2.5rem; flex-grow: 1; }
-
-        .btn-more {
-            align-self: flex-start; padding: 0.8rem 0; border: none; background: transparent; pointer-events: auto;
-            color: var(--accent); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;
-            display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
+        .card:hover .card-glow { opacity: 1; }
+        .card-inner { position: relative; z-index: 2; pointer-events: none; }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin: 1.5rem 0 1rem; }
+        .card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
+        
+        .btn-open { 
+            background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white;
+            padding: 0.8rem 1.5rem; border-radius: 30px; font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 2px; pointer-events: all; transition: 0.3s; align-self: flex-start;
         }
-        .card:hover .btn-more { gap: 1rem; }
+        .btn-open:hover { background: white; color: black; }
 
-        /* Footer */
-        footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 20; background: var(--bg); }
-        .footer-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; }
-        .social-links { display: flex; gap: 1.5rem; }
-        .social-links a { color: var(--text-dim); transition: 0.3s; }
-        .social-links a:hover { color: white; transform: translateY(-3px); }
+        /* Slider Nav Arrows */
+        .slider-nav { position: absolute; top: -4rem; right: 0; display: flex; gap: 1rem; }
+        .nav-arrow { 
+            width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;
+        }
+        .nav-arrow:hover { background: var(--accent); color: black; border-color: var(--accent); }
 
-        /* Mobile */
+        /* Modal */
+        .modal { 
+            position: fixed; inset: 0; z-index: 10000; background: rgba(1,3,8,0.98); 
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s var(--expo);
+        }
+        .modal.active { opacity: 1; pointer-events: all; }
+        .modal-content { width: 90%; max-width: 900px; color: white; text-align: left; }
+        .close-modal { position: absolute; top: 2rem; right: 2rem; color: white; }
+
         @media (max-width: 768px) {
-            .nav-links { display: none; }
+            .nav-links, .slider-nav { display: none; }
+            .about-grid { grid-template-columns: 1fr; }
+            .card-wrapper { flex: 0 0 85vw; }
             section { padding: 5rem 5vw; }
-            .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .slider-container { scroll-snap-type: x mandatory; padding-bottom: 2rem; gap: 1rem; }
-            .card-wrapper { flex: 0 0 85vw; scroll-snap-align: center; }
-            .card { transform: none !important; } /* Vypnuto na mobilu pro výkon */
-            .card::before { display: none; }
-            footer { flex-direction: column; gap: 2rem; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="vignette-overlay"></div>
-    <div class="noise-overlay"></div>
+    <div class="vignette"></div>
+    <div class="noise"></div>
+    <div class="fog-layer" id="fog"></div>
     <canvas id="particles-canvas"></canvas>
     <div id="cursor"></div>
 
@@ -174,71 +140,73 @@
         <a href="#" class="nav-logo interactive">SKETCHY<span>STUDIO</span></a>
         <div class="nav-links">
             <a href="#about" class="interactive">About</a>
-            <a href="#projects" class="interactive">Work</a>
+            <a href="#projects" class="interactive">Projects</a>
             <a href="#contact" class="interactive">Contact</a>
         </div>
     </nav>
 
     <div class="hero">
-        <div class="hero-content" id="hero-content">
+        <div class="hero-wrap" id="hero-wrap">
             <h1 class="interactive">ENGINEERING<br>THE VOID</h1>
-            <p class="hero-subtitle">Independent Game Developer</p>
+            <p>Independent Game Developer</p>
         </div>
     </div>
 
     <section id="about">
-        <h2 class="section-title reveal">THE ARCHITECT</h2>
         <div class="about-grid">
-            <div class="about-text reveal delay-1">
-                <p>I am an independent developer focused on building atmospheric, systems-driven experiences. My work revolves around the intersection of dark environments and fluid mechanics.</p>
-                <p>I engineer complex digital ecosystems where <strong>procedural generation</strong>, <strong>dynamic audio</strong>, and <strong>custom physics controllers</strong> dictate the player's survival.</p>
+            <div class="reveal">
+                <h2 style="font-family: 'Montserrat'; font-size: 3rem; margin-bottom: 2rem;">THE ARCHITECT</h2>
+                <div class="about-text">
+                    <p>I build systems-driven experiences focused on atmosphere and mechanics. My work sits at the intersection of technical art and gameplay engineering.</p>
+                    <p>Specializing in <strong>Unity & Unreal Engine</strong>, I focus on creating tools and games that push the boundaries of immersion.</p>
+                </div>
             </div>
-            <div class="stats-grid reveal delay-2">
-                <div class="stat-box interactive">
-                    <span>C# / C++</span>
-                    <label>Core Languages</label>
-                </div>
-                <div class="stat-box interactive">
-                    <span>Unity / UE5</span>
-                    <label>Architecture</label>
-                </div>
+            <div class="reveal delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="stat-box interactive"><span>6+</span><br><small>Years Exp</small></div>
+                <div class="stat-box interactive"><span>12</span><br><small>Projects</small></div>
             </div>
         </div>
     </section>
 
     <section id="projects">
-        <h2 class="section-title reveal">SELECTED WORKS</h2>
-        <div class="slider-container reveal delay-1" id="slider">
-            <!-- Vygenerováno pomocí JS -->
+        <div class="projects-wrapper">
+            <h2 class="reveal" style="font-family: 'Montserrat'; font-size: 3rem; margin-bottom: 4rem;">SELECTED WORKS</h2>
+            
+            <div class="slider-nav reveal">
+                <button class="nav-arrow interactive" onclick="moveSlider(-1)"><i data-lucide="arrow-left"></i></button>
+                <button class="nav-arrow interactive" onclick="moveSlider(1)"><i data-lucide="arrow-right"></i></button>
+            </div>
+
+            <div class="slider-container" id="slider">
+                <!-- Cards will be injected here -->
+            </div>
         </div>
     </section>
 
-    <footer id="contact">
-        <div class="footer-logo">SKETCHY STUDIO</div>
-        <div class="social-links">
-            <a href="#" class="interactive"><i data-lucide="github"></i></a>
-            <a href="#" class="interactive"><i data-lucide="twitter"></i></a>
-            <a href="#" class="interactive"><i data-lucide="mail"></i></a>
-        </div>
-    </footer>
+    <div class="modal" id="modal">
+        <button class="close-modal interactive" onclick="closeModal()"><i data-lucide="x" size="40"></i></button>
+        <div class="modal-content" id="modal-content"></div>
+    </div>
 
     <script>
         const projects = [
-            { id: 'eclipse', title: 'Project Eclipse', icon: 'anchor', desc: 'A non-linear survival experience set in the crushing depths of the ocean. Focused heavily on dynamic audio propagation.' },
-            { id: 'kinematics', title: 'Kinematics Engine', icon: 'cpu', desc: 'A custom character controller framework prioritizing realistic inertia and fluid state transitions.' },
-            { id: 'neon', title: 'Neon District', icon: 'layers', desc: 'Procedural city generation algorithm optimized for dense, cyberpunk-styled vertical environments.' }
+            { id: 1, title: "Project Eclipse", desc: "Atmospheric deep-sea exploration engine with procedural audio.", icon: "anchor" },
+            { id: 2, title: "Kinematics Core", desc: "Advanced character movement framework for high-speed action.", icon: "zap" },
+            { id: 3, title: "Void Shader Lab", desc: "Collection of stylized post-process effects for horror games.", icon: "framer" },
+            { id: 4, title: "Neon District", desc: "Procedural city generator for cyberpunk environments.", icon: "building" }
         ];
 
         const slider = document.getElementById('slider');
         projects.forEach(p => {
             slider.innerHTML += `
                 <div class="card-wrapper">
-                    <div class="card interactive">
-                        <div class="card-content">
-                            <i data-lucide="${p.icon}" size="40" class="card-icon"></i>
+                    <div class="card interactive" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                        <div class="card-glow"></div>
+                        <div class="card-inner">
+                            <i data-lucide="${p.icon}" class="card-icon" color="#00f2ff"></i>
                             <h3>${p.title}</h3>
                             <p>${p.desc}</p>
-                            <button class="btn-more">View Archive <i data-lucide="arrow-right" size="16"></i></button>
+                            <button class="btn-open" onclick="openModal(${p.id})">Details</button>
                         </div>
                     </div>
                 </div>
@@ -246,83 +214,89 @@
         });
         lucide.createIcons();
 
-        // 3D Tilt Effect + Mouse Glow (Glitch-Free pomocí CSS Variables)
-        const isTouch = window.matchMedia("(pointer: coarse)").matches;
-        if (!isTouch) {
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    // Nastavení pozice pro gradient
-                    card.style.setProperty('--mouseX', `${x}px`);
-                    card.style.setProperty('--mouseY', `${y}px`);
-                    
-                    // Výpočet rotace (max 8 stupňů pro eleganci)
-                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -8;
-                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
-                    
-                    card.style.setProperty('--rotX', `${rotateX}deg`);
-                    card.style.setProperty('--rotY', `${rotateY}deg`);
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.setProperty('--rotX', `0deg`);
-                    card.style.setProperty('--rotY', `0deg`);
-                });
+        // --- 3D TILT EFFECT (Glitch-Free) ---
+        function handleTilt(e, card) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotX = (y - centerY) / 10;
+            const rotY = (centerX - x) / 10;
+
+            requestAnimationFrame(() => {
+                card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
             });
         }
 
-        // Parallax Sinking Effect (Efekt potápění nadpisu)
+        function resetTilt(card) {
+            requestAnimationFrame(() => {
+                card.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            });
+        }
+
+        // --- SINKING & FOG EFFECT ---
         window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const heroContent = document.getElementById('hero-content');
-            // Nadpis klesá dolů a pomalu mizí
-            heroContent.style.transform = `translateY(${scrollY * 0.4}px)`;
-            heroContent.style.opacity = Math.max(1 - (scrollY / 400), 0);
+            const scroll = window.scrollY;
+            const hero = document.getElementById('hero-wrap');
+            const fog = document.getElementById('fog');
+
+            // Hero sinks slowly
+            hero.style.transform = `translateY(${scroll * 0.3}px)`;
+            hero.style.opacity = 1 - (scroll / 600);
+
+            // Fog rises
+            const fogProgress = Math.min(scroll / 800, 1);
+            fog.style.transform = `translateY(${100 - (fogProgress * 100)}%)`;
         });
 
-        // Smooth Custom Cursor
-        if (!isTouch) {
-            const cursor = document.getElementById('cursor');
-            let mouseX = 0, mouseY = 0;
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX; mouseY = e.clientY;
-                cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-            });
-            document.body.addEventListener('mouseover', e => {
-                if(e.target.closest('.interactive')) document.body.classList.add('hovering');
-            });
-            document.body.addEventListener('mouseout', e => {
-                if(e.target.closest('.interactive')) document.body.classList.remove('hovering');
-            });
+        // --- SLIDER NAV ---
+        function moveSlider(dir) {
+            const cardWidth = 432; // card + gap
+            slider.scrollLeft += dir * cardWidth;
         }
 
-        // Scroll Reveal Animations
-        const observer = new IntersectionObserver((entries) => {
+        // --- MODAL ---
+        function openModal(id) {
+            const p = projects.find(x => x.id === id);
+            document.getElementById('modal-content').innerHTML = `
+                <h1 style="font-family: 'Montserrat'; font-size: 4rem; margin-bottom: 2rem;">${p.title}</h1>
+                <p style="color: var(--text-dim); font-size: 1.2rem; line-height: 1.8;">[PLACEHOLDER] Detailed archive for ${p.title}. Projects technical specs, breakdown and media gallery would go here.</p>
+            `;
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- CURSOR & REVEALS ---
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+        });
+
+        document.addEventListener('mouseover', e => {
+            if(e.target.closest('.interactive')) document.body.classList.add('hovering');
+        });
+        document.addEventListener('mouseout', e => {
+            if(e.target.closest('.interactive')) document.body.classList.remove('hovering');
+        });
+
+        const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
+                if(entry.isIntersecting) entry.target.classList.add('active');
             });
-        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+        }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Smooth Drag Slider pro projekty
-        let isDown = false; let startX; let scrollLeft;
-        slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-        slider.addEventListener('mouseleave', () => isDown = false);
-        slider.addEventListener('mouseup', () => isDown = false);
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - slider.offsetLeft;
-            slider.scrollLeft = scrollLeft - (x - startX) * 1.5;
-        });
-
-        // Ambient Particles
+        // --- PARTICLES ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -331,30 +305,28 @@
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.speedY = Math.random() * -0.3 - 0.1;
-                this.opacity = Math.random() * 0.3 + 0.1;
-            }
-            update() {
-                this.y += this.speedY;
-                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5;
+                this.speed = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random() * 0.5;
             }
             draw() {
                 ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+            update() {
+                this.y -= this.speed;
+                if(this.y < 0) this.y = canvas.height;
             }
         }
-        
-        const pCount = isTouch ? 20 : 50; 
-        for(let i=0; i<pCount; i++) particles.push(new Particle());
-        
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for(let i=0; i<50; i++) particles.push(new Particle());
+        function anim() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+            requestAnimationFrame(anim);
         }
-        animate();
+        anim();
     </script>
 </body>
 </html>
