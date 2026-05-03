@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Independent Developer | Portfolio</title>
+    <title>Sketchy Studio | Dev Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
@@ -14,7 +14,7 @@
             --text: #ffffff;
             --text-dim: #7a8d9c;
             --glass: rgba(5, 10, 20, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.03);
             --expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -24,16 +24,12 @@
             background: var(--bg); color: var(--text); 
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden; width: 100%;
-            -webkit-font-smoothing: antialiased; scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Professional Overlays (Noise + Vignette) */
-        .vignette-overlay {
-            position: fixed; inset: 0; z-index: 50; pointer-events: none;
-            background: radial-gradient(circle at center, transparent 40%, rgba(1, 3, 8, 0.9) 100%);
-        }
+        /* Texture Overlay - Adds "Sketchy" cinematic feel */
         .noise-overlay {
-            position: fixed; inset: 0; z-index: 51; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay;
+            position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.02; mix-blend-mode: overlay;
             background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
         }
 
@@ -44,53 +40,53 @@
         #cursor {
             position: fixed; top: 0; left: 0; width: 6px; height: 6px; 
             background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate3d(-50%, -50%, 0); 
+            transform: translate3d(-50%, -50%, 0); /* Hardware accelerated */
             transition: width 0.3s var(--expo), height 0.3s var(--expo), background 0.3s var(--expo), border 0.3s var(--expo);
-            will-change: transform, width, height; box-shadow: 0 0 10px var(--accent);
+            will-change: transform, width, height;
         }
         body.hovering #cursor { 
-            width: 40px; height: 40px; background: rgba(0, 242, 255, 0.05); 
-            border: 1px solid rgba(0, 242, 255, 0.4); backdrop-filter: blur(2px); box-shadow: none;
+            width: 45px; height: 45px; background: rgba(0, 242, 255, 0.05); 
+            border: 1px solid rgba(0, 242, 255, 0.4); backdrop-filter: blur(2px);
         }
 
-        @media (pointer: coarse) { * { cursor: auto !important; } #cursor { display: none !important; } }
+        @media (pointer: coarse) {
+            * { cursor: auto !important; }
+            #cursor, .noise-overlay { display: none !important; } /* Cleaned for mobile */
+        }
 
-        /* Navigation with Links */
+        /* Navbar */
         nav {
-            position: fixed; top: 0; width: 100%; padding: 2.5rem 5vw; 
+            position: absolute; top: 0; width: 100%; padding: 2.5rem 5vw; 
             display: flex; justify-content: space-between; align-items: center; z-index: 1000;
-            background: linear-gradient(to bottom, rgba(1,3,8,0.8), transparent);
         }
         .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; text-decoration: none; color: white; }
         .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 2.5rem; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; transition: 0.3s; }
-        .nav-links a:hover { color: white; }
 
         /* Animation Classes */
         .reveal { opacity: 0; transform: translateY(40px); transition: 1s var(--expo); will-change: opacity, transform; }
         .reveal.active { opacity: 1; transform: translateY(0); }
         .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; }
 
-        /* Hero Section with Sinking Effect */
+        /* Hero Section */
         .hero { 
             height: 100vh; display: flex; flex-direction: column; justify-content: center; 
             align-items: center; text-align: center; position: relative; z-index: 10;
-        }
-        .hero-content {
-            display: flex; flex-direction: column; align-items: center;
-            will-change: transform, opacity; /* Optimalizace pro parallax */
         }
         .hero h1 {
             font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 12vw, 9rem);
             font-weight: 900; letter-spacing: -3px; line-height: 0.9;
             background: linear-gradient(180deg, #ffffff 0%, #3a4b5c 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: heroIn 1.5s var(--expo) forwards; opacity: 0; transform: translateY(30px) scale(0.95);
         }
+        @keyframes heroIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+        
         .hero-subtitle { 
             color: var(--accent); letter-spacing: 12px; text-transform: uppercase; 
             font-weight: 600; margin-top: 1.5rem; font-size: 0.75rem; 
+            opacity: 0; animation: fadeUp 1s 0.5s var(--expo) forwards;
         }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
         /* General Section */
         section { padding: 8rem 5vw; width: 100%; position: relative; z-index: 20; }
@@ -101,50 +97,73 @@
         .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 1.5rem; }
         .about-text strong { color: white; font-weight: 600; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .stat-box { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.5rem; transition: 0.3s; }
-        .stat-box:hover { border-color: rgba(0, 242, 255, 0.2); background: rgba(0, 242, 255, 0.02); }
+        .stat-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.5rem; transition: 0.3s; }
+        .stat-box:hover { border-color: rgba(0, 242, 255, 0.2); transform: translateY(-5px); }
         .stat-box span { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
         .stat-box label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Projects Slider & 3D Interactive Cards */
-        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 4rem; scrollbar-width: none; cursor: grab; perspective: 1200px; }
+        /* Slider & Cards - Glitch-Free & Professional */
+        .slider-container { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 4rem; scrollbar-width: none; cursor: grab; }
         .slider-container::-webkit-scrollbar { display: none; }
         .slider-container:active { cursor: grabbing; }
 
-        .card-wrapper { flex: 0 0 420px; transform-style: preserve-3d; }
-        
+        .card-wrapper { flex: 0 0 420px; }
         .card {
-            background: #02050a; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;
+            background: #02060d; border: 1px solid rgba(255,255,255,0.02); border-radius: 16px;
             padding: 3rem; display: flex; flex-direction: column; height: 100%;
-            position: relative; overflow: hidden; user-select: none;
-            /* 3D Tilt CSS Variables assigned via JS */
-            transform: rotateX(var(--rotX, 0deg)) rotateY(var(--rotY, 0deg)) scale(var(--scale, 1));
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s;
-            transform-style: preserve-3d; will-change: transform;
+            transition: transform 0.4s var(--expo), border-color 0.4s var(--expo), box-shadow 0.4s var(--expo);
+            user-select: none; position: relative; overflow: hidden;
+            /* Hardware acceleration to stop glitching */
+            will-change: transform; transform: translateZ(0); 
         }
-        .card:hover { --scale: 1.02; border-color: rgba(255,255,255,0.1); z-index: 10; }
-
-        /* Mouse Follow Glow Effect */
-        .card::before {
-            content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.4s; pointer-events: none;
-            background: radial-gradient(800px circle at var(--mouseX, 50%) var(--mouseY, 50%), rgba(0, 242, 255, 0.08), transparent 40%);
+        
+        /* Smooth Hover effect replacing the glitchy 3D tilt */
+        .card:hover {
+            transform: translateY(-10px) translateZ(0);
+            border-color: rgba(0, 242, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 242, 255, 0.05);
         }
-        .card:hover::before { opacity: 1; }
 
-        .card-content { position: relative; z-index: 1; transform: translateZ(30px); pointer-events: none; display: flex; flex-direction: column; height: 100%; }
         .card-icon { color: var(--accent); margin-bottom: 2.5rem; opacity: 0.8; transition: 0.3s; }
+        .card:hover .card-icon { opacity: 1; transform: scale(1.1); }
+        
         .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 1rem; color: white; letter-spacing: -0.5px; }
         .card p { color: var(--text-dim); line-height: 1.7; font-size: 1rem; margin-bottom: 2.5rem; flex-grow: 1; }
 
         .btn-more {
-            align-self: flex-start; padding: 0.8rem 0; border: none; background: transparent; pointer-events: auto;
+            align-self: flex-start; padding: 0.8rem 0; border: none; background: transparent;
             color: var(--accent); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;
             display: flex; align-items: center; gap: 0.5rem; transition: 0.3s;
         }
-        .card:hover .btn-more { gap: 1rem; }
+        .card:hover .btn-more { gap: 1rem; } /* Pushes arrow on hover */
 
-        /* Footer */
-        footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 20; background: var(--bg); }
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(1, 3, 8, 0.98); z-index: 5000;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s var(--expo);
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .modal-content {
+            width: 100%; max-width: 1100px; height: 100vh; max-height: 90vh; background: transparent;
+            padding: 2rem 4rem; overflow-y: auto; overflow-x: hidden; position: relative;
+            transform: scale(0.98) translateY(20px); transition: 0.5s var(--expo);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+        .modal-content::-webkit-scrollbar { display: none; }
+        
+        .close-btn { position: fixed; top: 2rem; right: 3rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: white; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 100; backdrop-filter: blur(5px); }
+        .close-btn:hover { background: var(--accent); color: black; transform: rotate(90deg); }
+
+        .modal-body { display: flex; flex-direction: column; gap: 3rem; padding-bottom: 4rem; }
+        .modal-header h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -2px; }
+        .modal-header span { color: var(--accent); font-weight: 600; letter-spacing: 2px; font-size: 0.9rem; text-transform: uppercase; }
+        .modal-desc { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; max-width: 800px; }
+        
+        .media-block { background: #040914; border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #1a2938; font-weight: 700; letter-spacing: 2px; }
+
+        /* Minimal Footer */
+        footer { padding: 4rem 5vw; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .footer-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; }
         .social-links { display: flex; gap: 1.5rem; }
         .social-links a { color: var(--text-dim); transition: 0.3s; }
@@ -152,38 +171,30 @@
 
         /* Mobile */
         @media (max-width: 768px) {
-            .nav-links { display: none; }
             section { padding: 5rem 5vw; }
             .about-grid { grid-template-columns: 1fr; gap: 3rem; }
             .slider-container { scroll-snap-type: x mandatory; padding-bottom: 2rem; gap: 1rem; }
             .card-wrapper { flex: 0 0 85vw; scroll-snap-align: center; }
-            .card { transform: none !important; } /* Vypnuto na mobilu pro výkon */
-            .card::before { display: none; }
+            .card { padding: 2.5rem 2rem; }
+            .modal-content { padding: 5rem 1.5rem 2rem 1.5rem; height: 100vh; max-height: 100vh; }
+            .close-btn { top: 1rem; right: 1rem; width: 40px; height: 40px; }
             footer { flex-direction: column; gap: 2rem; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="vignette-overlay"></div>
     <div class="noise-overlay"></div>
     <canvas id="particles-canvas"></canvas>
     <div id="cursor"></div>
 
     <nav>
         <a href="#" class="nav-logo interactive">SKETCHY<span>STUDIO</span></a>
-        <div class="nav-links">
-            <a href="#about" class="interactive">About</a>
-            <a href="#projects" class="interactive">Work</a>
-            <a href="#contact" class="interactive">Contact</a>
-        </div>
     </nav>
 
     <div class="hero">
-        <div class="hero-content" id="hero-content">
-            <h1 class="interactive">ENGINEERING<br>THE VOID</h1>
-            <p class="hero-subtitle">Independent Game Developer</p>
-        </div>
+        <h1 class="interactive">ENGINEERING<br>THE VOID</h1>
+        <p class="hero-subtitle">Independent Game Developer</p>
     </div>
 
     <section id="about">
@@ -209,86 +220,57 @@
     <section id="projects">
         <h2 class="section-title reveal">SELECTED WORKS</h2>
         <div class="slider-container reveal delay-1" id="slider">
-            <!-- Vygenerováno pomocí JS -->
+            <!-- Generated via JS -->
         </div>
     </section>
 
-    <footer id="contact">
+    <footer>
         <div class="footer-logo">SKETCHY STUDIO</div>
         <div class="social-links">
             <a href="#" class="interactive"><i data-lucide="github"></i></a>
             <a href="#" class="interactive"><i data-lucide="twitter"></i></a>
-            <a href="#" class="interactive"><i data-lucide="mail"></i></a>
+            <a href="#" class="interactive"><i data-lucide="discord"></i></a>
         </div>
     </footer>
 
+    <div class="modal-overlay" id="modal">
+        <button class="close-btn interactive" onclick="closeModal()"><i data-lucide="x" size="24"></i></button>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
     <script>
         const projects = [
-            { id: 'eclipse', title: 'Project Eclipse', icon: 'anchor', desc: 'A non-linear survival experience set in the crushing depths of the ocean. Focused heavily on dynamic audio propagation.' },
-            { id: 'kinematics', title: 'Kinematics Engine', icon: 'cpu', desc: 'A custom character controller framework prioritizing realistic inertia and fluid state transitions.' },
-            { id: 'neon', title: 'Neon District', icon: 'layers', desc: 'Procedural city generation algorithm optimized for dense, cyberpunk-styled vertical environments.' }
+            { id: 'eclipse', title: 'Project Eclipse', type: 'Survival Horror', icon: 'anchor', desc: 'A non-linear survival experience set in the crushing depths of the ocean. Focused heavily on dynamic audio propagation.', fullDesc: 'Project Eclipse is an ongoing experiment in deep-sea horror. The game uses a custom procedural audio engine that calculates sound reflection in real-time underwater, forcing the player to navigate pure darkness using echolocation.' },
+            { id: 'kinematics', title: 'Kinematics Engine', type: 'Core System', icon: 'cpu', desc: 'A custom character controller framework prioritizing realistic inertia and fluid state transitions.', fullDesc: 'Built entirely from scratch, this kinematics engine bypasses standard rigid-body constraints. It features predictive footing and momentum preservation during high-speed maneuvers.' },
+            { id: 'neon', title: 'Neon District', type: 'Environment Tool', icon: 'layers', desc: 'Procedural city generation algorithm optimized for dense, cyberpunk-styled vertical environments.', fullDesc: 'A toolset designed to generate infinite, highly detailed city blocks. It handles structural logic and dynamic lighting setup automatically, drastically reducing level design iteration time.' }
         ];
 
         const slider = document.getElementById('slider');
         projects.forEach(p => {
             slider.innerHTML += `
                 <div class="card-wrapper">
-                    <div class="card interactive">
-                        <div class="card-content">
-                            <i data-lucide="${p.icon}" size="40" class="card-icon"></i>
-                            <h3>${p.title}</h3>
-                            <p>${p.desc}</p>
-                            <button class="btn-more">View Archive <i data-lucide="arrow-right" size="16"></i></button>
-                        </div>
+                    <div class="card interactive" onclick="openModal('${p.id}')">
+                        <i data-lucide="${p.icon}" size="40" class="card-icon"></i>
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
+                        <button class="btn-more">View Archive <i data-lucide="arrow-right" size="16"></i></button>
                     </div>
                 </div>
             `;
         });
         lucide.createIcons();
 
-        // 3D Tilt Effect + Mouse Glow (Glitch-Free pomocí CSS Variables)
+        // Cursor Logic (Performance Optimized)
         const isTouch = window.matchMedia("(pointer: coarse)").matches;
-        if (!isTouch) {
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    // Nastavení pozice pro gradient
-                    card.style.setProperty('--mouseX', `${x}px`);
-                    card.style.setProperty('--mouseY', `${y}px`);
-                    
-                    // Výpočet rotace (max 8 stupňů pro eleganci)
-                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -8;
-                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
-                    
-                    card.style.setProperty('--rotX', `${rotateX}deg`);
-                    card.style.setProperty('--rotY', `${rotateY}deg`);
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.setProperty('--rotX', `0deg`);
-                    card.style.setProperty('--rotY', `0deg`);
-                });
-            });
-        }
-
-        // Parallax Sinking Effect (Efekt potápění nadpisu)
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const heroContent = document.getElementById('hero-content');
-            // Nadpis klesá dolů a pomalu mizí
-            heroContent.style.transform = `translateY(${scrollY * 0.4}px)`;
-            heroContent.style.opacity = Math.max(1 - (scrollY / 400), 0);
-        });
-
-        // Smooth Custom Cursor
         if (!isTouch) {
             const cursor = document.getElementById('cursor');
             let mouseX = 0, mouseY = 0;
+            
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
+                // Using transform instead of left/top for 60fps cursor
                 cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
             });
             document.body.addEventListener('mouseover', e => {
@@ -299,20 +281,23 @@
             });
         }
 
-        // Scroll Reveal Animations
+        // Scroll Reveal Animations (Intersection Observer)
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
+                    observer.unobserve(entry.target); // Animate only once
                 }
             });
-        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+        }, observerOptions);
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Smooth Drag Slider pro projekty
+        // Smooth Drag Slider
         let isDown = false; let startX; let scrollLeft;
-        slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
+        });
         slider.addEventListener('mouseleave', () => isDown = false);
         slider.addEventListener('mouseup', () => isDown = false);
         slider.addEventListener('mousemove', (e) => {
@@ -322,7 +307,7 @@
             slider.scrollLeft = scrollLeft - (x - startX) * 1.5;
         });
 
-        // Ambient Particles
+        // Ambient Particles (Optimized)
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -355,6 +340,30 @@
             requestAnimationFrame(animate);
         }
         animate();
+
+        // Modal Handling
+        function openModal(id) {
+            const p = projects.find(x => x.id === id);
+            document.getElementById('modal-body').innerHTML = `
+                <div class="modal-header">
+                    <h2>${p.title}</h2>
+                    <span>${p.type}</span>
+                </div>
+                <div class="media-block">[PLACEHOLDER_MAIN_VISUAL]</div>
+                <p class="modal-desc">${p.fullDesc}</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_GALLERY_1]</div>
+                    <div class="media-block" style="aspect-ratio: 4/3;">[PLACEHOLDER_GALLERY_2]</div>
+                </div>
+            `;
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if(!isTouch) document.body.classList.remove('hovering'); // Reset cursor
+        }
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
     </script>
 </body>
 </html>
