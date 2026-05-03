@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sketchy Studio | Archive</title>
+    <title>Sketchy Studio | Industrial Portfolio</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
@@ -37,88 +37,102 @@
         body.hovering #cursor { width: 55px; height: 55px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); backdrop-filter: blur(4px); }
 
         /* Nav */
-        nav { position: fixed; top: 0; width: 100%; padding: 2.5rem 5vw; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        nav { position: fixed; top: 0; width: 100%; padding: 2rem 5vw; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(1,3,8,0.8), transparent); }
         .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2px; text-decoration: none; color: white; }
         .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 3rem; }
+        .nav-links { display: flex; gap: 2.5rem; }
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; transition: 0.3s; }
-        .nav-links a:hover { color: white; text-shadow: 0 0 10px var(--accent); }
+        .nav-links a:hover { color: white; }
 
-        /* Hero & Sinking */
+        /* Hero */
         .hero { 
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
             position: relative; z-index: 10;
             background: radial-gradient(circle at top, var(--hero-top) 0%, var(--bg) 80%);
         }
-        .sinking-layer { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, var(--bg) 90%); pointer-events: none; z-index: 5; }
+        .sinking-layer { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, var(--bg) 95%); pointer-events: none; z-index: 5; }
         #hero-content { text-align: center; z-index: 10; will-change: transform, opacity; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(3.5rem, 12vw, 9rem); font-weight: 900; letter-spacing: -4px; line-height: 0.85; background: linear-gradient(180deg, #fff 0%, #444 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 900; letter-spacing: -4px; line-height: 0.85; background: linear-gradient(180deg, #fff 0%, #444 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { color: var(--accent); letter-spacing: 15px; text-transform: uppercase; font-size: 0.75rem; margin-top: 2rem; opacity: 0.8; }
 
-        /* Projects Section */
-        #work { padding: 8rem 0; overflow: hidden; position: relative; }
-        .section-header { padding: 0 5vw; margin-bottom: 4rem; }
+        /* Scroll Indicator */
+        .scroll-indicator { position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%); opacity: 0.5; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .mouse { width: 20px; height: 32px; border: 2px solid white; border-radius: 15px; position: relative; }
+        .wheel { width: 2px; height: 6px; background: white; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); animation: scrollMouse 2s infinite; }
+        @keyframes scrollMouse { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(15px); } }
 
-        /* Slider Logic */
-        .slider-wrapper { position: relative; width: 100%; padding: 0 5vw; }
-        .slider-container { 
-            display: flex; gap: 3rem; overflow-x: auto; scrollbar-width: none; 
-            padding: 4rem 0; scroll-behavior: smooth;
-        }
+        /* Sections */
+        section { padding: 8rem 5vw; position: relative; z-index: 20; background: var(--bg); }
+        .reveal { opacity: 0; transform: translateY(30px); transition: 1.2s var(--expo); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* About Section */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1200px; margin: 0 auto; align-items: center; }
+        .about-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .stat-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; }
+        .stat-box span { font-family: 'Montserrat'; color: var(--accent); font-weight: 900; font-size: 1.4rem; display: block; }
+        .stat-box label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+
+        /* Slider */
+        .slider-wrapper { position: relative; width: 100%; margin-top: 4rem; }
+        .slider-container { display: flex; gap: 2.5rem; overflow-x: auto; scrollbar-width: none; padding: 3rem 0; scroll-behavior: smooth; }
         .slider-container::-webkit-scrollbar { display: none; }
 
-        /* Arrows */
         .nav-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
-            width: 60px; height: 60px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            width: 50px; height: 50px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center;
             z-index: 100; transition: 0.3s; opacity: 0;
         }
         .slider-wrapper:hover .nav-arrow { opacity: 1; }
-        .nav-arrow:hover { background: var(--accent); color: black; border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); }
-        .arrow-left { left: 2vw; }
-        .arrow-right { right: 2vw; }
+        .nav-arrow:hover { background: var(--accent); color: black; border-color: var(--accent); }
+        .arrow-left { left: -1rem; }
+        .arrow-right { right: -1rem; }
 
-        /* 3D Project Card */
-        .card-perspective { flex: 0 0 450px; perspective: 1000px; }
+        /* 3D Card */
+        .card-perspective { flex: 0 0 380px; perspective: 1200px; }
         .project-card {
-            background: rgba(5, 10, 20, 0.6); border: 1px solid rgba(255,255,255,0.03); border-radius: 24px;
-            padding: 4rem 3rem; height: 550px; position: relative; overflow: hidden;
-            transform-style: preserve-3d; transition: border-color 0.4s var(--expo);
+            background: rgba(5, 10, 20, 0.4); border: 1px solid rgba(255,255,255,0.03); border-radius: 24px;
+            padding: 3rem 2.5rem; height: 480px; position: relative; overflow: hidden;
+            transform-style: preserve-3d; transition: border-color 0.4s, transform 0.1s linear;
             display: flex; flex-direction: column; justify-content: flex-end;
             backdrop-filter: blur(10px);
         }
-        
-        /* Spotlight odlesk */
         .project-card::before {
             content: ""; position: absolute; inset: 0;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.12), transparent 40%);
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 242, 255, 0.1), transparent 40%);
             z-index: 0; pointer-events: none;
         }
-
-        .project-card:hover { border-color: rgba(0, 242, 255, 0.4); }
-        .card-content { position: relative; z-index: 1; pointer-events: none; transform: translateZ(60px); }
-        
-        .p-icon { color: var(--accent); margin-bottom: 2.5rem; display: block; filter: drop-shadow(0 0 15px rgba(0,242,255,0.5)); }
-        .p-title { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; margin-bottom: 1rem; font-weight: 900; letter-spacing: -1px; }
-        .p-desc { color: var(--text-dim); line-height: 1.8; font-size: 1rem; margin-bottom: 2rem; }
-
-        .btn-archive { 
-            background: transparent; border: none; color: var(--accent); font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px;
-        }
+        .project-card:hover { border-color: rgba(0, 242, 255, 0.3); }
+        .card-content { position: relative; z-index: 1; pointer-events: none; transform: translateZ(50px); }
+        .p-icon { color: var(--accent); margin-bottom: 2rem; display: block; }
+        .p-title { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 0.8rem; font-weight: 900; }
+        .p-desc { color: var(--text-dim); line-height: 1.6; font-size: 0.9rem; margin-bottom: 2rem; }
+        .btn-more { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; }
 
         /* Footer */
-        footer { padding: 6rem 5vw; display: flex; flex-direction: column; align-items: center; gap: 4rem; }
-        .social-links { display: flex; gap: 4rem; }
-        .social-link { color: var(--text-dim); text-decoration: none; font-weight: 600; letter-spacing: 2px; font-size: 0.85rem; transition: 0.4s; display: flex; align-items: center; gap: 10px; }
-        .social-link:hover { color: var(--accent); text-shadow: 0 0 20px var(--accent); transform: translateY(-5px); }
+        footer { padding: 6rem 5vw; display: flex; flex-direction: column; align-items: center; gap: 3rem; border-top: 1px solid rgba(255,255,255,0.02); }
+        .social-links { display: flex; gap: 3rem; }
+        .social-link { color: var(--text-dim); text-decoration: none; font-weight: 600; letter-spacing: 2px; font-size: 0.8rem; transition: 0.4s; display: flex; align-items: center; gap: 8px; }
+        .social-link:hover { color: var(--accent); transform: translateY(-3px); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(1, 3, 8, 0.98); z-index: 5000;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s var(--expo);
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; padding: 3rem; position: relative; }
+        .close-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.05); border: none; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .close-btn:hover { background: var(--accent); color: black; }
 
         @media (max-width: 768px) {
             .nav-links, .nav-arrow { display: none; }
+            .about-grid { grid-template-columns: 1fr; }
             .card-perspective { flex: 0 0 85vw; }
-            .project-card { padding: 3rem 2rem; height: 500px; }
             #cursor { display: none; }
+            .modal-content { padding: 2rem 1rem; }
         }
     </style>
 </head>
@@ -143,20 +157,37 @@
             <h1 class="interactive">VOID<br>ENGINEER</h1>
             <p class="hero-subtitle">Industrial Game Architecture</p>
         </div>
+        <div class="scroll-indicator">
+            <div class="mouse"><div class="wheel"></div></div>
+        </div>
     </div>
+
+    <!-- ABOUT SECTION VRÁCENA -->
+    <section id="about">
+        <div class="about-grid reveal">
+            <div class="about-text">
+                <h2 style="font-family: 'Montserrat'; font-size: 2.5rem; margin-bottom: 2rem;">THE ARCHITECT</h2>
+                <p>Nezávislý vývojář zaměřený na budování atmosférických, systémy řízených zážitků. Moje práce se pohybuje na hraně mezi temným prostředím a fluidní mechanikou.</p>
+                <p>Vytvářím komplexní digitální ekosystémy, kde o přežití hráče rozhoduje procedurální generování a dynamické audio.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box"><span>C# / C++</span><label>Languages</label></div>
+                <div class="stat-box"><span>Unity / UE5</span><label>Engine</label></div>
+                <div class="stat-box"><span>HLSL</span><label>Shaders</label></div>
+                <div class="stat-box"><span>6+ YRS</span><label>Experience</label></div>
+            </div>
+        </div>
+    </section>
 
     <section id="work">
         <div class="section-header reveal">
-            <h2 style="font-family: 'Montserrat'; font-size: 3rem; font-weight: 900; letter-spacing: -2px;">SELECTED_WORKS</h2>
+            <h2 style="font-family: 'Montserrat'; font-size: 2.5rem; font-weight: 900; letter-spacing: -1px;">SELECTED_WORKS</h2>
         </div>
 
         <div class="slider-wrapper">
             <button class="nav-arrow arrow-left interactive" onclick="scrollSlider(-1)"><i data-lucide="chevron-left"></i></button>
             <button class="nav-arrow arrow-right interactive" onclick="scrollSlider(1)"><i data-lucide="chevron-right"></i></button>
-            
-            <div class="slider-container" id="slider">
-                <!-- Projekty se vloží JS -->
-            </div>
+            <div class="slider-container" id="slider"></div>
         </div>
     </section>
 
@@ -168,35 +199,42 @@
         </div>
     </footer>
 
+    <!-- MODAL VRÁCEN -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-btn interactive" onclick="closeModal()"><i data-lucide="x"></i></button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
     <script>
         const projects = [
-            { id: '1', title: 'Deep State', icon: 'zap', desc: 'Atmospheric underwater simulation with procedural ecosystem logic.' },
-            { id: '2', title: 'Kinematics', icon: 'cpu', desc: 'Advanced character physics engine for high-fidelity movement.' },
-            { id: '3', title: 'Aura UI', icon: 'layers', desc: 'Minimalist interface framework for diegetic game menus.' },
-            { id: '4', title: 'Neon Pulse', icon: 'activity', desc: 'Fast-paced rhythm system built for procedural music generation.' }
+            { id: '1', title: 'Deep State', icon: 'zap', desc: 'Atmosférická podmořská simulace s procedurální logikou ekosystému.', long: 'Tento projekt zkoumá hlubiny oceánu pomocí vlastního shaderu pro lom světla pod vodou a AI systémů pro hejna ryb.' },
+            { id: '2', title: 'Kinematics', icon: 'cpu', desc: 'Pokročilý fyzikální engine pro pohyb postav s vysokou věrností.', long: 'Systém, který nahrazuje standardní animace dynamickým výpočtem setrvačnosti a těžiště v reálném čase.' },
+            { id: '3', title: 'Aura UI', icon: 'layers', desc: 'Minimalistický framework pro diegetická herní menu v 3D prostoru.', long: 'UI, které existuje přímo v herním světě, reaguje na osvětlení a postavení kamery hráče.' }
         ];
 
         const slider = document.getElementById('slider');
 
         // Render Cards
         projects.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'card-perspective';
-            card.innerHTML = `
-                <div class="project-card interactive">
+            const wrap = document.createElement('div');
+            wrap.className = 'card-perspective reveal';
+            wrap.innerHTML = `
+                <div class="project-card interactive" onclick="openModal('${p.id}')">
                     <div class="card-content">
-                        <i data-lucide="${p.icon}" class="p-icon" size="40"></i>
+                        <i data-lucide="${p.icon}" class="p-icon" size="32"></i>
                         <h3 class="p-title">${p.title}</h3>
                         <p class="p-desc">${p.desc}</p>
-                        <div class="btn-archive">View Archive <i data-lucide="arrow-right" size="16"></i></div>
+                        <div class="btn-more">Open Detail <i data-lucide="arrow-right" size="14"></i></div>
                     </div>
                 </div>
             `;
-            slider.appendChild(card);
+            slider.appendChild(wrap);
         });
         lucide.createIcons();
 
-        // 3D Tilt & Spotlight
+        // 3D Tilt Script (Fixed)
         document.addEventListener('mousemove', e => {
             const cursor = document.getElementById('cursor');
             cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
@@ -209,12 +247,11 @@
                 card.style.setProperty('--mouse-x', `${x}px`);
                 card.style.setProperty('--mouse-y', `${y}px`);
 
-                // Tilt calculation
                 if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    const rotateX = (y - centerY) / 10;
-                    const rotateY = (centerX - x) / 10;
+                    const rotateX = (y - centerY) / 20; // Jemnější rotace
+                    const rotateY = (centerX - x) / 20;
                     card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
                 } else {
                     card.style.transform = `rotateX(0deg) rotateY(0deg)`;
@@ -222,58 +259,64 @@
             });
         });
 
-        // Slider Navigation
-        function scrollSlider(dir) {
-            const scrollAmount = 500;
-            slider.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+        // Modal Logic
+        function openModal(id) {
+            const p = projects.find(x => x.id === id);
+            document.getElementById('modal-body').innerHTML = `
+                <h2 style="font-family: 'Montserrat'; font-size: 2.5rem; margin-bottom: 1rem;">${p.title}</h2>
+                <span style="color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Project Archive</span>
+                <p style="color: var(--text-dim); line-height: 1.8; margin: 2rem 0;">${p.long}</p>
+                <div style="background: #050a14; aspect-ratio: 16/9; border-radius: 12px; border: 1px solid #111;"></div>
+            `;
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
-        // Parallax Sinking
+        // Slider Nav
+        function scrollSlider(dir) {
+            slider.scrollBy({ left: dir * 400, behavior: 'smooth' });
+        }
+
+        // Parallax & Sinking
         window.addEventListener('scroll', () => {
             const scrolled = window.scrollY;
             const hero = document.getElementById('hero-content');
             if(scrolled < 800) {
-                hero.style.transform = `translateY(${scrolled * 0.45}px)`;
-                hero.style.opacity = 1 - (scrolled / 550);
+                hero.style.transform = `translateY(${scrolled * 0.4}px)`;
+                hero.style.opacity = 1 - (scrolled / 600);
             }
         });
 
-        // Hover Detection
-        document.body.addEventListener('mouseover', e => {
-            if(e.target.closest('.interactive')) document.body.classList.add('hovering');
-        });
-        document.body.addEventListener('mouseout', e => {
-            if(e.target.closest('.interactive')) document.body.classList.remove('hovering');
-        });
+        // Hover & Reveal
+        document.body.addEventListener('mouseover', e => { if(e.target.closest('.interactive')) document.body.classList.add('hovering'); });
+        document.body.addEventListener('mouseout', e => { if(e.target.closest('.interactive')) document.body.classList.remove('hovering'); });
 
-        // Reveal Animation
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('active'); });
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Background Particles
+        // Particles
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let parts = [];
         function init() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            parts = Array.from({length: 50}, () => ({
+            parts = Array.from({length: 40}, () => ({
                 x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                s: Math.random() * 1.5, v: Math.random() * 0.4 + 0.1
+                s: Math.random() * 1.5, v: Math.random() * 0.3 + 0.1
             }));
         }
         function draw() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = "rgba(0, 242, 255, 0.15)";
-            parts.forEach(p => {
-                p.y -= p.v; if(p.y < 0) p.y = canvas.height;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
-            });
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "rgba(0, 242, 255, 0.1)";
+            parts.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = canvas.height; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill(); });
             requestAnimationFrame(draw);
         }
-        window.addEventListener('resize', init);
-        init(); draw();
+        window.addEventListener('resize', init); init(); draw();
     </script>
 </body>
 </html>
