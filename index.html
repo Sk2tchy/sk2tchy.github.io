@@ -10,7 +10,7 @@
 
         :root {
             --bg: #010308;
-            --hero-top: #0a1120;
+            --hero-top: #15324d; /* Světlejší hlubina */
             --accent: #00f2ff;
             --text: #ffffff;
             --text-dim: #7a8d9c;
@@ -48,9 +48,11 @@
         .hero { 
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
             position: relative; z-index: 10;
-            background: radial-gradient(circle at top, var(--hero-top) 0%, var(--bg) 85%);
+            /* Efekt prosvítání z hladiny */
+            background: radial-gradient(circle at top, #2b618a 0%, var(--hero-top) 25%, var(--bg) 85%);
         }
-        .sinking-layer { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, var(--bg) 95%); pointer-events: none; z-index: 5; }
+        /* Sinking layer teď propouští víc nahoře, ale spolehlivě stmívá dolů */
+        .sinking-layer { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, var(--bg) 95%); pointer-events: none; z-index: 5; }
         #hero-content { text-align: center; z-index: 10; will-change: transform, opacity; }
         .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 900; letter-spacing: -4px; line-height: 0.85; background: linear-gradient(180deg, #fff 0%, #444 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { color: var(--accent); letter-spacing: 15px; text-transform: uppercase; font-size: 0.75rem; margin-top: 2rem; opacity: 0.8; }
@@ -311,9 +313,10 @@
         let parts = [];
         function init() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            parts = Array.from({length: 40}, () => ({
+            // Zvýšeno na 150 pro mnohem více bublinek (i lehce zvětšeny)
+            parts = Array.from({length: 150}, () => ({
                 x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                s: Math.random() * 1.5, v: Math.random() * 0.3 + 0.1
+                s: Math.random() * 2, v: Math.random() * 0.5 + 0.1
             }));
         }
         function draw() {
